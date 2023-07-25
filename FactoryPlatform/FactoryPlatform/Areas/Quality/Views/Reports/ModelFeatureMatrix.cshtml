@@ -1,0 +1,254 @@
+﻿@using FactoryPlatform.Areas.Quality.Models.Reports.Modelos.ModelFeatureMatrix
+@model R_ModelFeatureMatrixViewModel
+
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+}
+@* Ocultar elementos para que funcione la datatable por ajax sin modificar la estructura html *@
+<style>
+    .dt-buttons, .dataTables_filter {
+        display: none;
+    }
+</style>
+<div class="post d-flex flex-column-fluid border" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <div id="BlockPantalla">
+            <div class="card mb-5">
+                <div class="card-body p-5 mb-0">
+                    <div class="row">
+                        <div class="col-lg-3 fv-row mb-5">
+                            <label class="fs-6 form-label fw-bolder text-dark">Model</label>
+                            <input id="Modelo" name="Modelo" type="text" class="form-control ps-3 p-3 fs-8" value="" placeholder="Modelo" autocomplete="off" autofocus />
+                        </div>
+                        <div class="col-lg-3 fv-row mb-5">
+                            <label class="fs-6 form-label fw-bolder text-dark">WorkStations</label>
+                            <select id="Estacion" name="Estacion" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Workstations--" data-allow-clear="true">
+                                <option></option>
+                                @foreach (var item in Model.WorkStation)
+                                {
+                                    <option value="@item.ID">@item.Descripcion</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-lg-3 fv-row me-0 p-8">
+                            <button type="button" onclick="SendFormCombos()" id="Search" class="btn btn-primary p-3 fs-8 me-3"><i class="fas fa-search"></i>Search</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card mb-5 d-none" id="Resultado">
+                <div class="card-body p-5 mb-0 d-none" id="Tabla">
+                    <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                        <div class="card-title">
+                            <div class="d-flex align-items-center position-relative my-1">
+                                <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                                <input type="text" data-kt-filter="searchMFList" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+                            </div>
+                            <div id="TablaModelChanges_export" class="d-none"></div>
+                        </div>
+                        <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                            <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                                Export Report
+                            </button>
+                            <div id="TablaModelChanges_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-exportMFList="excel">
+                                        Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                                    </a>
+                                </div>
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-exportMFList="csv">
+                                        Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                                    </a>
+                                </div>
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-exportMFList="pdf">
+                                        Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div id="TablaModelChanges_buttons" class="d-none"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table id="TablaModelChanges" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7" style="width:100%">
+                            <thead>
+                                <tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+                                    <th class="min-w-50px  align-middle border-end text-center"></th>
+                                    <th class="min-w-50px  align-middle border-end text-center">Model</th>
+                                    <th class="min-w-50px  align-middle border-end text-center">Block Washing</th>
+                                    <th class="min-w-50px  align-middle border-end text-center">Assemble 1</th>
+                                    <th class="min-w-100px align-middle border-end text-center">Assemble 2</th>
+                                    <th class="min-w-100px align-middle border-end text-center">Assemble 3</th>
+                                    <th class="min-w-50px  align-middle border-end text-center">Assemble 4</th>
+                                    <th class="min-w-100px align-middle border-end text-center">Assemble 5</th>
+                                    <th class="min-w-100px align-middle border-end text-center">Assemble 6</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-body p-5 mb-0 d-none" id="NoInfo">
+                    <div class="alert alert-warning d-flex align-items-center p-5" id="AlertWarning">
+                        <span class="svg-icon svg-icon-2x svg-icon-light me-4">
+                            <i class="fas fa-exclamation-triangle fs-2x text-warning"></i>
+                        </span>
+                        <div class="d-flex flex-column">
+                            <h6 class="text-warning">-- There are no records --</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    @* Block pantalla *@
+    <script>
+        var button = document.querySelector("#Search");
+        var target = document.querySelector("#BlockPantalla");
+
+        var BlockPantalla = new KTBlockUI(target, {
+            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+        });
+    </script>
+    @*Data ranges*@
+    <script>
+        var start = moment().subtract(10, "years");
+        var end = moment();
+
+        function cb(start, end) {
+            $("#DateRanges").html(start.format("MMMM D, YYYY") + " - " + end.format("MMMM D, YYYY"));
+        }
+
+        $("#DateRanges").daterangepicker({
+            showDropdowns: true,
+            startDate: start,
+            endDate: end,
+            ranges: {
+                "All Dates": [moment().subtract(10, "years"), moment()],
+                "Today": [moment(), moment()],
+                "Yesterday": [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                "This Month": [moment().startOf("month"), moment().endOf("month")],
+                "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
+            }
+        }, cb);
+
+        cb(start, end);
+    </script>
+    <script>
+        function SendFormCombos() {
+            BlockPantalla.block();
+
+            $("#Resultado").addClass("d-none");
+            $("#Tabla").addClass("d-none");
+            $("#NoInfo").addClass("d-none");
+
+            var Modelo = $("#Modelo").val();
+            var EstacionID = $("#Estacion").val();
+            if (EstacionID == '' || EstacionID == null){
+                EstacionID = 0;
+            }
+            $.ajax({
+                url: "@Url.Action("SearchInfo","R_ModelFeatureMatrix")",
+                data: {
+                    Modelo: Modelo,EstacionID:EstacionID
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if (result != null) {
+                    if (result == 'Error') {
+                        BlockPantalla.release();
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else {
+                        var obj = JSON.parse(result);
+
+                        if (obj.length > 0) {
+                            $("#Resultado").removeClass("d-none");
+                            $("#Tabla").removeClass("d-none");
+                            var t = $('#TablaModelChanges').DataTable({
+                                destroy: true,
+                                dom: 'Bfrtip',
+                                "pageLength": 100,
+                                "columnDefs": [
+                                    { "className": "dt-center", "targets": "_all" }
+                                ]
+                            });
+                            t.clear().draw();
+
+                            for (var i = 0; i < obj.length; i++) {
+                                t.row.add(
+                                    [
+                                        i + 1,
+                                        obj[i].Modelo,
+                                        obj[i].Lavado,
+                                        obj[i].Ensamble1,
+                                        obj[i].Ensamble2,
+                                        obj[i].Ensamble3,
+                                        obj[i].Ensamble4,
+                                        obj[i].Ensamble5,
+                                        obj[i].Ensamble6
+
+                                    ]).draw(false);
+                            }
+
+                            //Export datable ajax
+                            const exportButtons = document.querySelectorAll('#TablaModelChanges_export_menu [data-kt-exportMFList]');
+                            exportButtons.forEach(exportButton => {
+                                exportButton.addEventListener('click', e => {
+
+                                    e.preventDefault();
+
+                                    var exportValue = e.target.getAttribute('data-kt-exportmflist');
+                                    var target = document.querySelector('div[id="TablaModelChanges_buttons"]');
+                                    target = document.querySelector('.buttons-' + exportValue);
+                                    target.click();
+                                });
+                            });
+                            //Search in datable ajax
+                            const filterSearch = document.querySelector('[data-kt-filter="searchMFList"]');
+                            filterSearch.addEventListener('keyup', function (e) {
+                                t.search(e.target.value).draw();
+                            });
+
+                            BlockPantalla.release();
+                        } else {
+
+                            $("#Resultado").removeClass("d-none");
+                            $("#NoInfo").removeClass("d-none");
+                            BlockPantalla.release();
+                        }
+                        //$("#kt_body").attr("data-kt-aside-minimize", "on");
+
+                    }
+
+                }
+                else {
+                    SystemServerError()
+                }
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+        }
+    </script>
+}

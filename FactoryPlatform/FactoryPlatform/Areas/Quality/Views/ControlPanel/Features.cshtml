@@ -1,0 +1,1887 @@
+﻿@using FactoryPlatform.Areas.Quality.Models.ControlPanel.ModelFeactures
+@model CP_ModelFeaturesViewModel
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+}
+
+<div class=" d-flex flex-column flex-row-fluid">
+	<!--begin::Header-->
+	<div id="kt_docs_header" class="docs-header mb-2 mb-lg-10">
+		<div class="container-fluid">
+			<div class="card-header">
+				<form asp-area="Quality" asp-action="Features" asp-controller="ControlPanel" method="post" id="MainForm">
+				<div class="row">
+					<input type="hidden" name="SeccionId" id="IdSeccion" value="@Model.IdSeccion" />
+					<input type="hidden" name="Tipo" id="Tipo" value="@Model.Tipo" />
+					<input type="hidden" name="PlantaID" id="PlantaID" value="@Model.PlantaId" />
+					<div class="col-lg-2 fv-row mb-4">
+						<label class="fs-6 form-label fw-bolder text-dark">Modelo</label>
+						<input id="Modelo" name="Modelo" type="text" class="form-control ps-3 p-3 fs-8"  value="@Model.Modelo" placeholder="Modelo" autocomplete="off" autofocus />
+					</div>
+					<div class="col-lg-3 fv-row mb-4">
+						<label class="fs-6 form-label fw-bolder text-dark">Stations</label>
+						<select id="Estacion" name="Estacion" data-selected="@Model.Estacion" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Stations--" data-allow-clear="true">
+							<option></option>
+							@foreach(var item in Model.Quality_Workstations)
+							{
+								<option value="@item.Value">@item.Text</option>
+							}
+						</select>
+					</div>
+					<div class="col-lg-3 fv-row pt-9 me-0">
+						<button type="submit"  class="btn btn-primary p-3  fs-8 me-3">
+							<i class="fas fa-search"></i>Search
+						</button>
+						@if ((Model.Modelo != null && Model.Modelo != "") && (Model.Estacion > 0))
+						{
+							<button class="btn btn-success p-3 fs-8 me-3" type="button" onclick="OpenNewFeature()" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" title="Add Feature">
+								<i class="fas fa-plus"></i>
+							</button>
+							<button class="btn btn-warning p-3 fs-8 me-3" type="button" onclick="OpenCopyFeature()" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" title="Copy Feature">
+								<i class="far fa-copy fs-3"></i>
+							</button>
+							<button class="btn btn-danger p-3 fs-8 me-3" onclick="DeleteAllFeaures('@Model.Modelo', @Model.Estacion)"  type="button" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" title="Delete Feature">
+								&nbsp;<i class="fa fa-times "></i>
+							</button>
+						}
+					</div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!--end::Header-->
+	<!--begin::Content-->
+	@if ((Model.Modelo != null && Model.Modelo != "") && (Model.Estacion > 0))
+	{ 
+	<div class="docs-content d-flex flex-column flex-column-fluid" id="kt_docs_content">
+		<div class="container-fluid d-flex flex-column flex-lg-row" id="kt_docs_content_container">
+			<div class="card card-docs flex-row-fluid mb-2">
+				<div class="card-body">
+					@if(Model.CP_Q_ModelFeature.Any())
+					{
+						foreach (var item in Model.CP_Q_ModelFeature)
+							{
+							string DatosPictures = "";
+							int len = 1;
+							<div class="row">
+									
+								<div class="col-lg-6 fv-row mb-4">
+									@if(Model.FilesModelFeactures.Any())
+									{
+										var fileNames = Model.FilesModelFeactures.Where(f => f.RegistroId == item.ID_Registro).ToList();
+										@if (fileNames.Any())
+										{
+											<div class="w-500px me-5">
+												<div id="Caroucel-@item.ID_Registro" class="carousel slide" data-bs-ride="true">
+													@{
+														int CountActiveScore = 0;
+														int CountActivePic = 0;
+
+																<div class="carousel-indicators">
+																	@foreach (var file in fileNames)
+															{
+																string Active = CountActiveScore > 0 ? "" : "active";
+																string Current = CountActiveScore > 0 ? "false" : "true";
+																		<button type="button" data-bs-target="#Caroucel-@item.ID_Registro" data-bs-slide-to="@CountActiveScore" aria-label="Slide @CountActiveScore" class="@Active" aria-current="@Current"></button>
+																CountActiveScore++;
+															}
+																</div>
+																<div class="carousel-inner">
+																	@foreach (var file in fileNames)
+															{
+																string Active = CountActivePic > 0 ? "" : "active";
+																var src = $"https://mxesc1vapp001/photocenter/Planta{item.PlantaID}/model-features/{item.Modelo}/{item.ID_Registro}/large/{file.FileName}";
+																DatosPictures = DatosPictures + file.FileName + ",";
+																		<div class="carousel-item @Active">
+																			<img src="@src" class="d-block w-100" alt="@file.FileName" onclick="OpenModalImage('@src')">
+																		</div>
+																CountActivePic++;
+															}
+																</div>
+													}
+													<button class="carousel-control-prev" type="button" data-bs-target="#Caroucel-@item.ID_Registro" data-bs-slide="prev">
+														<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+														<span class="visually-hidden">Previous</span>
+													</button>
+													<button class="carousel-control-next" type="button" data-bs-target="#Caroucel-@item.ID_Registro" data-bs-slide="next">
+														<span class="carousel-control-next-icon" aria-hidden="true"></span>
+														<span class="visually-hidden">Next</span>
+													</button>
+												</div>
+											</div>
+										}
+										else
+										{
+											<div class="alert alert-danger d-flex align-items-center p-5 w-500px mt-6">
+												<span class="svg-icon svg-icon-2x svg-icon-light me-4">
+													<i class="fas fa-exclamation-triangle fs-2x text-danger"></i>
+												</span>
+												<div class="d-flex flex-column">
+													<h6 class="text-danger">There are not pictures for this feaute.</h6>
+												</div>
+											</div>
+										}
+									}
+									else
+									{
+										<div class="alert alert-danger d-flex align-items-center p-5 w-500px mt-6">
+											<span class="svg-icon svg-icon-2x svg-icon-light me-4">
+												<i class="fas fa-exclamation-triangle fs-2x text-danger"></i>
+											</span>
+											<div class="d-flex flex-column">
+												<h6 class="text-danger">There are not pictures for this feaute.</h6>
+											</div>
+										</div>
+									}
+								</div>
+									
+								<div class="col-lg-6 fv-row mb-4">
+									<div>
+										<h1 class="fw-bold mb-6 fs-1">
+											@item.Titulo
+										</h1>
+										<p class="fs-5 fw-bold mb-1">@item.Descripcion</p>
+									</div>
+									<div class="row">
+										<div class="col-6 fv-row pt-9 me-0">
+											<button type="button" onclick="OpenModalUpdateFeature(@item.ID_Registro,'@DatosPictures.TrimEnd(',')')" class="btn btn-primary p-3  fs-8 me-3">
+												<i class="fas fa-sync-alt"></i>Update
+											</button>
+												<button onclick="DeleteFeature(@item.ID_Registro, '@item.Modelo')" class="btn btn-danger p-3 fs-8 me-3" type="button">
+												&nbsp;<i class="fa fa-times "></i>Delete
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="border-gray-300 border-bottom border-bottom-dashed mb-4"></div>
+							}
+						
+					}
+					else
+					{
+						<div class="alert alert-warning d-flex align-items-center p-5">
+							<span class="svg-icon svg-icon-2x svg-icon-light me-4"> 
+								<i class="fas fa-exclamation-triangle fs-2x text-warning"></i>
+							</span>
+							<div class="d-flex flex-column">
+								<h6 class="text-warning">No features at the moment</h6>
+								<span>Now you can start recording features for this model!.</span>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+			
+			<!--begin::Sidebar wrapper-->
+			<div class="ms-7 flex-row-auto w-500px scroll bg-white">
+					<div class="card-body px-0 px-3 py-6">
+						<div class="row draggable-zone p-3" tabindex="0" id="ordendatos">
+							@if(Model.CP_Q_ModelFeature.Any())
+							{
+								foreach (var item in Model.CP_Q_ModelFeature)
+								{
+									<div class="col draggable col-lg-12 py-1" tabindex="0" style="" id="@item.ID_Registro">
+										<div class="card card-bordered">
+											<div class="row" style="padding-top: 0px;">
+												<div class="card-toolbar col-lg-1">
+													<a class="btn btn-icon btn-sm btn-hover-light-primary draggable-handle">
+														<i class="fas fa-bars fs-1"></i>
+													</a>
+												</div>
+												<div class="col-lg-11 fs-4" style="vertical-align: middle;">
+													@item.Orden - @item.Titulo
+												</div>
+											</div>
+										</div>
+									</div>
+								}
+							}
+							else
+							{
+								<div class="alert alert-warning d-flex align-items-center p-5">
+									<span class="svg-icon svg-icon-2x svg-icon-light me-4">
+										<i class="fas fa-exclamation-triangle fs-2x text-warning"></i>
+									</span>
+									<div class="d-flex flex-column">
+										<h6 class="text-warning">No features at the moment</h6>
+										<span>Now you can start recording features for this model!.</span>
+									</div>
+								</div>
+							}
+							
+						</div>
+					</div>
+					<form asp-area="Quality" asp-action="FeaturesOrder" asp-controller="CP_ModelFeatures" method="post" id="orderDataForm">
+						<input type="hidden" name="SeccionId" id="IdSeccion" value="@Model.IdSeccion" />
+						<input name="orderData" id="orderData" value="0" type="text" hidden />
+						<input name="orderDataModel" id="orderDataModel" value="0" type="text" hidden />
+						<input name="orderDataStation" id="orderDataStation" value="0" type="text" hidden />
+					</form>
+			</div>
+			<!--end::Sidebar wrapper-->
+		</div>
+	</div>
+	}
+	<!--end::Content-->
+</div>
+
+@*Modal Update Feature*@
+<div class="modal fade" tabindex="-1" id="UpdateModel" data-bs-keyboard="false" data-bs-backdrop="static">
+	<div class="modal-dialog modal-fullscreen">
+
+		<div class="modal-content shadow-none">
+			<div class="modal-header">
+				<h3 class="modal-title">Update Feature</h3>
+				<a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close" onclick="CloseUpdateModal()">
+					<span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+				</a>
+			</div>
+			<div class="modal-body pt-0 bg-light-dark text-dark p-5 pt-5">
+
+				<div class="row p-5">
+					<div class="col-lg-4 fv-row mb-5 bg-white me-10 p-5">
+						<div class="d-flex align-items-center mb-2">
+							<span class="fs-4 fw-semibold text-gray-400 align-self-start me-1">
+								<i class="far fa-file-alt fs-4"></i>
+							</span>
+							<span class="fs-4 fw-bold text-gray-800 me-2">Update data</span>
+						</div>
+						<div class="border-gray-300 border-bottom border-bottom-dashed mb-4"></div>
+
+						<form id="FormUpdateF">
+							<input type="hidden" id="IdSeccionUpdF" name="SeccionId" value="@Model.IdSeccion" />
+							<input type="hidden" id="TipoUpdF" name="Tipo" value="@Model.Tipo" />
+							<input type="hidden" id="modeloUpdF" name="modelo" value="@Model.Modelo" />
+							<input type="hidden" id="ModalNumberUpdF" name="ModalNumber" value="2" />
+							<input type="hidden" id="IdFeatureUpdF" name="FeatureID" />
+							<div class="fv-row">
+								<label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Stations:</label>
+								<select id="estacionUpdF" name="estacion" data-selected="@Model.Estacion" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Stations--" data-allow-clear="true">
+									<option></option>
+									@foreach(var item in Model.Quality_Workstations)
+									{
+										<option value="@item.Value">@item.Text</option>
+									}
+								</select>
+							</div>
+							<div class="fv-row">
+								<label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Title:</label>
+								<input type="text" id="TitleUpdF" name="Title" class="form-control p-3 fs-7 mb-0" />
+							</div>
+							<div class="fv-row mb-5">
+								<label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Description:</label>
+								<textarea id="DescriptionUpdF" name="Description" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary p-3 fs-7 me-3" id="BtnUpdateF" type="button">
+									<span class="indicator-label"><i class="fas fa-save"></i> Save</span>
+									<span class="indicator-progress">
+										Please wait...
+										<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+									</span>
+								</button>
+							</div>
+						</form>
+					</div>
+					<div class="col-lg-3 fv-row mb-4 bg-white me-10 p-5">
+						<div class="d-flex align-items-center mb-2">
+							<span class="fs-4 fw-semibold text-gray-400 align-self-start me-1">
+								<i class="fas fa-camera fs-4"></i>
+							</span>
+							<span class="fs-4 fw-bold text-gray-800 me-2">Upload more photos</span>
+						</div>
+						<div class="border-gray-300 border-bottom border-bottom-dashed mb-4"></div>
+
+						<div class="dropzone dropzone-queue mb-2" id="DropzoneUpdateFeature">
+							<div class="dropzone-panel mb-lg-0 mb-2">
+								<button type="button" class="dropzone-select btn btn-sm btn-primary me-2" id="attachFileUpdate" >Add files</button>
+								<button type="button" class="dropzone-upload btn btn-sm btn-primary me-2" id="archivosUpdate">Upload All</button>
+								<button type="button" class="dropzone-remove-all btn btn-sm btn-danger">Remove All</button>
+							</div>
+							<div class="dropzone-items wm-200px">
+								<div class="dropzone-item" style="display:none">
+									<div class="dropzone-file">
+										<div class="dropzone-filename" title="some_image_file_name.jpg">
+											<span data-dz-name>some_image_file_name.jpg</span>
+											<strong>(<span data-dz-size>340kb</span>)</strong>
+										</div>
+										<div class="dropzone-success text-success" data-dz-successmessage></div>
+										<div class="dropzone-error" data-dz-errormessage></div>
+									</div>
+									<div class="dropzone-progress">
+										<div class="progress">
+											<div class="progress-bar bg-primary"
+												 role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-dz-uploadprogress>
+											</div>
+										</div>
+									</div>
+									<div class="dropzone-toolbar" >
+										<span class="dropzone-start"><i class="bi bi-play-fill fs-3"></i></span>
+										<span class="dropzone-cancel d-none" data-dz-remove style="display: none;"><i class="bi bi-x fs-3"></i></span>
+										<span class="dropzone-delete" data-dz-remove><i class="bi bi-x fs-1"></i></span>
+									</div>
+								</div>
+							</div>
+						</div>
+			
+
+					</div>
+					<div class="col-lg-4 fv-row mb-4 bg-white p-5">
+						<div class="d-flex align-items-center mb-2">
+							<span class="fs-4 fw-semibold text-gray-400 align-self-start me-1">
+								<i class="fas fa-images fs-4"></i>
+							</span>
+							<span class="fs-4 fw-bold text-gray-800 me-2">Delete and order photos</span>
+						</div>
+					    <div class="border-gray-300 border-bottom border-bottom-dashed mb-4"></div>
+
+						<div id="CreateDrags" class="text-center" style="position: relative;left: 25%;">
+
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-light" onclick="CloseUpdateModal()">Close</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+@*Modal New Feaute*@
+<div class="modal fade" tabindex="-1" id="NewFeature" data-bs-keyboard="false" data-bs-backdrop="static">
+	<div class="modal-dialog mw-750px">
+		<div class="modal-content">
+			<form id="FormNewFeature">
+				<div class="modal-header">
+					<h3 class="modal-title">New Feature</h3>
+					<div class="btn btn-icon btn-sm ms-2" data-bs-dismiss="modal" aria-label="Close">
+						<span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+					</div>
+				</div>
+				<div class="modal-body">
+						<input type="hidden" id="IdSeccionNewF" name="SeccionId" value="@Model.IdSeccion" />
+						<input type="hidden" id="TipoNewF" name="Tipo" value="@Model.Tipo" />
+						<input type="hidden" id="modeloNewF" name="modelo" value="@Model.Modelo"/>
+						<input type="hidden" id="estacionNewF" name="estacion" value="@Model.Estacion"/>
+						<input type="hidden" id="ModalNumberNewF" name="ModalNumber" value="1" />
+						<div class="fv-row">
+							<label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Title:</label>
+						    <input type="text" onkeyup="HabilitarDropZone()" id="TitleNewF" name="Title" class="form-control p-3 fs-7 mb-0" />
+						</div>
+						<div class="fv-row mb-5">
+							<label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Description:</label>
+							<textarea onkeyup="HabilitarDropZone()" id="DescriptionNewF" name="Description" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+						</div>
+
+					<!--begin::Dropzone-->
+					<div class="dropzone dropzone-queue mb-2" id="DropzoneNewFeature">
+						<div class="dropzone-panel mb-lg-0 mb-2">
+							<button type="button" class="dropzone-select btn btn-sm btn-primary me-2" id="attachFile" disabled="disabled">Add files</button>
+							<button type="button" class="dropzone-upload btn btn-sm btn-primary me-2" id="archivos" disabled="disabled">Upload All</button>
+							<button type="button" class="dropzone-remove-all btn btn-sm btn-danger">Remove All</button>
+						</div>
+						<div class="dropzone-items wm-200px">
+							<div class="dropzone-item" style="display:none">
+								<div class="dropzone-file">
+									<div class="dropzone-filename" title="some_image_file_name.jpg">
+										<span data-dz-name>some_image_file_name.jpg</span>
+										<strong>(<span data-dz-size>340kb</span>)</strong>
+									</div>
+									<div class="dropzone-success text-success" data-dz-successmessage></div>
+									<div class="dropzone-error" data-dz-errormessage></div>
+								</div>
+								<div class="dropzone-progress">
+									<div class="progress">
+										<div class="progress-bar bg-primary"
+											 role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-dz-uploadprogress>
+										</div>
+									</div>
+								</div>
+								<div class="dropzone-toolbar">
+									<span class="dropzone-start"><i class="bi bi-play-fill fs-3"></i></span>
+									<span class="dropzone-cancel d-none" data-dz-remove style="display: none;"><i class="bi bi-x fs-3"></i></span>
+									<span class="dropzone-delete" data-dz-remove><i class="bi bi-x fs-1"></i></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--end::Dropzone-->
+
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@*Modal Copy Feaute*@
+<div class="modal fade" tabindex="-1" id="CopyFeature" data-bs-keyboard="false" data-bs-backdrop="static">
+	<div class="modal-dialog mw-600px">
+		<div class="modal-content">
+			<form id="FormCopyFeature">
+				<div class="modal-header">
+					<h3 class="modal-title">Copy Feature</h3>
+					<div class="btn btn-icon btn-sm ms-2" data-bs-dismiss="modal" aria-label="Close">
+						<span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id="modeloNewF" name="modelo" value="@Model.Modelo" />
+					<div class="fv-row">
+						<label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Copy to Model:</label>
+						<input type="text" id="CopyNewModelo" name="NewModelo" class="form-control p-3 fs-7 mb-0" />
+					</div>
+					<div class="fv-row mb-5">
+						<label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Worksation:</label>
+						<select id="CopyEstacion" name="estacion" data-selected="@Model.Estacion" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Stations--" data-allow-clear="true">
+							<option></option>
+							@foreach (var item in Model.Quality_Workstations)
+							{
+								<option value="@item.Value">@item.Text</option>
+							}
+						</select>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-light me-3 p-3 fs-7" data-bs-dismiss="modal">Close</button>
+					<button id="BtnCopyF" class="btn btn-primary p-3 fs-7 me-3"  type="button">
+						<span class="indicator-label"><i class="fas fa-save"></i> Save</span>
+						<span class="indicator-progress">
+							Please wait...
+							<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+						</span>
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@*Modal Photo viewe*@
+<div class="modal fade" tabindex="-1" id="PhotoViewer" data-bs-keyboard="false" data-bs-backdrop="static">
+	<div class="modal-dialog mw-1000px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title">Photo Viewer</h3>
+				<div class="btn btn-icon btn-sm ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="me-5 text-center">
+					<img id="IdPhotoView" class="d-block text-center w-950px" alt="PhotoViewer">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts
+{
+@*Variables Globales*@
+<script>
+	document.querySelectorAll('[data-selected]').forEach(e => { e.value = e.dataset.selected });
+	var IdSeccion = $('#IdSeccion').val();
+</script>
+
+@*Minimize the Aside Menu*@
+<script>
+	$(document).ready(function () {
+		$("#kt_body").attr("data-kt-aside-minimize", "on");
+	})
+</script>
+
+@*Open modal New Feature*@
+<script>
+	function OpenNewFeature()
+	{
+	   $('#NewFeature').modal('show')
+	}
+	function HabilitarDropZone()
+	{
+		var Titulo = $("#TitleNewF").val();
+		var Descrip = $("#DescriptionNewF").val();
+
+	    if (Titulo.length > 4 && Descrip.length > 5)
+		{
+			document.getElementById('archivos').disabled = false;
+			document.getElementById('attachFile').disabled = false;
+		}
+		else
+		{
+			document.getElementById('archivos').disabled = true;
+		    document.getElementById('attachFile').disabled = true;
+		}
+	}
+</script>
+
+@*Open modal Copy Feature*@
+<script>
+	function OpenCopyFeature()
+	{
+	   $('#CopyFeature').modal('show');
+	}
+</script>
+
+@*Open modal Update Feature*@
+<script>
+	var featureid = "";
+	function OpenModalUpdateFeature(FeatureID, Pictures) {
+		$.ajax({
+			url: "@Url.Action("ShowUpdateFeature","CP_ModelFeatures")",
+			data: {
+				FeatureID: FeatureID,
+				IdSeccion: IdSeccion
+			},
+			type: "POST",
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("XSRF-TOKEN",
+					$('input:hidden[name="__RequestVerificationToken"]').val());
+			},
+		}).done(function (result) {
+			if (result != null) {
+				if (result == 'Error') {
+					SystemServerError()
+				}
+				else if (result == 'noSession') {
+					swalExpired()
+				}
+				else if (result == 'Sorry') {
+					swalNoAuthorized()
+				}
+				else if (result == 'NoPage')
+				{
+					swalNoAuthorized()
+				}
+				else
+				{
+					var obj = JSON.parse(result);
+
+					$("#IdFeatureUpdF").val(obj[0].ID_Registro);
+					$("#TitleUpdF").val(obj[0].Titulo);
+					$("#DescriptionUpdF").val(obj[0].Descripcion);
+
+					$('#UpdateModel').modal('show')
+					
+					Pictures = Pictures.split(",");
+					PlantaGlobalid = $("#PlantaID").val();
+					featureid = FeatureID;
+					var modelo = $('#Modelo').val();
+					var dragphoto = '<div class="col-lg-6" >'+
+										'<div class="row row-col-lg-12 g-10 min-h-200px mt-0 mb-0 draggable-zone" tabindex="0" id="' + FeatureID + '">';
+					
+					for (let i = 0; i < Pictures.length; i++) {
+
+							var name = FeatureID + "label" + Pictures[i];
+							var numero = i + 1 ;
+							dragphoto += `<div class="col draggable" id="${Pictures[i]}">` +
+											`<div class="card bg-light mt-0 mb-0">` +
+												`<div class="card-header">` +
+													`<a class="btn btn-icon"  style="position: relative;left: -8%;top:15px" onclick="deleteModalPicture(${FeatureID},'${Pictures[i]}')">` +
+														`<span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>` +
+													`</a>` +
+													`<div class="card-title mx-auto" id="${name}">` +
+														`<h3 class="card-label" >Picture # ${numero}</h3>` +
+													`</div>` +
+													`<div class="card-toolbar">` +
+														`<a class="btn btn-icon btn-sm btn-hover-light-primary draggable-handle">` +
+														`<span class="svg-icon svg-icon-2x" >` +
+															`<svg width="24" height = "24" viewBox = "0 0 24 24" fill = "none" xmlns = "http://www.w3.org/2000/svg" >` +
+															`<path d="M21 7H3C2.4 7 2 6.6 2 6V4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V6C22 6.6 21.6 7 21 7Z" fill = "currentColor" > </path>` +
+															`<path opacity = "0.3" d = "M21 14H3C2.4 14 2 13.6 2 13V11C2 10.4 2.4 10 3 10H21C21.6 10 22 10.4 22 11V13C22 13.6 21.6 14 21 14ZM22 20V18C22 17.4 21.6 17 21 17H3C2.4 17 2 17.4 2 18V20C2 20.6 2.4 21 3 21H21C21.6 21 22 20.6 22 20Z" fill = "currentColor" > </path>` +
+															`</svg>` +
+														`</span>` +
+														`</a>` +
+													`</div>` +
+												`</div>` +
+												`<div class="card-body text-center">` +
+													`<img src="https://mxesc1vapp001/photocenter/Planta${PlantaGlobalid}/model-features/${modelo}/${FeatureID}/large/${Pictures[i]}" width="150" height="150">` +
+												`</div>` +
+											`</div>` +
+										`</div>`
+					}
+
+						dragphoto += `</div>`+
+									`</div>`
+						$('#CreateDrags').html(dragphoto);
+						KTDraggableCards.init();
+				}
+			}
+			else {
+				SystemServerError()
+			}
+		}).fail(function (error) {
+			swalErrorServer()
+		});
+	}
+</script>
+
+@*Close modal update en reload page*@
+<script>
+	function CloseUpdateModal()
+	{
+		  $('#UpdateModel').modal('hide');
+		  $('#MainForm').submit();
+	}
+</script>
+
+@*Update data Feature*@
+<script>
+	function UpdateFeature()
+	{
+		var FeatureID = $("#IdFeatureUpdF").val();
+		var Titulo = $("#TitleUpdF").val();
+		var EstacionID = $("#estacionUpdF").val();
+		var Descripcion =$("#DescriptionUpdF").val();
+
+		$.ajax({
+			url: "@Url.Action("UpdateFeature","CP_ModelFeatures")",
+			data: {
+					FeatureID: FeatureID,
+					Titulo: Titulo,
+					EstacionID: EstacionID,
+					Descripcion: Descripcion,
+					IdSeccion: IdSeccion
+			},
+			type: "POST",
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("XSRF-TOKEN",
+					$('input:hidden[name="__RequestVerificationToken"]').val());
+			},
+		}).done(function (result) {
+			if (result != null) {
+				if (result == 'Error') {
+					SystemServerError()
+				}
+				else if (result == 'noSession') {
+					swalExpired()
+				}
+				else if (result == 'Sorry') {
+					swalNoAuthorized()
+				}
+				else if (result == 'NoPage') {
+					swalNoAuthorized()
+				}
+				else 
+				{
+						Swal.fire({
+							text: "The action has been successfully submitted!",
+							icon: "success",
+							buttonsStyling: false,
+							allowEscapeKey: false,
+							allowOutsideClick: false,
+							confirmButtonText: "Ok, got it!",
+							customClass: {
+								confirmButton: "btn btn-primary"
+							}
+						}).then((result) => {
+							if (result.isConfirmed) {
+								
+							}
+						});
+				}
+			}
+			else {
+				SystemServerError()
+			}
+		}).fail(function (error) {
+			swalErrorServer()
+		});
+	}
+</script>
+
+@*Delete feature*@
+<script>
+	function DeleteFeature(IdRegistro, Modelo) 
+	{
+
+			Swal.fire({
+				text: "Are you sure to Delete the Feature?",
+				icon: "question",
+				buttonsStyling: false,
+				allowEscapeKey: false,
+				allowOutsideClick: false,
+				showCancelButton: true,
+				closeOnCancel: true,
+				confirmButtonText: "Confirm",
+				cancelButtonText: 'Cancel',
+				customClass: {
+					confirmButton: "btn btn-primary",
+					cancelButton: 'btn btn-danger'
+				}
+			}).then((result) => {
+				if (result.isConfirmed) 
+				{
+					$.ajax({
+						url: "@Url.Action("DeleteFeature","CP_ModelFeatures")",
+						data: {
+							IdRegistro: IdRegistro,
+							Modelo: Modelo,
+							IdSeccion: IdSeccion
+						},
+						type: "POST",
+						beforeSend: function (xhr) {
+							xhr.setRequestHeader("XSRF-TOKEN",
+								$('input:hidden[name="__RequestVerificationToken"]').val());
+						},
+					}).done(function (result) {
+						if (result != null) {
+							if (result == 'Error') {
+								SystemServerError()
+							}
+							else if (result == 'noSession') {
+								swalExpired()
+							}
+							else if (result == 'Sorry') {
+								swalNoAuthorized()
+							}
+							else if (result == 'NoPage') {
+								swalNoAuthorized()
+							} 
+							else 
+							{
+								toastr.success("The action detele was success.");
+								var datoFinal = [];
+								$("#ordendatos .draggable").each(function (index) {
+									//Obtener el id de cada elemento por clase
+
+									var valida = datoFinal.includes($(this).attr('id'));
+									if (valida != true) {
+										if(IdRegistro != $(this).attr('id')){
+										datoFinal.push($(this).attr('id'));
+										var idCombos = $(this).attr('id');
+										}
+									}
+
+								});
+								//Setear variables 
+								var orderData = datoFinal.toString();
+								var orderDataModel = $('#Modelo').val();
+								var orderDataStation = $('#Estacion').val();
+
+								$.ajax({
+									url: "@Url.Action("FeaturesOrder","CP_ModelFeatures")",
+									data: {
+										orderData: orderData,
+										orderDataModel: orderDataModel,
+										orderDataStation: orderDataStation
+									},
+									type: "POST",
+									beforeSend: function (xhr) {
+										xhr.setRequestHeader("XSRF-TOKEN",
+											$('input:hidden[name="__RequestVerificationToken"]').val());
+									},
+								}).done(function (result) {
+									if (result != null) {
+										if (result == 'Error') {
+											SystemServerError()
+										}
+										else if (result == 'noSession') {
+											swalExpired()
+										}
+										else if (result == 'Sorry') {
+											swalNoAuthorized()
+										}
+										else if (result == 'NoPage') {
+											swalNoAuthorized()
+										}else{
+											$('#MainForm').submit()
+										}
+									}
+									else {
+										SystemServerError()
+									}
+								}).fail(function (error) {
+									swalErrorServer()
+								});
+								
+							}
+						}
+						else {
+							SystemServerError()
+						}
+					}).fail(function (error) {
+						swalErrorServer()
+					});
+
+				}
+				else {
+					$('.swal2-container').css('display', 'none');
+				}
+			});
+	}
+</script>
+
+@*Copy facutres*@
+<script>
+	function CopyFeature()
+	{
+		var NewModelo = $("#CopyNewModelo").val();
+		var EstacionID = $("#CopyEstacion").val();
+		var Modelo = $("#modeloNewF").val();
+
+	   $.ajax({
+		url: "@Url.Action("CopyFeature","CP_ModelFeatures")",
+		data: {
+		   NewModelo:NewModelo,
+		   EstacionID:EstacionID,
+		   Modelo:Modelo,
+		   IdSeccion:IdSeccion,
+		},
+		type: "POST",
+		beforeSend: function (xhr)
+		{
+			xhr.setRequestHeader("XSRF-TOKEN",
+			$('input:hidden[name="__RequestVerificationToken"]').val());
+		},
+		}).done(function(result)
+		{
+			if(result != null)
+			{
+				if (result == 'Error') {
+					SystemServerError()
+				}
+				else if (result == 'noSession')
+				{
+					swalExpired()
+				}
+				else if (result == 'Sorry')
+				{
+					swalNoAuthorized()
+				}
+				else if (result == 'NoPage')
+				{
+					swalNoAuthorized()
+				}
+			    else if (result == 'NoExistMF') 
+				{
+						Swal.fire({
+							text: "The Actual Model does not have Features.!",
+							icon: "warning",
+							buttonsStyling: false,
+							allowEscapeKey: false,
+							allowOutsideClick: false,
+							confirmButtonText: "Ok, got it!",
+							customClass: {
+								confirmButton: "btn btn-primary"
+							}
+						}).then((result) => {
+							if (result.isConfirmed) {
+
+							}
+						});
+				}
+				else if (result == 'NoExistModel') 
+				{
+						Swal.fire({
+							text: "No exist the new Model in Production Models!",
+							icon: "warning",
+							buttonsStyling: false,
+							allowEscapeKey: false,
+							allowOutsideClick: false,
+							confirmButtonText: "Ok, got it!",
+							customClass: {
+								confirmButton: "btn btn-primary"
+							}
+						}).then((result) => {
+							if (result.isConfirmed) {
+
+							}
+						});
+				}
+				else
+				{
+						Swal.fire({
+							text: "The action has been successfully submitted!",
+							icon: "success",
+							buttonsStyling: false,
+							allowEscapeKey: false,
+							allowOutsideClick: false,
+							confirmButtonText: "Ok, got it!",
+							customClass: {
+								confirmButton: "btn btn-primary"
+							}
+						}).then((result) => {
+							if (result.isConfirmed) {
+
+							}
+						});
+				}
+
+			}
+			else
+			{
+				 SystemServerError()
+			}
+		}).fail(function (error)
+		{
+			swalErrorServer()
+		});
+
+
+	}
+</script>
+
+@*Delete All Feature*@
+<script>
+	function DeleteAllFeaures(Modelo, EstacionID) 
+	{
+		Swal.fire({
+			text: "Are you sure to Delete all Feature?",
+			icon: "question",
+			buttonsStyling: false,
+			allowEscapeKey: false,
+			allowOutsideClick: false,
+			showCancelButton: true,
+			closeOnCancel: true,
+			confirmButtonText: "Confirm",
+			cancelButtonText: 'Cancel',
+			customClass: {
+				confirmButton: "btn btn-primary",
+				cancelButton: 'btn btn-danger'
+			}
+		}).then((result) => {
+			if (result.isConfirmed) 
+			{
+				$.ajax({
+					url: "@Url.Action("DeleteAllFeatures","CP_ModelFeatures")",
+					data: {
+						Modelo: Modelo,
+						EstacionID: EstacionID,
+						IdSeccion: IdSeccion
+					},
+					type: "POST",
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader("XSRF-TOKEN",
+							$('input:hidden[name="__RequestVerificationToken"]').val());
+					},
+				}).done(function (result) {
+					if (result != null) {
+						if (result == 'Error') {
+							SystemServerError()
+						}
+						else if (result == 'noSession') {
+							swalExpired()
+						}
+						else if (result == 'Sorry') {
+							swalNoAuthorized()
+						}
+						else if (result == 'NoPage') {
+							swalNoAuthorized()
+						} 
+						else 
+						{
+							toastr.success("The action detele was success.");
+							//llamar Funtion  order
+						}
+					}
+					else {
+						SystemServerError()
+					}
+				}).fail(function (error) {
+					swalErrorServer()
+				});
+
+			}
+			else {
+				$('.swal2-container').css('display', 'none');
+			}
+		});
+	}
+</script>
+
+@*Delete Picture from Modal*@
+<script>
+function deleteModalPicture(caracteristica,foto){
+
+	Swal.fire({
+		text: "Are you sure to Delete the Picture?",
+		icon: "question",
+		buttonsStyling: false,
+		allowEscapeKey: false,
+		allowOutsideClick: false,
+		showCancelButton: true,
+		closeOnCancel: true,
+		confirmButtonText: "Confirm",
+		cancelButtonText: 'Cancel',
+		customClass: {
+			confirmButton: "btn btn-primary",
+			cancelButton: 'btn btn-danger'
+		}
+	}).then((result) => {
+		if (result.isConfirmed) 
+		{
+		document.getElementById(foto).remove();
+			$.ajax({
+					url: "@Url.Action("DeletePicture","CP_ModelFeatures")",
+				data: {
+					CaracteristicaID: caracteristica,
+					Picture: foto,
+					Modelo: $('#Modelo').val()
+				},
+				type: "POST",
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("XSRF-TOKEN",
+						$('input:hidden[name="__RequestVerificationToken"]').val());
+				},
+			}).done(function (result) {
+				if (result != null) {
+					if (result == 'Error') {
+						SystemServerError()
+					}
+					else if (result == 'noSession') {
+						swalExpired()
+					}
+					else if (result == 'Sorry') {
+						swalNoAuthorized()
+					}
+					else if (result == 'NoPage') {
+						swalNoAuthorized()
+					} else {
+						Swal.fire({
+							text: "The operation completed successfully!",
+							icon: "success",
+							buttonsStyling: false,
+							allowEscapeKey: false,
+							allowOutsideClick: false,
+							confirmButtonText: "Ok, got it!",
+							customClass: {
+								confirmButton: "btn btn-primary"
+							}
+						}).then((result) => {
+							if (result.isConfirmed) {
+
+								//$('#formSearch').submit()
+								contador = 1;
+								var datoFinal = [];
+								$("#CreateDrags .draggable").each(function (index) {
+									//console.log($(this).attr('id'));
+ 								//Obtener el id de cada elemento por clase
+ 								var valida = datoFinal.includes($(this).attr('id'));
+ 								if (valida != true) {
+ 									//setear label para poder ir actualizar el titulo de acuerdo al nuevo orden
+ 									var label = caracteristica+"label"+$(this).attr('id');
+ 									datoFinal.push($(this).attr('id'));
+ 									var idCombos = $(this).attr('id');
+ 									//setear nuevo orden visual
+ 									document.getElementById(label).innerHTML = '<h3 class="card-label" >Picture # ' + contador + '</h3>';
+ 									contador++;
+ 								}
+				
+ 							});
+
+ 							$.ajax({
+ 								url: "@Url.Action("FeaturesPictureOrder","CP_ModelFeatures")",
+ 								data: {
+ 									CaracteristicaID: caracteristica,
+ 									Pictures: datoFinal.toString()
+ 								},
+ 								type: "POST",
+ 								beforeSend: function (xhr) {
+ 									xhr.setRequestHeader("XSRF-TOKEN",
+ 										$('input:hidden[name="__RequestVerificationToken"]').val());
+ 								},
+ 							}).done(function (result) {
+ 								if (result != null) {
+ 									if (result == 'Error') {
+ 										SystemServerError()
+ 									}
+ 									else if (result == 'noSession') {
+ 										swalExpired()
+ 									}
+ 									else if (result == 'Sorry') {
+ 										swalNoAuthorized()
+ 									}
+ 									else if (result == 'NoPage') {
+ 										swalNoAuthorized()
+ 									} else {
+ 										Swal.fire({
+ 											text: "The operation completed successfully!",
+ 											icon: "success",
+ 											buttonsStyling: false,
+ 											allowEscapeKey: false,
+ 											allowOutsideClick: false,
+ 											confirmButtonText: "Ok, got it!",
+ 											customClass: {
+ 												confirmButton: "btn btn-primary"
+ 											}
+ 										}).then((result) => {
+ 											if (result.isConfirmed) {
+
+ 												//$('#formSearch').submit()
+
+ 											}
+ 										})
+ 									}
+ 								}
+ 								else {
+ 									SystemServerError()
+ 								}
+ 							}).fail(function (error) {
+ 								swalErrorServer()
+ 							});
+
+							}
+						})
+					}
+				}
+				else {
+					SystemServerError()
+				}
+			}).fail(function (error) {
+				swalErrorServer()
+			});
+		}
+	});
+}
+</script>
+
+@*Open modal Photo viewer*@
+<script>
+	function OpenModalImage(src) {
+			$('#IdPhotoView').attr('src', `${src}`);
+			$('#PhotoViewer').modal('show')
+	}
+</script>
+
+@*Dropzone New Feature*@
+<script>
+		// set the dropzone container id
+		var id = "#DropzoneNewFeature";
+		var dropzoneNew = document.querySelector(id);
+
+		// set the preview element template
+		var previewNode = dropzoneNew.querySelector(".dropzone-item");
+		previewNode.id = "";
+		var previewTemplateNew = previewNode.parentNode.innerHTML;
+		previewNode.parentNode.removeChild(previewNode);
+
+		var NewDropzone = new Dropzone(id, { // Make the whole body a dropzone
+			url: "@Url.Action("SaveNewFeature","CP_ModelFeatures")",
+			parallelUploads: 1,
+			acceptedFiles: '.jpg,.jpeg',
+			previewTemplate: previewTemplateNew,
+			maxFilesize: 30, // Max filesize in MB
+			autoQueue: false, // Make sure the files aren't queued until manually added
+			previewsContainer: id + " .dropzone-items", // Define the container to display the previews
+			clickable: id + " .dropzone-select", // Define the element that should be used as click trigger to select files.
+			init: function () {
+				this.on("success", function (file, responseText) 
+				{
+					if (responseText != null) 
+					{
+						if (responseText == 'Error') 
+						{
+							SystemServerError()
+							BlockPantalla.release();
+							document.getElementById('archivos').disabled = true;
+							document.getElementById('attachFile').disabled = true;
+						}
+						if (responseText == 'noSession') {
+							swalExpired()
+							BlockPantalla.release();
+						}
+						else if (responseText == 'Sorry') {
+							swalNoAuthorized()
+							BlockPantalla.release();
+						}
+						else if (responseText == 'NoPage') {
+							swalNoAuthorized()
+							BlockPantalla.release();
+						}
+						else if (responseText == 'Exist') {
+							swal.fire({
+								text: "Sorry, The Feature exist, please try again.",
+								icon: "warning",
+								buttonsStyling: false,
+								confirmButtonText: "Ok, got it!",
+								customClass: {
+									confirmButton: "btn font-weight-bold btn-light-primary"
+								}
+							})
+							BlockPantalla.release();
+						}
+
+						else 
+						{
+							if (responseText == "Success") 
+							{
+								file.previewElement.querySelector('[data-dz-successmessage]').textContent = "success";
+
+
+								Swal.fire({
+									text: "The action has been successfully submitted!",
+									icon: "success",
+									buttonsStyling: false,
+									allowEscapeKey: false,
+									allowOutsideClick: false,
+									confirmButtonText: "Ok, got it!",
+									customClass: {
+										confirmButton: "btn btn-primary"
+									}
+								}).then((result) => {
+									if (result.isConfirmed) {
+										$('#MainForm').submit();
+									}
+								});
+
+							}
+							else {
+
+								Swal.fire({
+									title: '<h1>The next file can not Upload:</h1> <br> <p class="text-danger">' + file.name,
+									icon: "danger",
+									width: '450px',
+									showCancelButton: false,
+									buttonsStyling: false,
+									allowOutsideClick: false,
+									allowEscapeKey: false,
+									confirmButtonText: "Ok",
+									customClass: {
+										confirmButton: "btn btn-danger"
+									}
+								})
+
+							}
+						}
+					}
+				});
+			}
+
+		});
+
+		NewDropzone.on("addedfile", function (file) 
+		{
+			// Hookup the start button
+			file.previewElement.querySelector(id + " .dropzone-start").onclick = function () { NewDropzone.enqueueFile(file) };
+			const dropzoneItems = dropzoneNew.querySelectorAll('.dropzone-item');
+			dropzoneItems.forEach(dropzoneItem => {
+				dropzoneItem.style.display = '';
+			});
+			dropzoneNew.querySelector('.dropzone-upload').style.display = "inline-block";
+			dropzoneNew.querySelector('.dropzone-remove-all').style.display = "inline-block";
+		});
+
+		// Update the total progress bar
+		NewDropzone.on("totaluploadprogress", function (progress) {
+			var progressBars = dropzoneNew.querySelectorAll('.progress-bar');
+			progressBars.forEach(progressBar => {
+				progressBar.style.width = progress + "%";
+			});
+		});
+
+		NewDropzone.on("sending", function (file, xhr, data) {
+			// Show the total progress bar when upload starts
+			var progressBars = dropzoneNew.querySelectorAll('.progress-bar');
+			progressBars.forEach(progressBar => {
+				progressBar.style.opacity = "1";
+			});
+			// And disable the start button
+			file.previewElement.querySelector(id + " .dropzone-start").setAttribute("disabled", "disabled");
+			data.set("Modelo", $("#modeloNewF").val());
+			data.set("Titulo", $("#TitleNewF").val());
+			data.set("EstacionID", $("#estacionNewF").val());
+			data.set("Descripcion", $("#DescriptionNewF").val());
+			data.set("IdSeccion", $("#IdSeccion").val());
+			data.set("__RequestVerificationToken", $('input:hidden[name="__RequestVerificationToken"]').val());
+		});
+
+		// Hide the total progress bar when nothing's uploading anymore
+		NewDropzone.on("complete", function (progress) {
+			var progressBars = dropzoneNew.querySelectorAll('.dz-complete');
+			setTimeout(function () {
+				progressBars.forEach(progressBar => {
+					progressBar.querySelector('.progress-bar').style.opacity = "0";
+					progressBar.querySelector('.progress').style.opacity = "0";
+					progressBar.querySelector('.dropzone-start').style.opacity = "0";
+				});
+			}, 300);
+		});
+
+		// Setup the buttons for all transfers
+		dropzoneNew.querySelector(".dropzone-upload").addEventListener('click', function () {
+			NewDropzone.enqueueFiles(NewDropzone.getFilesWithStatus(Dropzone.ADDED));
+		});
+
+		// Setup the button for remove all files
+		dropzoneNew.querySelector(".dropzone-remove-all").addEventListener('click', function () {
+			dropzoneNew.querySelector('.dropzone-upload').style.display = "none";
+			dropzoneNew.querySelector('.dropzone-remove-all').style.display = "none";
+			NewDropzone.removeAllFiles(true);
+		});
+
+		// On all files completed upload
+		NewDropzone.on("queuecomplete", function (progress) {
+			var uploadIcons = dropzoneNew.querySelectorAll('.dropzone-upload');
+			uploadIcons.forEach(uploadIcon => {
+				uploadIcon.style.display = "none";
+			});
+		});
+
+		// On all files removed
+		NewDropzone.on("removedfile", function (file) {
+			if (NewDropzone.files.length < 1) {
+				dropzoneNew.querySelector('.dropzone-upload').style.display = "none";
+				dropzoneNew.querySelector('.dropzone-remove-all').style.display = "none";
+			}
+		});
+</script>
+
+@*Dropzone Update Feature*@
+<script>
+		// set the dropzone container id
+		var idUpdate = "#DropzoneUpdateFeature";
+		var dropzone = document.querySelector(idUpdate);
+
+		// set the preview element template
+		var previewNodeUpdate = dropzone.querySelector(".dropzone-item");
+		previewNodeUpdate.id = "";
+		var previewTemplate = previewNodeUpdate.parentNode.innerHTML;
+		previewNodeUpdate.parentNode.removeChild(previewNodeUpdate);
+
+		var myDropzone = new Dropzone(idUpdate, { // Make the whole body a dropzone
+			url: "@Url.Action("UploadPictures","CP_ModelFeatures")",
+			parallelUploads: 1,
+			acceptedFiles: '.jpg,.jpeg',
+			previewTemplate: previewTemplate,
+			maxFilesize: 30, // Max filesize in MB
+			autoQueue: false, // Make sure the files aren't queued until manually added
+			previewsContainer: idUpdate + " .dropzone-items", // Define the container to display the previews
+			clickable: idUpdate + " .dropzone-select", // Define the element that should be used as click trigger to select files.
+			init: function () {
+				this.on("success", function (file, responseText) 
+				{
+					if (responseText != null) 
+					{
+						if (responseText == 'Error') 
+						{
+							SystemServerError()
+							BlockPantalla.release();
+						}
+						if (responseText == 'noSession') {
+							swalExpired()
+							BlockPantalla.release();
+						}
+						else if (responseText == 'Sorry') {
+							swalNoAuthorized()
+							BlockPantalla.release();
+						}
+						else if (responseText == 'NoPage') {
+							swalNoAuthorized()
+							BlockPantalla.release();
+						}
+						else 
+						{
+							file.previewElement.querySelector('[data-dz-successmessage]').textContent = "success";
+
+							var obj = JSON.parse(responseText);
+							// var images = "";
+
+							// for (var i = 0; i < obj.length; i++)
+                            // {
+							// 	images = images +
+							//     `<img src="https://mxesc1vapp001/photocenter/Prueba2/Planta${obj[i].PlantaId}/model-features/${obj[i].Modelo}/${obj[i].IdRegistro}/large/${obj[i].FileName}" id="IdPhotoView" class="d-block text-center w-100px" alt="PhotoViewer">`;
+							// }
+							
+							PlantaGlobalid = $("#PlantaID").val();
+					
+							var modelo = $('#Modelo').val();
+							var dragphoto = '<div class="col-lg-6" >'+
+								'<div class="row row-col-lg-12 g-10 min-h-200px mt-0 mb-0 draggable-zone" tabindex="0" id="' + featureid + '">';
+
+							for (let i = 0; i < obj.length; i++) {
+
+								var name = obj[i].IdRegistro + "label" + obj[i].FileName;
+									var numero = i + 1 ;
+									dragphoto += `<div class="col draggable" id="${obj[i].FileName}">` +
+													`<div class="card bg-light mt-0 mb-0">` +
+														`<div class="card-header">` +
+														`<a class="btn btn-icon"  style="position: relative;left: -8%;top:15px" onclick="deleteModalPicture(${featureid},'${obj[i].FileName}')">` +
+															`<span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>` +
+														`</a>` +
+															`<div class="card-title mx-auto" id="${name}">` +
+																`<h3 class="card-label" >Picture # ${numero}</h3>` +
+															`</div>` +
+															`<div class="card-toolbar">` +
+																`<a class="btn btn-icon btn-sm btn-hover-light-primary draggable-handle">` +
+																`<span class="svg-icon svg-icon-2x" >` +
+																	`<svg width="24" height = "24" viewBox = "0 0 24 24" fill = "none" xmlns = "http://www.w3.org/2000/svg" >` +
+																	`<path d="M21 7H3C2.4 7 2 6.6 2 6V4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V6C22 6.6 21.6 7 21 7Z" fill = "currentColor" > </path>` +
+																	`<path opacity = "0.3" d = "M21 14H3C2.4 14 2 13.6 2 13V11C2 10.4 2.4 10 3 10H21C21.6 10 22 10.4 22 11V13C22 13.6 21.6 14 21 14ZM22 20V18C22 17.4 21.6 17 21 17H3C2.4 17 2 17.4 2 18V20C2 20.6 2.4 21 3 21H21C21.6 21 22 20.6 22 20Z" fill = "currentColor" > </path>` +
+																	`</svg>` +
+																`</span>` +
+																`</a>` +
+															`</div>` +
+														`</div>` +
+														`<div class="card-body text-center">` +
+															`<img src="https://mxesc1vapp001/photocenter/Planta${PlantaGlobalid}/model-features/${modelo}/${obj[i].IdRegistro}/large/${obj[i].FileName}" width="150" height="150">` +
+														`</div>` +
+													`</div>` +
+												`</div>`
+							}
+
+							dragphoto += `</div>`+
+										`</div>`
+
+							Swal.fire({
+								text: "The action has been successfully submitted!",
+								icon: "success",
+								buttonsStyling: false,
+								allowEscapeKey: false,
+								allowOutsideClick: false,
+								confirmButtonText: "Ok, got it!",
+								customClass: {
+									confirmButton: "btn btn-primary"
+								}
+							}).then((result) => {
+								if (result.isConfirmed) 
+								{
+									$('#CreateDrags').html(dragphoto);
+									KTDraggableCards.init();
+								}
+							});
+							
+						}
+					}
+				});
+			}
+
+		});
+
+		myDropzone.on("addedfile", function (file) 
+		{
+			// Hookup the start button
+			file.previewElement.querySelector(idUpdate + " .dropzone-start").onclick = function () { myDropzone.enqueueFile(file) };
+			var dropzoneItems = dropzone.querySelectorAll('.dropzone-item');
+			dropzoneItems.forEach(dropzoneItem => {
+				dropzoneItem.style.display = '';
+			});
+			dropzone.querySelector('.dropzone-upload').style.display = "inline-block";
+			dropzone.querySelector('.dropzone-remove-all').style.display = "inline-block";
+		});
+
+		// Update the total progress bar
+		myDropzone.on("totaluploadprogress", function (progress) {
+			var progressBars = dropzone.querySelectorAll('.progress-bar');
+			progressBars.forEach(progressBar => {
+				progressBar.style.width = progress + "%";
+			});
+		});
+
+		myDropzone.on("sending", function (file, xhr, data) {
+			// Show the total progress bar when upload starts
+			var progressBars = dropzone.querySelectorAll('.progress-bar');
+			progressBars.forEach(progressBar => {
+				progressBar.style.opacity = "1";
+			});
+			// And disable the start button
+			file.previewElement.querySelector(idUpdate + " .dropzone-start").setAttribute("disabled", "disabled");
+			data.set("Modelo", $("#modeloNewF").val());
+			data.set("IdRegistro", $("#IdFeatureUpdF").val());
+			data.set("IdSeccion", $("#IdSeccion").val());
+			data.set("__RequestVerificationToken", $('input:hidden[name="__RequestVerificationToken"]').val());
+		});
+
+		// Hide the total progress bar when nothing's uploading anymore
+		myDropzone.on("complete", function (progress) {
+			var progressBars = dropzone.querySelectorAll('.dz-complete');
+			setTimeout(function () {
+				progressBars.forEach(progressBar => {
+					progressBar.querySelector('.progress-bar').style.opacity = "0";
+					progressBar.querySelector('.progress').style.opacity = "0";
+					progressBar.querySelector('.dropzone-start').style.opacity = "0";
+				});
+			}, 300);
+		});
+
+		// Setup the buttons for all transfers
+		dropzone.querySelector(".dropzone-upload").addEventListener('click', function () {
+			myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
+		});
+
+		// Setup the button for remove all files
+		dropzone.querySelector(".dropzone-remove-all").addEventListener('click', function () {
+			dropzone.querySelector('.dropzone-upload').style.display = "none";
+			dropzone.querySelector('.dropzone-remove-all').style.display = "none";
+			myDropzone.removeAllFiles(true);
+		});
+
+		// On all files completed upload
+		myDropzone.on("queuecomplete", function (progress) {
+			var uploadIcons = dropzone.querySelectorAll('.dropzone-upload');
+			uploadIcons.forEach(uploadIcon => {
+				uploadIcon.style.display = "none";
+			});
+		});
+
+		// On all files removed
+		myDropzone.on("removedfile", function (file) {
+			if (myDropzone.files.length < 1) {
+				dropzone.querySelector('.dropzone-upload').style.display = "none";
+				dropzone.querySelector('.dropzone-remove-all').style.display = "none";
+			}
+		});
+</script>
+
+@*Draggable*@
+<script>
+	document.getElementById("ordendatos").addEventListener("drag:stop", updOrden);
+	
+	function updOrden(event) {
+
+		var id = event.target.id;
+		var datoFinal = [];
+		$("#" + id + " .draggable").each(function (index) {
+			//Obtener el id de cada elemento por clase
+
+			var valida = datoFinal.includes($(this).attr('id'));
+			if (valida != true) {
+				datoFinal.push($(this).attr('id'));
+				var idCombos = $(this).attr('id');
+			}
+
+		});
+		//Setear variables 
+		var orderData = datoFinal.toString();
+		var orderDataModel = $('#Modelo').val();
+		var orderDataStation = $('#Estacion').val();
+
+		$.ajax({
+			url: "@Url.Action("FeaturesOrder","CP_ModelFeatures")",
+			data: {
+				orderData: orderData,
+				orderDataModel: orderDataModel,
+				orderDataStation: orderDataStation
+			},
+			type: "POST",
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("XSRF-TOKEN",
+					$('input:hidden[name="__RequestVerificationToken"]').val());
+			},
+		}).done(function (result) {
+			if (result != null) {
+				if (result == 'Error') {
+					SystemServerError()
+				}
+				else if (result == 'noSession') {
+					swalExpired()
+				}
+				else if (result == 'Sorry') {
+					swalNoAuthorized()
+				}
+				else if (result == 'NoPage') {
+					swalNoAuthorized()
+				}else{
+					Swal.fire({
+						text: "The operation completed successfully!",
+						icon: "success",
+						buttonsStyling: false,
+						allowEscapeKey: false,
+						allowOutsideClick: false,
+						confirmButtonText: "Ok, got it!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then((result) => {
+						if (result.isConfirmed) {
+
+							$('#MainForm').submit()
+							
+						}
+					})
+				}
+			}
+			else {
+				SystemServerError()
+			}
+		}).fail(function (error) {
+			swalErrorServer()
+		});
+	}
+</script>
+
+@*draggable Pictures*@
+<script>
+ 	document.getElementById("CreateDrags").addEventListener("drag:stop", sendInfo);
+
+ 	function sendInfo(event) {
+
+			
+ 		var id = event.target.id;
+		 //console.log(id);
+ 		var contador = 1;
+
+ 		var datoFinal = [];
+			$("#CreateDrags .draggable").each(function (index) {
+				//console.log($(this).attr('id'));
+ 			//Obtener el id de cada elemento por clase
+ 			var valida = datoFinal.includes($(this).attr('id'));
+ 			if (valida != true) {
+ 				//setear label para poder ir actualizar el titulo de acuerdo al nuevo orden
+ 				var label = id+"label"+$(this).attr('id');
+ 				datoFinal.push($(this).attr('id'));
+ 				var idCombos = $(this).attr('id');
+ 				//setear nuevo orden visual
+ 				document.getElementById(label).innerHTML = '<h3 class="card-label" >Picture # ' + contador + '</h3>';
+ 				contador++;
+ 			}
+				
+ 		});
+
+ 		$.ajax({
+ 			url: "@Url.Action("FeaturesPictureOrder","CP_ModelFeatures")",
+ 			data: {
+ 				CaracteristicaID: id,
+ 				Pictures: datoFinal.toString()
+ 			},
+ 			type: "POST",
+ 			beforeSend: function (xhr) {
+ 				xhr.setRequestHeader("XSRF-TOKEN",
+ 					$('input:hidden[name="__RequestVerificationToken"]').val());
+ 			},
+ 		}).done(function (result) {
+ 			if (result != null) {
+ 				if (result == 'Error') {
+ 					SystemServerError()
+ 				}
+ 				else if (result == 'noSession') {
+ 					swalExpired()
+ 				}
+ 				else if (result == 'Sorry') {
+ 					swalNoAuthorized()
+ 				}
+ 				else if (result == 'NoPage') {
+ 					swalNoAuthorized()
+ 				} else {
+ 					Swal.fire({
+ 						text: "The operation completed successfully!",
+ 						icon: "success",
+ 						buttonsStyling: false,
+ 						allowEscapeKey: false,
+ 						allowOutsideClick: false,
+ 						confirmButtonText: "Ok, got it!",
+ 						customClass: {
+ 							confirmButton: "btn btn-primary"
+ 						}
+ 					}).then((result) => {
+ 						if (result.isConfirmed) {
+
+ 							//$('#formSearch').submit()
+
+ 						}
+ 					})
+ 				}
+ 			}
+ 			else {
+ 				SystemServerError()
+ 			}
+ 		}).fail(function (error) {
+ 			swalErrorServer()
+ 		});
+ }
+</script>
+
+@*Init Dragg*@
+<script>
+"use strict";
+
+// Class definition
+var KTDraggableCards = function () {
+	// Private functions
+	var exampleCards = function () {
+		var containers = document.querySelectorAll('.draggable-zone');
+
+		if (containers.length === 0) {
+			return false;
+		}
+
+		var swappable = new Sortable.default(containers, {
+			draggable: '.draggable',
+			handle: '.draggable .draggable-handle',
+			mirror: {
+				//appendTo: selector,
+				appendTo: 'body',
+				constrainDimensions: true
+			}
+		});
+
+
+	}
+
+	return {
+		// Public Functions
+		init: function () {
+			exampleCards();
+
+		}
+	};
+}();
+
+// On document ready
+KTUtil.onDOMContentLoaded(function () {
+	KTDraggableCards.init();
+});
+
+</script>
+
+@*Form validation for Update Feature Data*@
+<script>
+	//Form Validation
+	var UpFeatureForm = document.getElementById('FormUpdateF');
+	var validatorUpFeature = FormValidation.formValidation(
+		UpFeatureForm ,
+		{
+			fields: {
+				estacion: {
+					validators: {
+						notEmpty: {
+							message: 'Input estacion is required!'
+						}
+					}
+				},
+				Title: {
+					validators: {
+						notEmpty: {
+							message: 'Input Tittle is required!'
+						}
+					}
+				},
+				Description: {
+					validators: {
+						notEmpty: {
+							message: 'Input Description is required!'
+						}
+					}
+				}
+
+			},
+
+			plugins: { //Learn more: https://formvalidation.io/guide/plugins
+				trigger: new FormValidation.plugins.Trigger(),
+				bootstrap: new FormValidation.plugins.Bootstrap5({
+					rowSelector: '.fv-row',
+					eleInvalidClass: '',
+					eleValidClass: ''
+				})
+			}
+		}
+	);
+
+	var submitUpF = document.getElementById('BtnUpdateF');
+
+		submitUpF.addEventListener('click', function (e) {
+		e.preventDefault();
+
+		if (validatorUpFeature) {
+			validatorUpFeature.validate().then(function (status) {
+				if (status == 'Valid') {
+
+					submitUpF.setAttribute('data-kt-indicator', 'on');
+					submitUpF.disabled = true;
+					setTimeout(function () {
+						submitUpF.removeAttribute('data-kt-indicator');
+						submitUpF.disabled = false;
+
+						UpdateFeature()
+
+					}, 900);
+				}
+				else {
+					submitUpF.setAttribute('data-kt-indicator', 'on');
+					submitUpF.disabled = true;
+					setTimeout(function () {
+						submitUpF.removeAttribute('data-kt-indicator');
+						submitUpF.disabled = false;
+
+					}, 100);
+
+				}
+			});
+		}
+	});
+</script>
+
+@*Form validation for Update Feature Data*@
+<script>
+	//Form Validation
+	var CopyFeatureForm = document.getElementById('FormCopyFeature');
+	var validatorCopyFeature = FormValidation.formValidation(
+		CopyFeatureForm ,
+		{
+			fields: {
+					estacion: {
+					validators: {
+						notEmpty: {
+							message: 'Input estacion is required!'
+						}
+					}
+				},
+					NewModelo: {
+					validators: {
+						notEmpty: {
+							message: 'Input Modelo is required!'
+						}
+					}
+				},
+
+			},
+
+			plugins: { //Learn more: https://formvalidation.io/guide/plugins
+				trigger: new FormValidation.plugins.Trigger(),
+				bootstrap: new FormValidation.plugins.Bootstrap5({
+					rowSelector: '.fv-row',
+					eleInvalidClass: '',
+					eleValidClass: ''
+				})
+			}
+		}
+	);
+
+	var submitCopyF = document.getElementById('BtnCopyF');
+
+		submitCopyF.addEventListener('click', function (e) {
+		e.preventDefault();
+
+		if (validatorCopyFeature) {
+			validatorCopyFeature.validate().then(function (status) {
+				if (status == 'Valid') {
+
+					submitCopyF.setAttribute('data-kt-indicator', 'on');
+					submitCopyF.disabled = true;
+					setTimeout(function () {
+						submitCopyF.removeAttribute('data-kt-indicator');
+						submitCopyF.disabled = false;
+
+						CopyFeature()
+
+					}, 900);
+				}
+				else {
+					submitCopyF.setAttribute('data-kt-indicator', 'on');
+					submitCopyF.disabled = true;
+					setTimeout(function () {
+						submitCopyF.removeAttribute('data-kt-indicator');
+						submitCopyF.disabled = false;
+
+					}, 100);
+
+				}
+			});
+		}
+	});
+</script>
+
+}

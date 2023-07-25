@@ -1,0 +1,1237 @@
+﻿@model PreApprovalTaskModel
+
+<div class="card-body p-5" id="BlockPreApproval">
+    @if (Model.PreApproval.Any())
+    {
+        <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+            <div class="card-title">
+                <div class="d-flex align-items-center position-relative my-1">
+                    <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                    <input type="text" data-kt-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Report" />
+                </div>
+                <div id="table_PreApproval_export" class="d-none"></div>
+            </div>
+            <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                    <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                    export report
+                </button>
+                <div id="table_PreApproval_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3" data-kt-export="excel">
+                            Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                        </a>
+                    </div>
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3" data-kt-export="csv">
+                            Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                        </a>
+                    </div>
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                            Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="table_PreApproval" class="table table-striped  border-gray-300 gy-7 gs-7">
+                    <thead class="p-2">
+                        <tr class="p-2 fw-bolder text-uppercase bg-gray-300 border-top border-bottom border-end border-gray-400 fs-6 text-gray-800">
+                            <th class="align-middle min-w-20px text-center">#</th>
+                            <th class="align-middle min-w-20px text-center"></th>
+                            <th class="align-middle min-w-200px ">Key</th>
+                            <th class="align-middle min-w-200px ">Origin of the change comment</th>
+                            <th class="align-middle min-w-200px ">Change description</th>
+                            <th class="align-middle min-w-200px ">Responsable of change</th>
+                            <th class="align-middle min-w-350px ">Pre-approval</th>
+                            <th class="align-middle min-w-350px ">Final Signature</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int countId = 1;
+                        }
+                        @foreach (var item in Model.PreApproval)
+                        {
+                            <tr class="mb-1 border-top border-end border-gray-400">
+                                <td class="p-2  align-middle min-w-20px text-center"> @countId </td>
+                                <td class="p-2  align-middle min-w-20px">
+                                    <a class="btn btn-primary hover-scale  p-3 fs-8" onclick="Review(@item.ID_Documento,@ViewData["MenuTaskId"],'@item.TipoArchivo',@item.RevisionID, '@item.StatusDoc', '@item.Clave')">Review</a>
+                                </td>
+                                <td class="p-2  align-middle min-w-200px">
+                                    <a class=" text-dark text-hover-primary">@item.Clave </a>
+                                </td>
+                                <td class="p-2  align-middle min-w-200px">@item.OrigenComentario </td>
+                                <td class="p-2  align-middle min-w-200px">@item.Descripcion </td>
+                                <td class="p-2  align-middle min-w-200px">@item.Responsable </td>
+                                <td class="p-2 min-w-350px align-middle ">
+                                    <ul class="mb-0">
+                                        @{
+                                            string[] icons = item.PreApprovalIco.Split("*");
+                                            string[] color = item.PreApprovalTx.Split("*");
+                                            string[] preapproval = item.PreApproval.Split("*");
+                                                                        @for (var i = 0; i < icons.Length; i++)
+                                            {
+                                                                            <li class="mb-0">
+                                                                                <i class="@icons[i] @color[i]"></i> @preapproval[i]
+                                                                            </li>
+                                            }
+                                        }
+                                    </ul>
+                                </td>
+                                <td class="p-2 min-w-350px align-middle ">
+                                    <ul class="mb-0">
+                                        @{
+                                            string[] iconsF = item.FinalSignatureIco.Split("*");
+                                            string[] colorF = item.FinalSignatureTx.Split("*");
+                                            string[] finalsignature = item.FinalSignature.Split("*");
+                                                                        @for (var i = 0; i < iconsF.Length; i++)
+                                            {
+                                                                            <li class="mb-0">
+                                                                                <i class="@iconsF[i] @colorF[i]"></i> @finalsignature[i]
+                                                                            </li>
+                                            }
+                                        }
+                                    </ul>
+                                </td>
+                            </tr>
+
+                            countId++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info d-flex align-items-center p-5 mb-10">
+            <span class="svg-icon svg-icon-2x svg-icon-light"> <i class="fas fa-exclamation-triangle fs-2x text-info"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <div class="d-flex flex-column">
+                <h6 class="text-info">There are no documents for the moment.</h6>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="modal fade" id="modal_review" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog mw-1000px p-6">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">@ViewData["TituloMenuTask"]</h2>
+                <a onclick="showReport(@ViewData["MenuTaskId"])" class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body">
+                <div class="stepper stepper-pills" id="kt_stepper_example_basic">
+                    <div class="stepper-nav flex-center flex-wrap mb-10">
+                        <div class="stepper-item mx-2 my-4 current" data-kt-stepper-element="nav">
+                            <div class="stepper-line w-40px"></div>
+                            <div class="stepper-icon w-40px h-40px">
+                                <i class="stepper-check fas fa-check"></i>
+                                <span class="stepper-number">1</span>
+                            </div>
+                            <div class="stepper-label">
+                                <h3 class="stepper-title">
+                                    Step 1
+                                </h3>
+                                <div class="stepper-desc">
+                                    Description
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stepper-item mx-2 my-4" data-kt-stepper-element="nav">
+                            <div class="stepper-line w-40px"></div>
+                            <div class="stepper-icon w-40px h-40px">
+                                <i class="stepper-check fas fa-check"></i>
+                                <span class="stepper-number">2</span>
+                            </div>
+                            <div class="stepper-label">
+                                <h3 class="stepper-title">
+                                    Step 2
+                                </h3>
+                                <div class="stepper-desc">
+                                    Doc.Viewer
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stepper-item mx-2 my-4" data-kt-stepper-element="nav">
+                            <div class="stepper-line w-40px"></div>
+                            <div class="stepper-icon w-40px h-40px">
+                                <i class="stepper-check fas fa-check"></i>
+                                <span class="stepper-number">3</span>
+                            </div>
+                            <div class="stepper-label">
+                                <h3 class="stepper-title">
+                                    Step 3
+                                </h3>
+                                <div class="stepper-desc">
+                                    Athorization
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="form w-lg-900px mx-auto" novalidate="novalidate" id="kt_stepper_example_basic_form">
+                        <div class="mb-5">
+                            <div class="flex-column current" data-kt-stepper-element="content">
+                                <div class="alert alert-danger d-flex align-items-center p-5 mb-4 d-none" id="PorObsoletar">
+                                    <span class="svg-icon svg-icon-2x svg-icon-light me-3"> <i class="fas fa-exclamation-triangle fs-2x text-danger"></i></span>
+                                    <div class="d-flex flex-column">
+                                        <h6 class="text-danger  fs-4 fw-bold pt-2">This Document is going to be OBSOLETE</h6>
+                                    </div>
+                                </div>
+
+                                <div class="fv-row mb-10">
+                                    <label class="form-label fw-bold "><h1> Responsible for the change:</h1></label>
+                                    <textarea id="Responsable" name="Responsable" class="form-control form-control-solid" data-kt-autosize="true" disabled style="resize: none;font-size:20px; "></textarea>
+                                </div>
+                                <div class="fv-row mb-10">
+                                    <label class="form-label fw-bold "><h1> Origin of Change:</h1></label>
+                                    <textarea id="Origen" name="Origen" class="form-control form-control-solid" data-kt-autosize="true" disabled style="resize: none;font-size:20px; "></textarea>
+                                </div>
+                                <div class="fv-row mb-10">
+                                    <label class="form-label fw-bold"><h1>Comment Origin of change:</h1></label>
+                                    <textarea id="OrigenComment" name="OrigenComment" class="form-control form-control-solid" data-kt-autosize="true" disabled style="resize: none;font-size:20px; "></textarea>
+                                </div>
+                                <div class="fv-row mb-10">
+                                    <label class="form-label fw-bold"><h1>Description of Change:</h1></label>
+                                    <textarea id="Descripcion" name="Descripcion" class="form-control form-control-solid" data-kt-autosize="true" disabled style="resize: none;font-size:20px; "></textarea>
+                                </div>
+                                <div class="fv-row mb-10">
+                                    <label class="form-label fw-bold"><h1>Change Review:</h1></label>
+                                    <textarea id="Revision" name="Revision" class="form-control form-control-solid" data-kt-autosize="true" disabled style="resize: none;font-size:20px; "></textarea>
+                                </div>
+                            </div>
+                            <div class="flex-column" data-kt-stepper-element="content">
+                                <embed id="idRutaDoc" width="100%" height="1100" type='application/pdf'>
+                            </div>
+                            <div class="flex-column" data-kt-stepper-element="content">
+                            </div>
+                        </div>
+                        <div class="d-flex flex-stack">
+                            <div class="me-2">
+                                <label class="form-label" style="display:none;" id="backInf">
+                                    <h2></h2>
+                                </label>
+                                <a class="btn btn-light btn-active-light-primary" data-kt-stepper-action="previous" id="idBack">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </a>                                
+                            </div>
+                            <div class="" style="display: flex;align-items: center;">
+                                <button  type="button" class="btn btn-danger me-10" style="display:none;" data-kt-stepper-action="" id="idDocReject" data-role="button" data-inline="true" onclick="$('#modalReject').modal('toggle')">
+                                    <i class="fas fa-time"></i> Reject
+                                </button>
+                                <button type="button" class="btn btn-warning" style="display:none;" data-kt-stepper-action="" id="idDocRev" data-role="button" data-inline="true" onclick="showDocInfo(0,'',0,'',0);"
+>
+                                    <i class="fas fa-list"></i> See Reviews
+                                </button>
+                            </div>
+                            <div class="text-center" style="text-align: center;">
+                                <input type="hidden" id="DocumentoID" />
+                                <label class="form-label" style="display:none;" id="InfSteps">
+                                    <h2>Please confirm authorization!</h2>
+                                </label>
+                                <button onclick="finishapp()" type="button" style="display:none;" class="btn btn-primary me-10 text-center" id="CloseSteps">
+                                    <span class="indicator-label">
+                                        Finish <i class="fas fa-arrow-right"></i>
+                                    </span>
+                                    <span class="indicator-progress">
+                                        Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </button>
+                                <a class="btn btn-primary" data-kt-stepper-action="next">
+                                    Continue <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal revision*@
+<div class="modal fade" id="modalDocRevison" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  mw-900px p-9">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    Document revision
+                </h2>
+                <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger" id="BtnNewRevisionClose"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body p-10">
+
+                <div class="row mb-2">
+                    <div class="col-lg-9 fv-row mb-4 ">
+                        <a class="btn btn-warning p-3 fs-8 me-2" onclick="" id="RevBtnOrigin">
+                            <i class="fas fa-file-download text-white fs-3"></i> Original
+                        </a>
+                        <button class="btn btn-primary p-3 fs-8 me-2" onclick="" id="RevBtnPdf">
+                            <i class="fas fa-file-pdf text-white fs-3"></i>PDF Document
+                        </button>
+                        <button type="button" class="btn btn-success p-3 fs-8 me-2" onclick="NewDocRevision()" id="IdNewDocRevision">
+                            <i class="fas fa-sync-alt text-white"></i>Update Revision
+                        </button>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger d-flex align-items-center p-5 mb-4 d-none" id="Obsoletarse">
+                    <span class="svg-icon svg-icon-2x svg-icon-light me-3"> <i class="fas fa-exclamation-triangle fs-2x text-danger"></i></span>
+                    <div class="d-flex flex-column">
+                        <h6 class="text-danger  fs-4 fw-bold pt-2">The revision is going to be OBSOLETE</h6>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger d-flex align-items-center p-5 mb-4 d-none" id="ObsoletoOk">
+                    <span class="svg-icon svg-icon-2x svg-icon-light me-3"> <i class="fas fa-exclamation-triangle fs-2x text-danger"></i></span>
+                    <div class="d-flex flex-column">
+                        <h6 class="text-danger  fs-4 fw-bold pt-2">The revision is going to be OBSOLETE</h6>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Key (1):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="idKey" class="badge badge-success p-3 fs-8 me-2" style="background-color:#36c6d3;"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Revision:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="idRevision" class="badge badge-success" style="background-color:#36c6d3;"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Document type:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="idDocType"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Product:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="idProduct"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Owner:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="idOwner"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Applicant  (2):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idApplicant"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Record date:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idRecordDate"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Start date (3):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idStartDate"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Estimated end date (4):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idEstimatedDate"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Change manager (5):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idChangeManager"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Origin of change (6):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idOriginChange"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Description of change (7):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idDescripChange"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Review of Change (8):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idRewChange"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Validation of change (9):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idValChange"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 align-middle p-5">Workstations (10):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idWorkstation"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Pre-approval (12):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idPreAppro"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Final-signature:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idFinalSig"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <div class="col-lg border-end border-white p-5">
+                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">Authorizations and rejects:</h1>
+                        <div class="table-responsive">
+                            <table class="table table-striped  gy-7 gs-7">
+                                <thead>
+                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                        <th class="">#</th>
+                                        <th class="">Signature</th>
+                                        <th class="">Date</th>
+                                        <th class="">Operation</th>
+                                        <th class="">Categorie</th>
+                                        <th class="">Reasons of reject</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td id="tdSignature" nowrap></td>
+                                        <td id="tdDate" nowrap></td>
+                                        <td id="tdOperation"></td>
+                                        <td nowrap><span id="spanIcono"></span><span id="tdCategorie"></span></td>
+                                        <td id="tdReason"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Revisions:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idRevisions"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="modalReject" data-bs-keyboard="false" data-bs-backdrop="static"> 
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Reject document</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="svg-icon svg-icon-1"></span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="fv-row mb-10">
+                    <label class="form-label fw-bold">Comments:</h1></label>
+                    <textarea id="CommentsReject" name="CommentsReject" class="form-control form-control-solid" data-kt-autosize="true" style="resize: none;font-size:20px; "></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="RejectDoc()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal to show Documents PDF*@
+<div class="modal fade" id="ModalPdfs" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  modal-xl p-9">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="TituloDoc"></h2>
+                <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body">
+                <embed id="idRutaDoc" width="100%" height="1100" type="application/pdf" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Datatable library*@
+<script>
+    "use strict";
+
+    // Class definition
+    var KTDatatablesButtons = function () {
+        // Shared variables
+        var table;
+        var datatable;
+
+        // Private functions
+        var initDatatable = function () {
+            // Set date data order
+            const tableRows = table.querySelectorAll('tbody tr');
+
+            tableRows.forEach(row => {
+                const dateRow = row.querySelectorAll('td');
+                const realDate = moment(dateRow[3].innerHTML, "DD MMM YYYY, LT").format(); // select date from 4th column in table
+                dateRow[3].setAttribute('data-order', realDate);
+            });
+
+            // Init datatable --- more info on datatables: https://datatables.net/manual/
+            datatable = $(table).DataTable({
+
+                "info": false,
+                'order': [],
+                'pageLength': 100,
+                "scrollY": "500px",
+                "scrollCollapse": true,
+                "sScrollX": "100%",
+                //'select': true,
+            });
+        }
+
+        //Hook export buttons
+        var exportButtons = () => {
+            const documentTitle = 'Training Docs Report';
+            var buttons = new $.fn.dataTable.Buttons(table, {
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        title: documentTitle
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        title: documentTitle
+
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        title: documentTitle
+                    }
+                ]
+            }).container().appendTo($('#table_PreApproval_export'));
+
+            // Hook dropdown menu click event to datatable export buttons
+            const exportButtons = document.querySelectorAll('#table_PreApproval_export_menu [data-kt-export]');
+            exportButtons.forEach(exportButton => {
+                exportButton.addEventListener('click', e => {
+                    e.preventDefault();
+
+                    // Get clicked export value
+                    const exportValue = e.target.getAttribute('data-kt-export');
+                    const target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+
+                    // Trigger click event on hidden datatable export buttons
+                    target.click();
+                });
+            });
+        }
+
+        // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
+        var handleSearchDatatable = () => {
+            const filterSearch = document.querySelector('[data-kt-filter="search"]');
+            filterSearch.addEventListener('keyup', function (e) {
+                datatable.search(e.target.value).draw();
+            });
+        }
+
+        // Public methods
+        return {
+            init: function () {
+                table = document.querySelector('#table_PreApproval');
+
+                if (!table) {
+                    return;
+                }
+
+                initDatatable();
+                exportButtons();
+                handleSearchDatatable();
+            }
+        };
+    }();
+
+    // On document ready
+    KTUtil.onDOMContentLoaded(function () {
+        KTDatatablesButtons.init();
+    });
+</script>
+
+@*loading...*@
+<script>
+    var button = document.querySelector("#BlockPreApproval");
+    var target = document.querySelector("#BlockPreApproval");
+
+    var BlockPreApp = new KTBlockUI(target, 
+    {
+        message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+    });
+</script>
+
+@*Variables Globales*@
+<script>
+    idDocGlobal = "";
+    idRevGlobal = "";
+    statusDocGlobal = "";
+    claveGlobal = "";
+</script>
+
+@*Show data in the Stepper*@
+<script type="text/javascript">
+    function Review(idDocument, IdMenuTask, TipoArchivo, Revision, Status , Clave) {
+        if (idDocument != "" && IdMenuTask != "") 
+        {
+            idDocGlobal = idDocument;
+            idRevGlobal = Revision;
+            statusDocGlobal = Status ;
+            claveGlobal = Clave;
+
+             var element = document.getElementById("PorObsoletar");
+            element.classList.add("d-none");
+
+
+
+            BlockPreApp.block()
+            $.ajax({
+                url: "@Url.Action("PreApprovalDocInf","TMPreApproval")",
+                type: "post",
+                data: { idDocument: idDocument, IdMenuTask: IdMenuTask },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            })
+            .done(function (result)
+            {
+                if (result != null) 
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else
+                    {
+                        var obj = JSON.parse(result);
+                        var Origen = obj[0].Origen;
+                        var Descripcion = obj[0].Descripcion;
+                        var Revision = obj[0].Revision;
+                        var PlantaID = obj[0].PlantaID;
+                        var ClaveDoc = obj[0].ClaveDoc;
+                        var RevisionID = obj[0].RevisionID;
+                        var DocumentoID = obj[0].DocumentoID;
+                        var Comment = obj[0].OrigenComentario;
+                        var Responsable  = obj[0].Responsable;
+
+                         if (obj[0].Obsoleto) {
+                            var element = document.getElementById("PorObsoletar");
+                            element.classList.remove("d-none");
+                        }
+
+                        $("#Origen").val(Origen)
+                        $("#Descripcion").val(Descripcion)
+                        $("#Revision").val(Revision)
+                        $("#DocumentoID").val(DocumentoID)
+                        $("#OrigenComment").val(Comment)
+                        $("#Responsable").val(Responsable)
+
+                        if (TipoArchivo != "Digital") 
+                        {
+                            var ruta = 'https:/' + `/mxesc1vapp001/fp_data_center/planta${PlantaID}/documents-center/${ClaveDoc}/${RevisionID}/${ClaveDoc}.pdf?#toolbar=0`;
+                            $("#idRutaDoc").attr("src", ruta);
+
+                            $('#modal_review').modal('toggle');
+                            BlockPreApp.release()
+                        }
+                        else 
+                        {
+                            $.ajax({
+                                url: "@Url.Action("ExportToPDF","DocViewer")",
+                                type: "post",
+                                data: {
+                                    DigitalID: DigitalID,
+                                    TipoDigital: TipoDigital,
+                                    Ruta: Ruta
+                                },
+                                beforeSend: function (xhr) {
+                                    xhr.setRequestHeader("XSRF-TOKEN",
+                                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                                },
+                            })
+                                .done(function (result) {
+                                    if (result != null) 
+                                    {
+                                        if (result == 'Error') {
+                                            SystemServerError()
+                                        }
+                                        else if (result == 'noSession') 
+                                        {
+                                            swalExpired()
+                                        }
+                                        else if (result == 'Sorry') 
+                                        {
+                                            swalNoAuthorized()
+                                        }
+                                        else if (result == 'NoPage') 
+                                        {
+                                            swalNoAuthorized()
+                                        }
+                                        else {
+                                            var ruta = `data:application/pdf;base64, ${result} #toolbar=0`;
+
+                                            $("#idRutaDoc").attr("src", ruta);
+
+                                            $('#modal_review').modal('toggle');
+                                            BlockPreApp.release()
+                                        }
+                                    }
+                                    else 
+                                    {
+                                        SystemServerError()
+                                        BlockPreApp.release()
+                                    }
+                                })
+                                .fail(function (xhr, status, error) {
+                                   swalErrorServer()
+                                })
+                        }
+
+                        KTApp.init();
+                    }
+                }
+                else {
+                        SystemServerError()
+                      BlockPreApp.release()
+                }
+            })
+            .fail(function (xhr, status, error)
+            {
+               swalErrorServer()
+            })
+
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+
+
+</script>
+
+@*Update Document*@
+<script>
+    
+    //Update the document view
+    function updateDoc(IdMenuTask) {
+        var idDoc = $("#DocumentoID").val();
+        var IdMenuTask = '@ViewData["MenuTaskId"]'
+
+        if (idDoc != "") {
+            $.ajax({
+                url: "@Url.Action("UpdateDocsEmployeesTraining","Home")",
+                type: "post",
+                data: { idDoc: idDoc, IdMenuTask: IdMenuTask },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            })
+                .done(function (result) {
+                    if (result != null) {
+                        if (result == 'Error') {
+                            SystemServerError()
+                        }
+                        else if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == "Correct") {
+                            toastr.success("Saved!");
+
+                            $('#kt_modal_1').modal('hide');
+                            showReport(@ViewData["MenuTaskId"])
+                        }
+                    }
+                    else {
+                       SystemServerError()
+                    }
+                })
+                .fail(function (xhr, status, error) {
+                    swalErrorServer()
+                })
+        }
+    }
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    var button = document.querySelector("#CloseSteps");
+    button.addEventListener("click", function () {
+        button.setAttribute("data-kt-indicator", "on");
+        setTimeout(function () {
+            button.removeAttribute("data-kt-indicator");
+        }, 3000);
+    });
+</script>
+
+@*Save comment preapproval*@
+<script>
+    function RejectDoc(){
+        documentoid = idDocGlobal;
+        revision    = idRevGlobal;
+        IdMenuTask  = @ViewData["MenuTaskId"];
+        comments    = $('#CommentsReject').val();
+
+        if(comments != '' && comments != null){
+            $.ajax({
+                url: "@Url.Action("SaveComments","TMPreApproval")",
+                type: "post",
+                data: { idDoc: documentoid, 
+                        revision: revision, 
+                        comments: comments,
+                        IdMenuTask: IdMenuTask
+                      },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            })
+            .done(function (result) 
+            {
+                if (result != null) 
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == "Success") {
+                        toastr.success("Saved Reject!");
+
+                        $('#modalReject').modal('hide');
+                        $('#modal_review').modal('hide');
+                        showReport(@ViewData["MenuTaskId"])
+                    }
+                }
+                else 
+                {
+                        SystemServerError()
+                }
+            })
+            .fail(function (xhr, status, error) {
+                 swalErrorServer()
+            })
+        }else
+        {
+            toastr.info("Comment is required!");
+        } 
+    }
+</script>
+
+@*Check Revision*@
+<script>
+    $("#EndNewRevision").flatpickr();
+
+    idRevisionesGlobal = "";
+    TiposArchivoGlobal = "";
+
+    function showDocInfo(Rev, Clave, Id, Stat, bit) 
+    {
+        if(bit == 0)
+        {
+            Id = idDocGlobal;
+            Rev = idRevGlobal;
+            Stat = statusDocGlobal;
+            Clave = claveGlobal;
+        }
+
+        document.getElementById("RevBtnPdf").setAttribute("hidden", "hidden");
+        document.getElementById("RevBtnOrigin").setAttribute("hidden", "hidden");
+
+        var element = document.getElementById("Obsoletarse");
+        element.classList.add("d-none");
+
+        if (Stat == 'Rejected')
+        {
+            document.getElementById("IdNewDocRevision").removeAttribute("hidden");
+        }
+        else 
+        {
+            document.getElementById("IdNewDocRevision").setAttribute("hidden", "hidden");
+        }
+
+        idDocGlobal = Id;
+        if (Stat != 'Rejected') 
+        {
+            $("#BtnNewRevision").css("pointer-events", "none");
+        } else 
+        {
+            $("#BtnNewRevision").css("pointer-events", "block");
+        }
+
+        $.ajax({
+            url: "@Url.Action("CheckRevision","DC_DocumentList")",
+            type: "post",
+            data: {
+                Clave: Clave,
+                Id: Id,
+                Revision: Rev
+            },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+        })
+            .done(function (result) {
+                if (result != null) {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else {
+                        var obj = JSON.parse(result);
+
+                        if (bit != 1) {
+                            $('#modalDocRevison').modal('toggle');
+                        }
+
+                        if (obj[0].TipoArchivo != 'Digital' && obj[0].TipoArchivo != null) {
+
+                            $('#RevBtnPdf').attr('onclick', `ShowDocument(${null}, ${null}, '${obj[0].TipoArchivo}', '${obj[0].Clave}', ${obj[0].RevisionID}, ${null}, ${obj[0].PlantaID}, ${null})`);
+                            document.getElementById('RevBtnPdf').removeAttribute("hidden");
+
+                            $('#RevBtnOrigin').attr('href', `https://mxesc1vapp001/fp_data_center/planta${obj[0].PlantaID}/documents-center/${obj[0].Clave}/${obj[0].RevisionID}/${obj[0].Clave}.${obj[0].TipoArchivo}`);
+                            document.getElementById('RevBtnOrigin').removeAttribute("hidden");
+
+                            $('#idKeyNew').removeAttr('disabled');
+
+                        } else 
+                        {
+                            $('#idKeyNew').attr("disabled", "disabled");
+
+                        }
+
+                        if (obj[0].TipoArchivo != 'Digital') 
+                        {
+                            if (Stat == 'Rejected') 
+                            {
+                                document.getElementById("IdNewDocRevision").removeAttribute("hidden");
+                            }
+                            else 
+                            {
+                                document.getElementById("IdNewDocRevision").setAttribute("hidden", "hidden");
+                            }
+                        }
+                        else 
+                        {
+                            document.getElementById("IdNewDocRevision").setAttribute("hidden", "hidden");
+                        }
+
+                        if (obj[0].Obsoleto) {
+                            var element = document.getElementById("Obsoletarse");
+                            element.classList.remove("d-none");
+                        }
+
+                        $('#idKey').html(obj[0].Clave);
+                        $('#idRevision').html(obj[0].RevisionID);
+                        $('#idDocType').html(obj[0].DocType);
+                        $('#idProduct').html(obj[0].Product);
+                        $('#idDescrip').html(obj[0].Title);
+                        $('#idOwner').html(obj[0].Owner);
+                        $('#idApplicant').html(obj[0].Applicant);
+                        $('#idRecordDate').html(obj[0].RecordDate);
+                        $('#idStartDate').html(obj[0].StartDate);
+                        $('#idEstimatedDate').html(obj[0].EstimatedEnd);
+                        $('#idChangeManager').html(obj[0].ChangeManager);
+                        $('#idOriginChange').html(obj[0].OriginOfChange);
+                        $('#idDescripChange').html(obj[0].DescripcionOfChange);
+                        $('#idRewChange').html(obj[0].ReviewOfChange);
+
+                        Revisions = "";
+                        arrayRevisions = obj[0].Revisions.split('*');
+                        idRevisionesGlobal = obj[0].Revisions;
+                        TiposArchivoGlobal = obj[0].TipoArchivos;
+
+                        for (j = 0; j < arrayRevisions.length; j++) {
+
+                            if (obj[0].RevisionID == arrayRevisions[j]) {
+                                Revisions = Revisions + `<li class="page-item m-1 active"><a class="page-link" onclick="showDocInfo(${arrayRevisions[j]},'${Clave}',${Id},'${Stat}',${1})">${arrayRevisions[j]}</a></li>`;
+                            } else {
+                                Revisions = Revisions + `<li class="page-item m-1"><a class="page-link" onclick="showDocInfo(${arrayRevisions[j]},'${Clave}',${Id},'${Stat}',${1})">${arrayRevisions[j]}</a></li>`;
+                            }
+
+                        }
+
+                        $('#idRevisions').html(
+                            '<ul class="pagination pagination-outline">' +
+                            Revisions +
+                            '</ul>'
+                        );
+
+                        $('#idValChange').html(obj[0].ValidationOfChange);
+                        var WorkSta = obj[0].Workstations == null ? obj[0].Workstations : obj[0].Workstations.split("*").join('<br>');
+                        $('#idWorkstation').html(WorkSta);
+
+                        var PreApp = obj[0].PreApproval == null ? obj[0].PreApproval : obj[0].PreApproval.split("*").join('<br>');
+                        $('#idPreAppro').html(PreApp);
+
+                        var FinalSign = obj[0].FinalSignature == null ? obj[0].FinalSignature : obj[0].FinalSignature.split("*").join('<br>');
+                        $('#idFinalSig').html(FinalSign);
+
+                        $('#tdRevision').html(obj[0].RevisionID);
+                        $('#tdSignature').html(obj[0].Usuario);
+                        $('#tdDate').html(obj[0].FechaRegistro);
+                        $('#tdOperation').html(obj[0].OperacionTxt);
+                        var icono = obj[0].Icono.replace(/\\/g, "");
+                        $('#spanIcono').html(icono);
+                        $('#tdCategorie').html(obj[0].TipoTxt);
+                        $('#tdReason').html(obj[0].Comentarios);
+                    }
+                }
+                else 
+                {
+                    SystemServerError()
+                }
+            })
+            .fail(function (xhr, status, error) {
+                swalErrorServer()
+            })
+
+    }
+</script>
+
+@*Mostrar documentos pdf*@
+<script type="text/javascript">
+        function ShowDocument(DigitalID, TipoDigital, TipoArchivo, Clave, RevisionID, Ruta, PlantaID, Down)
+        {
+            if (TipoArchivo != 'Digital') 
+            {
+
+                BlockPantalla.block()
+                var ruta = 'https:/' + `/mxesc1vapp001/fp_data_center/planta${PlantaID}/documents-center/${Clave}/${RevisionID}/${Clave}.pdf`;
+                $("#idRutaDoc").attr("src", ruta);
+                $('#ModalPdfs').modal('toggle');
+                $('#TituloDoc').html(Clave);
+                BlockPantalla.release()
+            }
+            else 
+            {
+                BlockPantalla.block()
+
+                $.ajax({
+                    url: "@Url.Action("ExportToPDF","DocViewer")",
+                    type: "post",
+                    data: {
+                        DigitalID: DigitalID,
+                        TipoDigital: TipoDigital,
+                        TipoArchivo: TipoArchivo,
+                        Clave: Clave,
+                        RevisionID: RevisionID,
+                        Ruta: Ruta,
+                        Print: 1,
+                        IdSeccion: IdSeccionGlobal
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (result)
+                {
+                        if (result != null) 
+                        {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            else if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else 
+                            {
+                                var ruta = 'data:application/pdf;base64,' + result;
+
+                                $("#idRutaDoc").attr("src", ruta);
+
+                                BlockPantalla.release()
+                                $('#ModalPdfs').modal('toggle');
+                                $('#TituloDoc').html(Clave);
+                            }
+                        }
+                        else 
+                        {
+                            SystemServerError()
+                            BlockPantalla.release()
+                        }
+                    }).fail(function (xhr, status, error) 
+                    {
+                         swalErrorServer()
+                    })
+            }
+        }
+
+
+    function donwPdf(DigitalID, TipoDigital, Ruta, PlantaID, Nw) 
+    {
+        if (DigitalID != '') {
+            if (Nw == 1) {
+                $('#DigitalID').val(DigitalID);
+                $('#TipoDigital').val(TipoDigital);
+                $('#Ruta').val(Ruta);
+                $('#PlantaID').val(PlantaID);
+                $('#NewWind').val(1);
+            }
+            else
+            {
+                $('#DigitalID').val(DigitalID);
+                $('#TipoDigital').val(TipoDigital);
+                $('#Ruta').val(Ruta);
+                $('#PlantaID').val(PlantaID);
+                $('#NewWind').val(0);
+            }
+
+            $('#Form').submit();
+        }
+        else {
+            toastr.error("An error please wait!");
+        }
+    }
+</script>
+
+@*Finalizar Preapruve*@
+<script type="text/javascript">
+    function finishapp()
+    {
+        $.ajax({
+            url: "@Url.Action("FinishApproval","TMPreApproval")",
+            data: 
+            {
+               IdDocument : idDocGlobal,
+               Revision : idRevGlobal,
+               Clave : claveGlobal
+            },
+            type: "POST",
+             beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+            }).done(function(result)
+            {
+                if(result != null)
+                {
+                    if (result == 'Error') 
+                    {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') 
+                    {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') 
+                    {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage')
+                    {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'Success') {
+                        Swal.fire({
+                            text: "PreApproval Success!",
+                            icon: "success",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((respuesta) => {
+                            if (respuesta.isConfirmed) {
+                                $('#modal_review').modal('hide');
+                                showReport(@ViewData["MenuTaskId"])
+                            }
+                        });
+
+                    }
+                }
+                else 
+                {
+                    SystemServerError()
+                }
+                
+            }).fail(function (error) 
+            {
+                swalErrorServer()
+            });
+
+    }
+</script>
+

@@ -1,0 +1,108 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+@*style="background-image: url(/Images/SystemPictures/white.jpg);"*@
+<div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed" style="background-color:#eff3fe">
+    <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+        <img alt="Logo" src="~/Images/SystemPictures/LKQ.png" class="h-65px mb-5" />
+        <div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
+            <form class="form w-100" asp-action="Index" method="post">
+                <div class="text-center mb-10">
+                    <h1 class="text-dark mb-3">Sign In to Factory Platform</h1>
+                </div>
+                <div class="separator my-5"></div>
+                <span class="mb-5">Enter your User and Password</span><br><br>
+                <span class="text-danger" asp-validation-for="Usuario"></span>
+                <div class="fv-row input-group  mb-10">
+                    <span class="input-group-text" id="basic-addon1">
+                        <i class="far fa-user-circle fs-1x"></i>
+                    </span>
+                    <input asp-for="Usuario" class="form-control" placeholder="User" aria-label="User" aria-describedby="basic-addon1" list="UserList" />
+                    @*<datalist id="UserList">
+                        <option value="6908">Balta Rdz</option>
+                        <option value="6887">Fer Rdz</option>
+                        <option value="6848">Ruben Ribera</option>
+                        <option value="5510">Manuel Gonzales</option>
+                        <option value="6319">Juan Bernal</option>
+                        <option value="6570">Enrique Salinas</option>
+                        <option value="5671">Samuel Ibarra</option>
+                    </datalist>*@
+                </div>
+                <span class="text-danger" asp-validation-for="PasswordHash"></span>
+                <div class="fv-row input-group mb-10">
+                    <span class="input-group-text" id="basic-addon1">
+                        <i class="fas fa-lock fs-1x"></i>
+                    </span>
+                    <input asp-for="PasswordHash" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1" />
+                </div>
+                <span class="text-danger">@ViewBag.Error</span>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-lg btn-primary w-100 mb-5" id="submitID">
+                        <span class="indicator-label">
+                            Continue
+                        </span>
+                        <span class="indicator-progress">
+                            Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                    <div class="text-center text-muted text-uppercase fw-bolder mb-5">or</div>
+                    <a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn" class="btn btn-flex flex-center btn-secondary btn-lg w-100 mb-5 " id="msButton">
+                        <span class="indicator-label">
+                            <img alt="Logo" src="~/assets/media/svg/brand-logos/microsoft-5.svg" class="h-20px me-3" />Continue with Microsoft
+                        </span>
+                        <span class="indicator-progress">
+                            Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="d-flex flex-center flex-column-auto p-10">
+        <div class="d-flex align-items-center fw-bold fs-6">
+            <a class="text-muted text-hover-primary px-2">Advanced Remanufacturing System</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script type="text/javascript">
+        function click() {
+            if ((e.which != 1)) {
+                e.preventDefault();
+            }
+        }
+        document.oncontextmenu = new Function("return false")
+
+        // Element to indecate
+        var submitID = document.querySelector("#submitID");
+        // Handle button click event
+        submitID.addEventListener("click", function () {
+            // Activate indicator
+            submitID.setAttribute("data-kt-indicator", "on");
+            $('#msButton').css("pointer-events", "none");
+            // Disable indicator after 3 seconds
+            setTimeout(function () {
+                submitID.removeAttribute("data-kt-indicator");
+                $('#msButton').removeAttr("style");
+            }, 5000);
+        });
+
+        var msButton = document.querySelector("#msButton");
+        // Handle button click event
+        msButton.addEventListener("click", function () {
+            // Activate indicator
+            msButton.setAttribute("data-kt-indicator", "on");
+            $('#submitID').css("pointer-events", "none");
+            // Disable indicator after 3 seconds
+            setTimeout(function () {
+                msButton.removeAttribute("data-kt-indicator");
+                $('#submitID').removeAttr("style");
+            }, 5000);
+        });
+    </script>
+ }

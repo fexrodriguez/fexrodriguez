@@ -1,0 +1,1613 @@
+﻿@using FactoryPlatform.Areas.Quality.Models.ControlPanel.Packaging
+@using Newtonsoft.Json
+@model CP_PackagindModelView
+
+@{
+	ViewData["Title"] = ViewData["Titulo"];
+}
+
+<div class="post d-flex flex-column-fluid border" id="kt_post">
+	<div id="kt_content_container" class="container-fluid">
+		<div id="kt_block">
+			<div class="card mb-5">
+				<div class="card-body p-5 mb-0" id="BlockPantalla">
+
+					<div class="mb-5 hover-scroll-x">
+						<div class="d-grid">
+							<ul class="nav nav-tabs flex-nowrap text-nowrap">
+							  <li class="nav-item"><a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0" data-bs-toggle="tab" href="#panel_1" id="nav1">Huacales</a></li>
+								<li class="nav-item"><a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0" data-bs-toggle="tab" href="#panel_2" id="nav2">TUB's - Plastic Inserts</a></li>
+								<li class="nav-item"><a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0" data-bs-toggle="tab" href="#panel_3" id="nav3">TUB's - Wood Inserts</a></li>
+								<li class="nav-item"><a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0" data-bs-toggle="tab" href="#panel_4" id="nav4">TUB's - Lids</a></li>
+								<li class="nav-item"><a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0" data-bs-toggle="tab" href="#panel_5" id="nav5">TUB's - Bases</a></li>
+								<li class="nav-item"><a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0" data-bs-toggle="tab" href="#panel_6" id="nav6">Packaging Problems</a></li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="tab-content" id="myTabContent">
+						<div id="panel_1" class="tab-pane fade show active" role="tabpanel">
+
+							<div class="card-header align-items-center py-5 gap-2 gap-md-5">
+								<div class="card-title">
+									<div class="d-flex align-items-center position-relative my-1">
+										<span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+										<input type="text" data-kt-filter="searchHuaca" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+									</div>
+									<div id="TablaHuacales_export" class="d-none"></div>
+								</div>
+								<div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+									<button type="button" class="btn btn-success me-3" onclick="newOption(1,'New Huacal')">
+										<i class="fas fa-plus"></i>New Huacales
+									</button>
+									<button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+										<span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+										Export Report
+									</button>
+									<div id="TablaHuacales_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-kt-exportHuaca="excel">
+												Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+											</a>
+										</div>
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-kt-exportHuaca="csv">
+												Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+											</a>
+										</div>
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-kt-exportHuaca="pdf">
+												Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+											</a>
+										</div>
+									</div>
+									<div id="TablaHuacales_buttons" class="d-none"></div>
+								</div>
+							</div>
+							<div class="card-body">
+								<table id="TablaHuacales" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+									<thead>
+										<tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+											<th class="min-w-20px  align-middle border-end text-center">ID#</th>
+											<th class="min-w-50px  align-middle border-end text-center">Delete</th>
+											<th class="min-w-200px align-middle border-end">Number</th>
+											<th class="min-w-200px align-middle border-end">Description</th>
+											<th class="min-w-200px align-middle border-end">Record date</th>
+											<th class="min-w-200px align-middle border-end">Record user</th>
+										</tr>
+									</thead>
+									<tbody>
+										@{var N1 = 1;}
+										@foreach (var item in Model.Hucales)
+										{
+											<tr>
+												<td>@N1</td>
+												<td>
+													<a class="p-0 btn btn-sm  me-2" onclick="Delete(this, @item.ID_Registro , 1)"><i class="fas fa-times fs-3 text-danger"></i></a>
+												</td>
+												<td><a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="Update(1,'Edit Huacal',this,$(this).closest('tr'),@item.ID_Registro)">@item.Numero</a></td>
+												<td>@item.Descripcion</td>
+												<td>@item.FechaRegistro</td>
+												<td>@item.UsuarioRegistro</td>
+											</tr>
+
+											N1++;
+										}
+									</tbody>
+								</table>
+							</div>
+
+						</div>
+						<div id="panel_2" class="tab-pane fade" role="tabpanel">
+
+							<div class="card-header align-items-center py-5 gap-2 gap-md-5">
+								<div class="card-title">
+									<div class="d-flex align-items-center position-relative my-1">
+										<span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+										<input type="text" data-kt-filter="searchPrastic" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+									</div>
+									<div id="TablaPlasticInsert_export" class="d-none"></div>
+								</div>
+								<div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+									<button type="button" class="btn btn-success me-3" onclick="newOption(2,'New TUB Plastic Insert')">
+										<i class="fas fa-plus"></i>New Plastic Inserts
+									</button>
+									<button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+										<span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+										Export Report
+									</button>
+									<div id="TablaPlasticInsert_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-kt-exportPlastic="excel">
+												Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+											</a>
+										</div>
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-kt-exportPlastic="csv">
+												Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+											</a>
+										</div>
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-kt-exportPlastic="pdf">
+												Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+											</a>
+										</div>
+									</div>
+									<div id="TablaPlasticInsert_buttons" class="d-none"></div>
+								</div>
+							</div>
+							<div class="card-body">
+								<table id="TablaPlasticInsert" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+									<thead>
+										<tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+											<th class="min-w-20px  align-middle border-end text-center">ID#</th>
+											<th class="min-w-50px  align-middle border-end text-center">Delete</th>
+											<th class="min-w-200px align-middle border-end">Number</th>
+											<th class="min-w-200px align-middle border-end">Description</th>
+											<th class="min-w-200px align-middle border-end">Record date</th>
+											<th class="min-w-200px align-middle border-end">Record user</th>
+										</tr>
+									</thead>
+									<tbody>
+										@{var N2 = 1;}
+										@foreach (var item in Model.TUB_PlasticInsert)
+										{
+											<tr>
+												<td>@N2</td>
+												<td>
+													<a class="p-0 btn btn-sm  me-2" onclick="Delete(this, @item.ID_Registro , 2)"><i class="fas fa-times fs-3 text-danger"></i></a>
+												</td>
+												<td><a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="Update(2,'Edit TUB Plastic Insert',this,$(this).closest('tr'),@item.ID_Registro)">@item.Numero</a></td>
+												<td>@item.Descripcion</td>
+												<td>@item.FechaRegistro</td>
+												<td>@item.UsuarioRegistro</td>
+											</tr>
+											N2++;
+										}
+									</tbody>
+								</table>
+							</div>
+
+						</div>
+						<div id="panel_3" class="tab-pane fade" role="tabpanel">
+
+							<div class="card-header align-items-center py-5 gap-2 gap-md-5">
+								<div class="card-title">
+									<div class="d-flex align-items-center position-relative my-1">
+										<span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+										<input type="text" data-kt-filter="searchWood" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+									</div>
+									<div id="TablaWoodInsert_export" class="d-none"></div>
+								</div>
+								<div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+									<button type="button" class="btn btn-success me-3" onclick="newOption(3,'New TUB Wood Inserts')">
+										<i class="fas fa-plus"></i>New Wood Insert
+									</button>
+									<button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+										<span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+										Export Report
+									</button>
+									<div id="TablaWoodInsert_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-kt-exportWood="excel">
+												Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+											</a>
+										</div>
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-kt-exportWood="csv">
+												Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+											</a>
+										</div>
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-kt-exportWood="pdf">
+												Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+											</a>
+										</div>
+									</div>
+									<div id="TablaWoodInsert_buttons" class="d-none"></div>
+								</div>
+							</div>
+							<div class="card-body">
+								<table id="TablaWoodInsert" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+									<thead>
+										<tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+											<th class="min-w-20px  align-middle border-end text-center">ID#</th>
+											<th class="min-w-50px  align-middle border-end text-center">Delete</th>
+											<th class="min-w-200px align-middle border-end">Number</th>
+											<th class="min-w-200px align-middle border-end">Description</th>
+											<th class="min-w-200px align-middle border-end">Record date</th>
+											<th class="min-w-200px align-middle border-end">Record user</th>
+										</tr>
+									</thead>
+									<tbody>
+										@{var N3 = 1;}
+										@foreach (var item in Model.TUB_WoodInsert)
+										{
+											<tr>
+												<td>@N3</td>
+												<td>
+													<a class="p-0 btn btn-sm  me-2" onclick="Delete(this, @item.ID_Registro, 3)"><i class="fas fa-times fs-3 text-danger"></i></a>
+												</td>
+												<td><a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="Update(3,'Edit TUB Wood Inserts',this,$(this).closest('tr'),@item.ID_Registro)">@item.Numero</a></td>
+												<td>@item.Descripcion</td>
+												<td>@item.FechaRegistro</td>
+												<td>@item.UsuarioRegistro</td>
+											</tr>
+											N3++;
+										}
+									</tbody>
+								</table>
+							</div>
+
+						</div>
+						<div id="panel_4" class="tab-pane fade" role="tabpanel">
+
+								<div class="card-header align-items-center py-5 gap-2 gap-md-5">
+									<div class="card-title">
+										<div class="d-flex align-items-center position-relative my-1">
+											<span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+											<input type="text" data-kt-filter="searchLibs" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+										</div>
+										<div id="TablaTubsLids_export" class="d-none"></div>
+									</div>
+									<div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+									<button type="button" class="btn btn-success me-3" onclick="newOption(4,'New TUB Lid')">
+											<i class="fas fa-plus"></i>New Lid
+										</button>
+										<button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+											<span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+											Export Report
+										</button>
+										<div id="TablaTubsLids_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+											<div class="menu-item px-3">
+												<a href="#" class="menu-link px-3" data-kt-exportLibs="excel">
+													Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+												</a>
+											</div>
+											<div class="menu-item px-3">
+												<a href="#" class="menu-link px-3" data-kt-exportLibs="csv">
+													Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+												</a>
+											</div>
+											<div class="menu-item px-3">
+												<a href="#" class="menu-link px-3" data-kt-exportLibs="pdf">
+													Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+												</a>
+											</div>
+										</div>
+										<div id="TablaTubsLids_buttons" class="d-none"></div>
+									</div>
+								</div>
+								<div class="card-body">
+									<table id="TablaTubsLids" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+										<thead>
+											<tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+												<th class="min-w-20px  align-middle border-end text-center">ID#</th>
+												<th class="min-w-50px  align-middle border-end text-center">Delete</th>
+												<th class="min-w-200px align-middle border-end">Number</th>
+												<th class="min-w-200px align-middle border-end">Description</th>
+												<th class="min-w-200px align-middle border-end">Record date</th>
+												<th class="min-w-200px align-middle border-end">Record user</th>
+											</tr>
+										</thead>
+										<tbody>
+											@{var N4 = 1;}
+											@foreach(var item in Model.TUB_Lid)
+											{
+												<tr>
+													<td>@N4</td>
+													<td>
+														<a class="p-0 btn btn-sm  me-2" onclick="Delete(this, @item.ID_Registro, 4)"><i class="fas fa-times fs-3 text-danger"></i></a>
+													</td>
+												<td><a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="Update(4,'Edit TUB Lid',this,$(this).closest('tr'),@item.ID_Registro)">@item.Numero</a></td>
+													<td>@item.Descripcion</td>
+													<td>@item.FechaRegistro</td>
+													<td>@item.UsuarioRegistro</td>
+												</tr>
+												N4++;
+											}
+										</tbody>
+									</table>
+								</div>
+
+						</div>
+						<div id="panel_5" class="tab-pane fade" role="tabpanel">
+
+								<div class="card-header align-items-center py-5 gap-2 gap-md-5">
+									<div class="card-title">
+										<div class="d-flex align-items-center position-relative my-1">
+											<span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+											<input type="text" data-kt-filter="searchBases" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+										</div>
+										<div id="TablaTubsBases_export" class="d-none"></div>
+									</div>
+									<div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+									<button type="button" class="btn btn-success me-3" onclick="newOption(5,'New TUB Bases')">
+											<i class="fas fa-plus"></i>New Base
+										</button>
+										<button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+											<span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+											Export Report
+										</button>
+										<div id="TablaTubsBases_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+											<div class="menu-item px-3">
+												<a href="#" class="menu-link px-3" data-kt-exportBases="excel">
+													Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+												</a>
+											</div>
+											<div class="menu-item px-3">
+												<a href="#" class="menu-link px-3" data-kt-exportBases="csv">
+													Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+												</a>
+											</div>
+											<div class="menu-item px-3">
+												<a href="#" class="menu-link px-3" data-kt-exportBases="pdf">
+													Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+												</a>
+											</div>
+										</div>
+										<div id="TablaTubsBases_buttons" class="d-none"></div>
+									</div>
+								</div>
+								<div class="card-body">
+									<table id="TablaTubsBases" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+										<thead>
+											<tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+												<th class="min-w-20px  align-middle border-end text-center">ID#</th>
+												<th class="min-w-50px  align-middle border-end text-center">Delete</th>
+												<th class="min-w-50px  align-middle border-end text-center">Locked</th>
+												<th class="min-w-200px align-middle border-end">Number</th>
+												<th class="min-w-200px align-middle border-end">Description</th>
+												<th class="min-w-200px align-middle border-end">Record date</th>
+												<th class="min-w-200px align-middle border-end">Record user</th>
+											</tr>
+										</thead>
+										<tbody>
+											@{var N5 = 1;}
+											@foreach(var item in Model.CP_TubBase)
+											{
+												<tr>
+													<td>@N5</td>
+													<td>
+														<a class="p-0 btn btn-sm  me-2" onclick="Delete(this, @item.ID_Registro , 5)"><i class="fas fa-times fs-3 text-danger"></i></a>
+													</td>
+													@if(item.Locked == true)
+													{
+														 <td>
+															<a class="p-0 btn btn-sm  me-2" onclick="Locked(this,1,@item.ID_Registro)"><i class="fas fa-lock fs-3 text-warning"></i></a>
+														</td>
+													}else
+													{
+														<td>
+															<a class="p-0 btn btn-sm  me-2" onclick="Locked(this,0,@item.ID_Registro)"><i class="fas fa-lock-open fs-3"></i></a>
+														</td>
+													}
+												<td><a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="Update(5,'Edit TUB Bases',this,$(this).closest('tr'),@item.ID_Registro)">@item.Numero</a></td>
+													<td>@item.Descripcion</td>
+													<td>@item.FechaRegistro</td>
+													<td>@item.UsuarioRegistro</td>
+											</tr>
+											N5++;
+										}
+										</tbody>
+									</table>
+								</div>
+							
+						</div>
+						<div id="panel_6" class="tab-pane fade" role="tabpanel">
+								<div class="card-header align-items-center py-5 gap-2 gap-md-5">
+									<div class="card-title">
+										<div class="d-flex align-items-center position-relative my-1">
+											<span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+											<input type="text" data-kt-filter="searchProblems" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+										</div>
+										<div id="TablaProblems_export" class="d-none"></div>
+									</div>
+									<div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+										<button type="button" class="btn btn-success me-3" onclick="newOption(6,'New Problem')">
+											<i class="fas fa-plus"></i>New Problem
+										</button>
+										<button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+											<span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+											Export Report
+										</button>
+										<div id="TablaProblems_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+											<div class="menu-item px-3">
+												<a href="#" class="menu-link px-3" data-kt-exportProblems="excel">
+													Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+												</a>
+											</div>
+											<div class="menu-item px-3">
+												<a href="#" class="menu-link px-3" data-kt-exportProblems="csv">
+													Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+												</a>
+											</div>
+											<div class="menu-item px-3">
+												<a href="#" class="menu-link px-3" data-kt-exportProblems="pdf">
+													Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+												</a>
+											</div>
+										</div>
+										<div id="TablaProblems_buttons" class="d-none"></div>
+									</div>
+								</div>
+								<div class="card-body">
+									<table id="TablaProblems" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+										<thead>
+											<tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+												<th class="min-w-20px  align-middle border-end text-center">ID#</th>
+												<th class="min-w-50px  align-middle border-end text-center">Delete</th>
+												<th class="min-w-200px align-middle border-end">Number</th>
+												<th class="min-w-200px align-middle border-end">Description</th>
+											</tr>
+										</thead>
+										<tbody>
+											@{var N6 = 1;}
+											@foreach (var item in Model.Problem)
+											{
+												<tr>
+													<td>@N6</td>
+													<td>
+														<a class="p-0 btn btn-sm  me-2" onclick="Delete(this, @item.ID_Registro , 6)"><i class="fas fa-times fs-3 text-danger"></i></a>
+													</td>
+													<td><a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="Update(6,'Edit Problem',this,$(this).closest('tr'),@item.ID_Registro)">@item.Numero</a></td>
+													<td>@item.Descripcion</td>
+												</tr>
+												N6++;
+											}
+										</tbody>
+									</table>
+								</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" tabindex="-1" id="newOption">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title" id="newOptionTitle"></h3>
+				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<span class="svg-icon svg-icon-1"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<form id="newOptionForm">
+					<input type="hidden" id="Opcion" name="Opcion" class="form-control" placeholder="">
+					<div class="mb-10 fv-row">
+						<label class="form-label">Number:</label>
+						<input type="text" id="Numero" name="Numero" class="form-control" placeholder="">
+					</div>
+					<div class="mb-10 fv-row">
+						<label for="" class="form-label">Description:</label>
+						<textarea class="form-control" data-kt-autosize="true" data-kt-initialized="1" maxlength="500" name="Descripcion" id="Descripcion" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 107px;"></textarea>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+				<button id="saveNewOption" type="button" class="btn btn-primary">
+					<span class="indicator-label">Save</span>
+					<span class="indicator-progress">
+						Please wait...<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+					</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+@section Scripts{
+
+@*Libreria datatable TUBS Huacales*@
+<script type="text/javascript">
+	var KTDatatablesTablaHuacales = function () {
+		var table;
+		var datatable;
+
+		var initDatatableModels = function () {
+			const tableRows = table.querySelectorAll('tbody tr');
+
+			tableRows.forEach(row => {
+				const dateRow = row.querySelectorAll('td');
+			});
+
+			datatable = $(table).DataTable({
+				"info": true,
+				"order": [],
+				"pageLength": 100,
+				"scrollY": "500px",
+				"scrollCollapse": true,
+				"scrollX": true,
+				"columns": [
+					{ className: "border-end  border-gray-400 border-start min-w-20px text-center", },
+					{ className: "border-end  border-gray-400 min-w-50px text-center", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+				],
+
+			});
+		}
+
+		// Hook export buttons
+		var exportButtons = () => {
+			const documentTitle = 'Report Huacales Lids';
+			var buttons = new $.fn.dataTable.Buttons(table, {
+				buttons: [
+					{
+						extend: 'copyHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'excelHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'csvHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'pdfHtml5',
+						title: documentTitle
+					}
+				]
+			}).container().appendTo($('#TablaHuacales_buttons'));
+
+			const exportButtons = document.querySelectorAll('#TablaHuacales_export_menu [data-kt-exportHuaca]');
+			exportButtons.forEach(exportButton => {
+				exportButton.addEventListener('click', e => {
+					e.preventDefault();
+
+					var exportValue = e.target.getAttribute('data-kt-exportHuaca');
+					var target = document.querySelector('div[id="TablaHuacales_buttons"]');
+					target = target.querySelector('.buttons-' + exportValue);
+
+					target.click();
+				});
+			});
+		}
+
+		var handleSearchDatatableModels = () => {
+			const filterSearch = document.querySelector('[data-kt-filter="searchHuaca"]');
+			filterSearch.addEventListener('keyup', function (e) {
+				datatable.search(e.target.value).draw();
+			});
+		}
+
+		return {
+			init: function () {
+				table = document.querySelector('#TablaHuacales');
+
+				if (!table) {
+					return;
+				}
+
+				initDatatableModels();
+				exportButtons();
+				handleSearchDatatableModels();
+			}
+		};
+	}();
+
+	KTUtil.onDOMContentLoaded(function () {
+		KTDatatablesTablaHuacales.init();
+	});
+</script>
+
+@*Libreria datatable TUBS Plastic Insert*@
+<script type="text/javascript">
+	var KTDatatablesTablaPlasticInsert = function () {
+		var table;
+		var datatable;
+
+		var initDatatableModels = function () {
+			const tableRows = table.querySelectorAll('tbody tr');
+
+			tableRows.forEach(row => {
+				const dateRow = row.querySelectorAll('td');
+			});
+
+			datatable = $(table).DataTable({
+				"info": true,
+				"order": [],
+				"pageLength": 100,
+				"scrollY": "500px",
+				"scrollCollapse": true,
+				"scrollX": true,
+				"columns": [
+					{ className: "border-end  border-gray-400 border-start min-w-20px text-center", },
+					{ className: "border-end  border-gray-400 min-w-50px text-center", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+				],
+
+			});
+		}
+
+		// Hook export buttons
+		var exportButtons = () => {
+			const documentTitle = 'Report Plastic insert';
+			var buttons = new $.fn.dataTable.Buttons(table, {
+				buttons: [
+					{
+						extend: 'copyHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'excelHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'csvHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'pdfHtml5',
+						title: documentTitle
+					}
+				]
+			}).container().appendTo($('#TablaPlasticInsert_buttons'));
+
+			const exportButtons = document.querySelectorAll('#TablaPlasticInsert_export_menu [data-kt-exportPlastic]');
+			exportButtons.forEach(exportButton => {
+				exportButton.addEventListener('click', e => {
+					e.preventDefault();
+
+					var exportValue = e.target.getAttribute('data-kt-exportPlastic');
+					var target = document.querySelector('div[id="TablaPlasticInsert_buttons"]');
+					target = target.querySelector('.buttons-' + exportValue);
+
+					target.click();
+				});
+			});
+		}
+
+		var handleSearchDatatableModels = () => {
+			const filterSearch = document.querySelector('[data-kt-filter="searchPrastic"]');
+			filterSearch.addEventListener('keyup', function (e) {
+				datatable.search(e.target.value).draw();
+			});
+		}
+
+		return {
+			init: function () {
+				table = document.querySelector('#TablaPlasticInsert');
+
+				if (!table) {
+					return;
+				}
+
+				initDatatableModels();
+				exportButtons();
+				handleSearchDatatableModels();
+			}
+		};
+	}();
+
+	KTUtil.onDOMContentLoaded(function () {
+		KTDatatablesTablaPlasticInsert.init();
+	});
+</script>
+
+@*Libreria datatable TUBS Wood Inserts*@
+<script type="text/javascript">
+	var KTDatatablesTablaWoodInsert = function () {
+		var table;
+		var datatable;
+
+		var initDatatableModels = function () {
+			const tableRows = table.querySelectorAll('tbody tr');
+
+			tableRows.forEach(row => {
+				const dateRow = row.querySelectorAll('td');
+			});
+
+			datatable = $(table).DataTable({
+				"info": true,
+				"order": [],
+				"pageLength": 100,
+				"scrollY": "500px",
+				"scrollCollapse": true,
+				"scrollX": true,
+				"columns": [
+					{ className: "border-end  border-gray-400 border-start min-w-20px text-center", },
+					{ className: "border-end  border-gray-400 min-w-50px text-center", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+				],
+
+			});
+		}
+
+		// Hook export buttons
+		var exportButtons = () => {
+			const documentTitle = 'Report Plastic insert';
+			var buttons = new $.fn.dataTable.Buttons(table, {
+				buttons: [
+					{
+						extend: 'copyHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'excelHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'csvHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'pdfHtml5',
+						title: documentTitle
+					}
+				]
+			}).container().appendTo($('#TablaWoodInsert_buttons'));
+
+			const exportButtons = document.querySelectorAll('#TablaWoodInsert_export_menu [data-kt-exportWood]');
+			exportButtons.forEach(exportButton => {
+				exportButton.addEventListener('click', e => {
+					e.preventDefault();
+
+					var exportValue = e.target.getAttribute('data-kt-exportWood');
+					var target = document.querySelector('div[id="TablaWoodInsert_buttons"]');
+					target = target.querySelector('.buttons-' + exportValue);
+
+					target.click();
+				});
+			});
+		}
+
+		var handleSearchDatatableModels = () => {
+			const filterSearch = document.querySelector('[data-kt-filter="searchWood"]');
+			filterSearch.addEventListener('keyup', function (e) {
+				datatable.search(e.target.value).draw();
+			});
+		}
+
+		return {
+			init: function () {
+				table = document.querySelector('#TablaWoodInsert');
+
+				if (!table) {
+					return;
+				}
+
+				initDatatableModels();
+				exportButtons();
+				handleSearchDatatableModels();
+			}
+		};
+	}();
+
+	KTUtil.onDOMContentLoaded(function () {
+		KTDatatablesTablaWoodInsert.init();
+	});
+</script>
+
+@*Libreria datatable TUBS Lids*@
+<script type="text/javascript">
+	var KTDatatablesTablaTubsLids = function () {
+		var table;
+		var datatable;
+
+		var initDatatableModels = function () {
+			const tableRows = table.querySelectorAll('tbody tr');
+
+			tableRows.forEach(row => {
+				const dateRow = row.querySelectorAll('td');
+			});
+
+			datatable = $(table).DataTable({
+				"info": true,
+				"order": [],
+				"pageLength": 100,
+				"scrollY": "500px",
+				"scrollCollapse": true,
+				"scrollX": true,
+				"columns": [
+					{ className: "border-end  border-gray-400 border-start min-w-20px text-center", },
+					{ className: "border-end  border-gray-400 min-w-50px text-center", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+				],
+
+			});
+		}
+
+		// Hook export buttons
+		var exportButtons = () => {
+			const documentTitle = 'Report Tub Lids';
+			var buttons = new $.fn.dataTable.Buttons(table, {
+				buttons: [
+					{
+						extend: 'copyHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'excelHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'csvHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'pdfHtml5',
+						title: documentTitle
+					}
+				]
+			}).container().appendTo($('#TablaTubsLids_buttons'));
+
+			const exportButtons = document.querySelectorAll('#TablaTubsLids_export_menu [data-kt-exportLibs]');
+			exportButtons.forEach(exportButton => {
+				exportButton.addEventListener('click', e => {
+					e.preventDefault();
+
+					var exportValue = e.target.getAttribute('data-kt-exportLibs');
+					var target = document.querySelector('div[id="TablaTubsLids_buttons"]');
+					target = target.querySelector('.buttons-' + exportValue);
+
+					target.click();
+				});
+			});
+		}
+
+		var handleSearchDatatableModels = () => {
+			const filterSearch = document.querySelector('[data-kt-filter="searchLibs"]');
+			filterSearch.addEventListener('keyup', function (e) {
+				datatable.search(e.target.value).draw();
+			});
+		}
+
+		return {
+			init: function () {
+				table = document.querySelector('#TablaTubsLids');
+
+				if (!table) {
+					return;
+				}
+
+				initDatatableModels();
+				exportButtons();
+				handleSearchDatatableModels();
+			}
+		};
+	}();
+
+	KTUtil.onDOMContentLoaded(function () {
+		KTDatatablesTablaTubsLids.init();
+	});
+</script>
+
+@*Libreria datatable TUBS Base*@
+<script type="text/javascript">
+	var KTDatatablesTablaTubsBases = function () {
+		var table;
+		var datatable;
+
+		var initDataTablaTubsBases = function () {
+			const tableRows = table.querySelectorAll('tbody tr');
+
+			tableRows.forEach(row => {
+				const dateRow = row.querySelectorAll('td');
+			});
+
+			datatable = $(table).DataTable({
+				"info": true,
+				"order": [],
+				"pageLength": 100,
+				"scrollY": "500px",
+				"scrollCollapse": true,
+				"scrollX": true,
+				"columns": [
+					{ className: "border-end  border-gray-400 border-start min-w-20px text-center", },
+					{ className: "border-end  border-gray-400 min-w-50px text-center", },
+					{ className: "border-end  border-gray-400 min-w-50px text-center", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+				],
+
+			});
+		}
+
+		// Hook export buttons
+		var exportButtons = () => {
+			const documentTitle = 'Report Tub Bases';
+			var buttons = new $.fn.dataTable.Buttons(table, {
+				buttons: [
+					{
+						extend: 'copyHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'excelHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'csvHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'pdfHtml5',
+						title: documentTitle
+					}
+				]
+			}).container().appendTo($('#TablaTubsBases_buttons'));
+
+			const exportButtons = document.querySelectorAll('#TablaTubsBases_export_menu [data-kt-exportBases]');
+			exportButtons.forEach(exportButton => {
+				exportButton.addEventListener('click', e => {
+					e.preventDefault();
+
+					var exportValue = e.target.getAttribute('data-kt-exportBases');
+					var target = document.querySelector('div[id="TablaTubsBases_buttons"]');
+					target = target.querySelector('.buttons-' + exportValue);
+
+					target.click();
+				});
+			});
+		}
+
+		var handleSearchDatatableModels = () => {
+			const filterSearch = document.querySelector('[data-kt-filter="searchBases"]');
+			filterSearch.addEventListener('keyup', function (e) {
+				datatable.search(e.target.value).draw();
+			});
+		}
+
+		return {
+			init: function () {
+				table = document.querySelector('#TablaTubsBases');
+
+				if (!table) {
+					return;
+				}
+
+				initDataTablaTubsBases();
+				exportButtons();
+				handleSearchDatatableModels();
+			}
+		};
+	}();
+
+	KTUtil.onDOMContentLoaded(function () {
+		KTDatatablesTablaTubsBases.init();
+	});
+</script>
+	
+@*Libreria datatable TUBS Problems*@
+<script type="text/javascript">
+	var KTDatatablesTablaProblems = function () {
+		var table;
+		var datatable;
+
+		var initDataTablaProblems = function () {
+			const tableRows = table.querySelectorAll('tbody tr');
+
+			tableRows.forEach(row => {
+				const dateRow = row.querySelectorAll('td');
+			});
+
+			datatable = $(table).DataTable({
+				"info": true,
+				"order": [],
+				"pageLength": 100,
+				"scrollY": "500px",
+				"scrollCollapse": true,
+				"scrollX": true,
+				"columns": [
+					{ className: "border-end  border-gray-400 border-start min-w-20px text-center", },
+					{ className: "border-end  border-gray-400 min-w-50px text-center", },
+					{ className: "border-end  border-gray-400 min-w-50px text-center", },
+					{ className: "border-end  border-gray-400 min-w-200px", },
+				],
+
+			});
+		}
+
+		// Hook export buttons
+		var exportButtons = () => {
+			const documentTitle = 'Report Tub Bases';
+			var buttons = new $.fn.dataTable.Buttons(table, {
+				buttons: [
+					{
+						extend: 'copyHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'excelHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'csvHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'pdfHtml5',
+						title: documentTitle
+					}
+				]
+			}).container().appendTo($('#TablaProblems_buttons'));
+
+			const exportButtons = document.querySelectorAll('#TablaProblems_export_menu [data-kt-exportProblems]');
+			exportButtons.forEach(exportButton => {
+				exportButton.addEventListener('click', e => {
+					e.preventDefault();
+
+					var exportValue = e.target.getAttribute('data-kt-exportProblems');
+					var target = document.querySelector('div[id="TablaProblems_buttons"]');
+					target = target.querySelector('.buttons-' + exportValue);
+
+					target.click();
+				});
+			});
+		}
+
+		var handleSearchDatatableModels = () => {
+			const filterSearch = document.querySelector('[data-kt-filter="searchProblems"]');
+			filterSearch.addEventListener('keyup', function (e) {
+				datatable.search(e.target.value).draw();
+			});
+		}
+
+		return {
+			init: function () {
+				table = document.querySelector('#TablaProblems');
+
+				if (!table) {
+					return;
+				}
+
+				initDataTablaProblems();
+				exportButtons();
+				handleSearchDatatableModels();
+			}
+		};
+	}();
+
+	KTUtil.onDOMContentLoaded(function () {
+		KTDatatablesTablaProblems.init();
+	});
+</script>
+@*Funcion para validar si existe un dato en localstorage para seleccionar la tab en la que se hizo una operacion para cuando recarge pantalla regresar a esa tab*@
+<script>
+	$(document).ready(function() {
+		if (localStorage.getItem('idGlobal') !== undefined && localStorage.getItem('idGlobal')) {
+			id = JSON.parse(window.localStorage.getItem('idGlobal'));
+			$("#panel_1").removeClass('active show');
+			$("#nav"+id).addClass('active');
+			$("#panel_"+id).addClass('active show');
+			localStorage.clear();
+		}else{
+			$("#nav1").addClass('active');
+			$("#panel_1").addClass('active show');
+		}
+	});
+</script>
+@*Funcion para mostrar titulo y saber que contenido guardara de acuerdo a tab*@
+<script>
+var tablaid = '';
+var idGlobal = '';
+var titleglobal = '';
+function newOption(id,title){
+	idGlobal = id;
+	tipoboton = 1;
+	$('#Opcion').val(id);
+	$('#newOptionTitle').html(title);
+	$('#newOption').modal('toggle');
+	titleglobal = title;
+	   
+	$('#panel_'+id+' .table').each(function () {
+		if(this.id != ''){
+			tablaid = this.id ;
+		}
+	});
+}
+</script>
+@*Form validation for New Registre*@
+<script>
+	//Form Validation
+	var NewOptionForm = document.getElementById('newOptionForm');
+	var validatorForm = FormValidation.formValidation(
+		NewOptionForm,
+		{
+			fields: {
+				Numero: {
+					validators: {
+						notEmpty: {
+							message: 'Numero is required!'
+						}
+					}
+				},
+				Descripcion: {
+					validators: {
+						notEmpty: {
+							message: 'Description is required!'
+						}
+					}
+				}
+
+			},
+
+			plugins: { //Learn more: https://formvalidation.io/guide/plugins
+				trigger: new FormValidation.plugins.Trigger(),
+				bootstrap: new FormValidation.plugins.Bootstrap5({
+					rowSelector: '.fv-row',
+					eleInvalidClass: '',
+					eleValidClass: ''
+				})
+			}
+		}
+	);
+
+	var saveOption = document.getElementById('saveNewOption');
+
+	saveOption.addEventListener('click', function (e) {
+		e.preventDefault();
+
+		if (validatorForm) {
+			validatorForm.validate().then(function (status) {
+				if (status == 'Valid') {
+
+					saveOption.setAttribute('data-kt-indicator', 'on');
+					saveOption.disabled = true;
+					setTimeout(function () {
+						saveOption.removeAttribute('data-kt-indicator');
+						saveOption.disabled = false;
+						if(tipoboton == 1){
+							saveModalInfo()
+						}else{
+							updateInfo()
+						}
+
+					}, 900);
+				}
+				else {
+					saveOption.setAttribute('data-kt-indicator', 'on');
+					saveOption.disabled = true;
+					setTimeout(function () {
+						saveOption.removeAttribute('data-kt-indicator');
+						saveOption.disabled = false;
+
+					}, 100);
+
+				}
+			});
+		}
+	});
+</script>
+@*Guardar Registro de modal de acuerdo a su tab*@
+<script>
+function saveModalInfo(){
+	var Numero = $("#Numero").val();
+	var Descripcion = $("#Descripcion").val();
+	var Opcion = $("#Opcion").val();
+
+	$.ajax({
+		url: "@Url.Action("saveNewOption","CP_Packing")",
+		data: {
+			Numero: Numero,
+			Descripcion: Descripcion,
+			Opcion: Opcion
+		},
+		type: "POST",
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("XSRF-TOKEN",
+				$('input:hidden[name="__RequestVerificationToken"]').val());
+		},
+	}).done(function (result) {
+		if (result != null) {
+			if (result == 'Error') {
+				SystemServerError()
+			}
+			if (result == 'noSession') {
+				swalExpired()
+			}
+			else if (result == 'Sorry') {
+				swalNoAuthorized()
+			}
+			else if (result == 'NoPage') {
+				swalNoAuthorized()
+			}
+			else {
+				var obj = JSON.parse(result);
+				var Respuesta = obj[0].Resultado;
+
+				if (Respuesta == 'Existe') {
+					Swal.fire({
+						text: "Sorry, The number already exists, please try with diferent number.",
+						icon: "warning",
+						buttonsStyling: false,
+						allowEscapeKey: false,
+						allowOutsideClick: false,
+						confirmButtonText: "Ok, got it!",
+						customClass: {
+							confirmButton: "btn font-weight-bold btn-light-primary"
+						}
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$('#newOptionForm')[0].reset();
+						}
+					});
+				}
+				else{
+					var tCell = $('#' + tablaid).DataTable();
+					var obj = JSON.parse(result);
+					var IdCell = obj[0].ID;
+
+
+					Swal.fire({
+						text: "The action has been successfully submitted!",
+						icon: "success",
+						buttonsStyling: false,
+						allowEscapeKey: false,
+						allowOutsideClick: false,
+						confirmButtonText: "Ok, got it!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then((result) => {
+						if (result.isConfirmed) {
+							;
+							$('#newOptionForm')[0].reset();
+							$('#newOption').modal('hide');
+
+							window.localStorage.setItem('idGlobal', idGlobal);
+
+							location.reload();
+
+							KTApp.init();
+							KTApp.initPageLoader();
+							KTMenu.init();
+
+						}
+					});
+				}
+						
+			}
+
+		}
+		else {
+			SystemServerError()
+		}
+	}).fail(function (error) {
+		swalErrorServer()
+	});
+	}
+</script>
+@*Borrar registro de cualquier datatable y eliminar por javascript el registro para no recargar la pagina*@
+<script>
+	function Delete(DeleteRow, Id,Opcion) {
+		Swal.fire({
+			text: "Are you sure to Delete?",
+			icon: "question",
+			buttonsStyling: false,
+			allowEscapeKey: false,
+			allowOutsideClick: false,
+			showCancelButton: true,
+			closeOnCancel: true,
+			confirmButtonText: "Confirm",
+			cancelButtonText: 'Cancel',
+			customClass: {
+				confirmButton: "btn btn-primary",
+				cancelButton: 'btn btn-danger'
+			}
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$.ajax({
+					url: "@Url.Action("Delete","CP_Packing")",
+					data: {
+						IDRegistro: Id,
+						Opcion  : Opcion
+					},
+					type: "POST",
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader("XSRF-TOKEN",
+							$('input:hidden[name="__RequestVerificationToken"]').val());
+					},
+				}).done(function (result) {
+					if (result != null) {
+						if (result == 'Error') {
+							SystemServerError()
+						}
+						if (result == 'noSession') {
+							swalExpired()
+						}
+						else if (result == 'Sorry') {
+							swalNoAuthorized()
+						}
+						else if (result == 'NoPage') {
+							swalNoAuthorized()
+						}
+						else {
+
+							$('#panel_' + Opcion + ' .table').each(function () {
+								if(this.id != ''){
+									tablaid = this.id ;
+								}
+
+							});
+							var obj = JSON.parse(result);
+							var Respuesta = obj[0].Resultado;
+
+							if (Respuesta == 'Correcto') {
+								Swal.fire({
+									text: "The action has been successfully submitted!",
+									icon: "success",
+									buttonsStyling: false,
+									allowEscapeKey: false,
+									allowOutsideClick: false,
+									confirmButtonText: "Ok, got it!",
+									customClass: {
+										confirmButton: "btn btn-primary"
+									}
+								}).then((result) => {
+									if (result.isConfirmed) {
+										var table = $('#' + tablaid).DataTable();
+										table.row($(DeleteRow).parents('tr')).remove().draw();
+									}
+								});
+							}else{
+								Swal.fire({
+									text: "Sorry, this operation is not allowed, please try again later.",
+									icon: "warning",
+									buttonsStyling: false,
+									allowEscapeKey: false,
+									allowOutsideClick: false,
+									confirmButtonText: "Ok, got it!",
+									customClass: {
+										confirmButton: "btn font-weight-bold btn-light-primary"
+									}
+								}).then((result) => {
+									if (result.isConfirmed) {
+									}
+								});
+							}
+						}
+					}
+					else {
+						SystemServerError()
+					}
+				}).fail(function (error) {
+					swalErrorServer()
+				});
+
+			}
+			else {
+				$('.swal2-container').css('display', 'none');
+			}
+		});
+
+
+
+	}
+</script>
+@*Funcion para mostrar titulo y saber que contenido guardara de acuerdo a tab cuando se realiza un update*@
+<script>
+var number = "";
+var description = "";
+var registroid = "";
+var tipoboton = 1;
+function Update(id,title,datos,texto,idregistro){
+		//Mostrar informacion en Modal//
+		var datostexto = $(datos).text();
+		$('#Opcion').val(id);
+		$('#newOptionTitle').html(title);
+		$('#newOption').modal('toggle');
+		$('#Numero').val(datostexto);
+		if(idGlobal == 5){
+			$('#Descripcion').val(texto.find("td:eq(4)").text());
+		}else{
+			$('#Descripcion').val(texto.find("td:eq(3)").text());
+		}
+		registroid = idregistro;
+		tipoboton = 2;
+
+		number = datos;
+		description = texto;
+		idGlobal = id
+		titleglobal = title;
+		/////////////////////////////////////////////////////
+			
+}
+</script>
+@*Actualizar el registro de datable y guardar en localstorage el id de la tab para cuando se recage la pagina pueda mostrar el cambio en ese apartado*@
+<script>
+function updateInfo(){
+				
+	var Numero = $("#Numero").val();
+	var Descripcion = $("#Descripcion").val();
+	var Opcion = $("#Opcion").val();
+			
+	$.ajax({
+		url: "@Url.Action("EditOption","CP_Packing")",
+		data: {
+			Numero: Numero,
+			Descripcion: Descripcion,
+			Opcion: Opcion,
+			RegistroID: registroid
+		},
+		type: "POST",
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("XSRF-TOKEN",
+				$('input:hidden[name="__RequestVerificationToken"]').val());
+		},
+	}).done(function (result) {
+		if (result != null) {
+			if (result == 'Error') {
+				SystemServerError()
+			}
+			if (result == 'noSession') {
+				swalExpired()
+			}
+			else if (result == 'Sorry') {
+				swalNoAuthorized()
+			}
+			else if (result == 'NoPage') {
+				swalNoAuthorized()
+			}
+			else {
+				var obj = JSON.parse(result);
+				var Respuesta = obj[0].Resultado;
+
+				if (Respuesta == 'NoValido') {
+					Swal.fire({
+						text: "Sorry, this operation is not allowed, please try again later.",
+						icon: "warning",
+						buttonsStyling: false,
+						allowEscapeKey: false,
+						allowOutsideClick: false,
+						confirmButtonText: "Ok, got it!",
+						customClass: {
+							confirmButton: "btn font-weight-bold btn-light-primary"
+						}
+					}).then((result) => {
+						if (result.isConfirmed) {
+
+						}
+					});
+				}
+				else {
+
+					Swal.fire({
+						text: "The action has been successfully submitted!",
+						icon: "success",
+						buttonsStyling: false,
+						allowEscapeKey: false,
+						allowOutsideClick: false,
+						confirmButtonText: "Ok, got it!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$('#newOptionForm')[0].reset();
+							$('#newOption').modal('hide');
+							console.log(idGlobal);
+							$(number).text(Numero)
+							if(idGlobal == 5){
+								description.find("td:eq(4)").text(Descripcion)
+							}else{
+								description.find("td:eq(3)").text(Descripcion)
+							}
+							KTApp.init();
+							KTApp.initPageLoader();
+							KTMenu.init();
+
+
+
+						}
+					});
+				}
+
+			}
+
+		}
+		else {
+			SystemServerError()
+		}
+	}).fail(function (error) {
+		swalErrorServer()
+	});
+
+}
+</script>
+@*Lock and unlock tub*@
+<script>
+function Locked(item,opt,id){
+	$.ajax({
+		url: "@Url.Action("Locked","CP_Packing")",
+		data: {
+			Opcion: opt,
+					RegistroID: id
+		},
+		type: "POST",
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("XSRF-TOKEN",
+				$('input:hidden[name="__RequestVerificationToken"]').val());
+		},
+	}).done(function (result) {
+		if (result != null) {
+			if (result == 'Error') {
+				SystemServerError()
+			}
+			if (result == 'noSession') {
+				swalExpired()
+			}
+			else if (result == 'Sorry') {
+				swalNoAuthorized()
+			}
+			else if (result == 'NoPage') {
+				swalNoAuthorized()
+			}
+			else {
+				var obj = JSON.parse(result);
+				var Respuesta = obj[0].Resultado;
+
+				if (Respuesta == 'NoExiste') {
+					Swal.fire({
+						text: "Sorry, this operation is not allowed,object you are trying to modify does not exist .",
+						icon: "warning",
+						buttonsStyling: false,
+						allowEscapeKey: false,
+						allowOutsideClick: false,
+						confirmButtonText: "Ok, got it!",
+						customClass: {
+							confirmButton: "btn font-weight-bold btn-light-primary"
+						}
+					}).then((result) => {
+						if (result.isConfirmed) {
+
+						}
+					});
+				}
+				else {
+
+					Swal.fire({
+						text: "The action has been successfully submitted!",
+						icon: "success",
+						buttonsStyling: false,
+						allowEscapeKey: false,
+						allowOutsideClick: false,
+						confirmButtonText: "Ok, got it!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then((result) => {
+						if (result.isConfirmed) {
+							if(opt == 1){
+								$(item).replaceWith('<a class="p-0 btn btn-sm  me-2" onclick="Locked(this,0,2)"><i class="fas fa-lock-open fs-3"></i></a>');
+							}else{
+								$(item).replaceWith('<a class="p-0 btn btn-sm  me-2" onclick="Locked(this,1,1)"><i class="fas fa-lock fs-3 text-warning"></i></a>');
+							}
+						}
+					});
+				}
+
+			}
+
+		}
+		else {
+			SystemServerError()
+		}
+	}).fail(function (error) {
+		swalErrorServer()
+	});
+		
+}
+</script>
+}

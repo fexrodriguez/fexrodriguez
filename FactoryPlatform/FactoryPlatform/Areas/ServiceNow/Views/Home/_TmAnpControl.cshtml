@@ -1,0 +1,3548 @@
+﻿@using Newtonsoft.Json
+@model TMAnpControlViewModel
+@*/////////////////////////////////////////////////////////
+/// Pagina:          _TmCorrectiveSctions
+/// Fecha creaci�n:  17/Enero/2023
+/// Editor:          Fernando Rdz
+/// Correo editor:
+/// Descripcion:     Descripción.
+///
+/// --- BITACORA DE EDICION -----------------------------
+/// 17/Enero/2023:    Inicio de programacion.
+////////////////////////////////////////////////////////*@
+<style>
+	.dataTables_scroll {
+		overflow: auto;
+		display: inline-block
+	}
+
+</style>
+@*---Variables Globales---*@
+<script>
+	var nivelGlobal = 0;
+	var requestGlobalID = 0;
+	var codigoMedioGlobal = '';
+	var fanpGlobal = 0;
+	var aplicacionGlobal='';
+</script>
+<div class="card-body p-5" id="BlockAnpControl">
+	@if (Model.ReportAnpControl.Any())
+	{
+		<div class="card-header align-items-center py-5 gap-2 gap-md-5">
+			<div class="card-title">
+				<div class="d-flex align-items-center position-relative my-1">
+					<span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+					<input type="text" data-kt-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Report" />
+				</div>
+				<div id="table_CorrectiveA_export" class="d-none"></div>
+			</div>
+			<div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+				<button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+					<span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+					Export report
+				</button>
+				<div id="table_CorrectiveA_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+					<div class="menu-item px-3">
+						<a href="#" class="menu-link px-3" data-kt-export="excel">
+							Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+						</a>
+					</div>
+					<div class="menu-item px-3">
+						<a href="#" class="menu-link px-3" data-kt-export="csv">
+							Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+						</a>
+					</div>
+					<div class="menu-item px-3">
+						<a href="#" class="menu-link px-3" data-kt-export="pdf">
+							Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card-body">
+			<table id="table_DocsEdition" class="table table-striped  border-gray-300 gy-7 gs-7" width="100%">
+				<thead class="p-2">
+					<tr class="p-2 fw-bolder text-uppercase bg-gray-300 border-top border-bottom border-end border-gray-400 fs-6 text-gray-800">
+						<th class=" align-middle text-center"></th>
+						<th class=" align-middle">Buttons</th>
+						<th class=" align-middle" nowrap>Item Code</th>
+						<th class=" align-middle ">#</th>
+						<th class=" align-middle ">Type</th>
+						<th class=" align-middle text-center" nowrap>Vendor</th>
+						<th class=" align-middle text-center" nowrap>Revision</th>
+						<th class=" align-middle text-center" nowrap>Assigned Enginner</th>
+						<th class=" align-middle " nowrap>Assigned to</th>
+						<th class=" align-middle ">Step</th>
+						<th class=" align-middle ">Level</th>
+						<th class=" align-middle ">Comments</th>
+						<th class=" align-middle ">Revision</th>
+					</tr>
+				</thead>
+				<tbody>
+					@{
+						var counter = 1;
+						foreach (var item in Model.ReportAnpControl)
+						{
+							<tr class="mb-1 border-top border-end border-gray-400 ">
+								<td class="align-middle  text-center">@counter</td>
+								<td class="align-middle" nowrap>
+									<button class="btn fs-8 btn-opacity-75 btn-primary ps-3 p-2 me-3" type="button" onclick="info(@item.ID_Request)">
+										<i class="fas fa-info text-white fs-8 text-center"></i>
+									</button>
+									@Html.Raw(item.Buttons)
+								</td>
+								<td class="align-middle " nowrap>@item.Codigo </td>
+								<td class="align-middle " nowrap>REQ-@item.ID_Request</td>
+								<td class="align-middle ">@item.TipoArchivo </td>
+								<td class="align-middle text-center" nowrap>@item.NombreProveedor</td>
+								<td class="align-middle " nowrap>
+									<ul class="mb-0">
+										@{
+
+											string[] revision = item.Revision.Split("*");
+											@for (var i = 0; i < revision.Length; i++)
+											{
+												string background = "";
+												@if ((i + 1) == revision.Length)
+												{
+													background = "fw-bold text-primary";
+												}
+												<li class="mb-0 @background">
+													@revision[i]
+												</li>
+											}
+										}
+									</ul>
+								</td>
+								<td class="text-center" nowrap><span class="badge badge-dark">@item.Ingeniero</span></td>
+								<td class="text-center" nowrap><span class="badge badge-warning">@item.Asignado</span></td>
+								<td class="text-center"><span class="badge badge-primary">@item.Step</span></td>
+								<td class="">@item.Levels </td>
+								<td class="min-w-200px">@item.ComentarioRevision</td>
+								<td class="">@item.FechaRevision</td>
+							</tr>
+							counter++;
+						}
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+	else
+	{
+		<div class="alert alert-info d-flex align-items-center p-5 mb-10">
+			<span class="svg-icon svg-icon-2x svg-icon-light"> <i class="fas fa-exclamation-triangle fs-2x text-info"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;
+			<div class="d-flex flex-column">
+				<h6 class="text-info">There have pendings for the moment.</h6>
+			</div>
+		</div>
+	}
+</div>
+<div class="modal fade" tabindex="-1" id="modal_information" data-bs-keyboard="false" data-bs-backdrop="static">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title" id="title_info"></h3>
+				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<span class="svg-icon svg-icon-1"></span>
+				</div>
+			</div>
+			<div class="modal-body" id="modal_informationBody">
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Requested by:</label>
+					<div class="col-lg-8 fv-row fv-plugins-icon-container">
+						<input type="text" name="Requested" id="Requested" class="form-control form-control-lg form-control-solid" value="" readonly>
+						<div class="fv-plugins-message-container invalid-feedback"></div>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Vendor:</label>
+					<div class="col-lg-8 fv-row fv-plugins-icon-container">
+						<input type="text" name="Vendor" id="Vendor" class="form-control form-control-lg form-control-solid" value="" readonly>
+						<div class="fv-plugins-message-container invalid-feedback"></div>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Item Code:</label>
+					<div class="col-lg-8 fv-row fv-plugins-icon-container">
+						<input type="text" name="Item" id="Item" class="form-control form-control-lg form-control-solid" value="" readonly>
+						<div class="fv-plugins-message-container invalid-feedback"></div>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Middle Code:</label>
+					<div class="col-lg-8 fv-row">
+						<input type="text" name="MiddleCode" id="MiddleCode" class="form-control form-control-lg form-control-solid" value="" readonly>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Engineering control:</label>
+					<div class="col-lg-8 fv-row">
+						<input type="text" name="Engineering" id="Engineering" class="form-control form-control-lg form-control-solid" value="" readonly>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Quality control:</label>
+					<div class="col-lg-8 fv-row">
+						<input type="text" name="QualityControl" id="QualityControl" class="form-control form-control-lg form-control-solid" value="" readonly>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label fw-semibold fs-6"></label>
+					<div class="col-lg-8 fv-row fv-plugins-icon-container">
+						<div class="d-flex align-items-center mt-3">
+							<label class="form-check form-check-custom form-check-inline form-check-solid me-5">
+								<input class="form-check-input" name="Oem" id="Oem" type="checkbox" value="1" disabled>
+								<span class="fw-semibold ps-2 fs-6">
+									OEM
+								</span>
+							</label>
+							<label class="form-check form-check-custom form-check-inline form-check-solid">
+								<input class="form-check-input" name="Critical" id="Critical" type="checkbox" value="2" disabled>
+								<span class="fw-semibold ps-2 fs-6">
+									Critical List
+								</span>
+							</label>
+						</div>
+						<div class="fv-plugins-message-container invalid-feedback"></div>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">List Actual Providers:</label>
+					<div class="col-lg-8 fv-row">
+						<div class="table-responsive">
+							<table class="table table-row-bordered border rounded gy-5 gs-7" id="TableBodyProviders">
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Part Number Item-Vendor:</label>
+					<div class="col-lg-8 fv-row">
+						<input type="text" name="PartNumber" id="PartNumber" class="form-control form-control-lg form-control-solid" value="" readonly>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Job</label>
+					<div class="col-lg-8 fv-row">
+						<input type="text" name="Job" id="Job" class="form-control form-control-lg form-control-solid" value="" readonly>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Approval Reason:</label>
+					<div class="col-lg-8 fv-row fv-plugins-icon-container">
+						<div class="d-flex align-items-center mt-3">
+							<label class="form-check form-check-custom form-check-inline form-check-solid me-5">
+								<input class="form-check-input" name="Cost" id="Cost" type="checkbox" value="1" disabled>
+								<span class="fw-semibold ps-2 fs-6">
+									Cost
+								</span>
+							</label>
+							<label class="form-check form-check-custom form-check-inline form-check-solid me-5">
+								<input class="form-check-input" name="Quality" id="Quality" type="checkbox" value="2" disabled>
+								<span class="fw-semibold ps-2 fs-6">
+									Quality
+								</span>
+							</label>
+							<label class="form-check form-check-custom form-check-inline form-check-solid me-5">
+								<input class="form-check-input" name="Availability" id="Availability" type="checkbox" value="3" disabled>
+								<span class="fw-semibold ps-2 fs-6">
+									Availability
+								</span>
+							</label>
+							<label class="form-check form-check-custom form-check-inline form-check-solid me-5">
+								<input class="form-check-input" name="NewProject" id="NewProject" type="checkbox" value="4" disabled>
+								<span class="fw-semibold ps-2 fs-6">
+									New Project
+								</span>
+							</label>
+							<label class="form-check form-check-custom form-check-inline form-check-solid">
+								<input class="form-check-input" name="Others" id="Others" type="checkbox" value="5" disabled>
+								<span class="fw-semibold ps-2 fs-6">
+									Others
+								</span>
+							</label>
+						</div>
+						<div class="fv-plugins-message-container invalid-feedback"></div>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label fw-semibold fs-6">Quality Fails(last year)</label>
+					<div class="col-lg-8 fv-row">
+						<input type="text" name="QualiyFails" id="QualiyFails" class="form-control form-control-lg form-control-solid" value="" readonly>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">Comments to Approval Reason:</label>
+					<div class="col-lg-8 fv-row">
+						<textarea type="text" name="Reason" id="Reason" class="form-control form-control-lg form-control-solid" value="" readonly=""></textarea>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label  fw-semibold fs-6"></label>
+					<div class="col-lg-2 fv-row">
+						<div class="input-group input-group-solid mb-5">
+							<span class="input-group-text" id="basic-addon1">$</span>
+							<input type="text" name="StdCost" id="StdCost" class="form-control form-control-lg form-control-solid" aria-describedby="basic-addon1" readonly>
+						</div>
+					</div>
+					<div class="col-lg-2 fv-row">
+						<div class="input-group input-group-solid mb-5">
+							<span class="input-group-text" id="basic-addon1">$</span>
+							<input type="text" name="NewPrice" id="NewPrice" class="form-control form-control-lg form-control-solid" aria-describedby="basic-addon1" readonly>
+						</div>
+					</div>
+					<div class="col-lg-2 fv-row">
+						<input type="text" name="AnualCost" id="AnualCost" class="form-control form-control-lg form-control-solid" value="" readonly>
+					</div>
+					<div class="col-lg-2 fv-row">
+						<input type="text" name="Balance" id="Balance" class="form-control form-control-lg form-control-solid" value="" readonly>
+					</div>
+				</div>
+				<div class="row mb-6">
+					<label class="col-lg-4 col-form-label required fw-semibold fs-6">File:</label>
+					<div class="col-lg-8 fv-row">
+						<input type="text" name="TypeFile" id="TypeFile" class="form-control form-control-lg form-control-solid" value="" readonly>
+					</div>
+				</div>
+				<div class="row mb-0">
+					<label class="col-lg-4 col-form-label fw-semibold fs-6">See Documents</label>
+					<div class="col-lg-8 d-flex align-items-center">
+						<div class="form-check form-check-solid form-switch form-check-custom fv-row">
+							<input class="form-check-input w-45px h-30px" type="checkbox" id="Documents" onclick="if( $('#Documents').prop('checked')) {$('#carrusel').removeClass('d-none');document.getElementById('modal_informationBody').style.minHeight='2500px';}else{$('#carrusel').addClass('d-none');$('#modal_informationBody').removeAttr('style');}">
+							<label class="form-check-label" for="Documents"></label>
+						</div>
+					</div>
+
+				</div>
+				<div class="row mb-6">
+					<div id="carrusel" class="mb-6 d-none" style="position:relative; top:950px;right:0%"></div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="AssignamentEng" data-bs-keyboard="false" data-bs-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title">Engineer Assignment</h3>
+				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<span class="svg-icon svg-icon-1"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<p>
+					<select id="Engineer" name="Engineer" class="form-select form-select p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true" onchange="setEngineer(this.value,$(EnginnerReq).val())" data-dropdown-parent="#AssignamentEng">
+						<option></option>
+						@foreach (var item in Model.AnpListUsers)
+						{
+							<option value="@item.Value">@item.Text</option>
+						}
+					</select>
+					<input type="hidden" class="form-control form-control-solid w-250px ps-14" name="EnginnerReq" id="EnginnerReq" />
+				</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="EntregaMaterial" data-bs-keyboard="false" data-bs-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title">Entrega de Material ANP</h3>
+				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<span class="svg-icon svg-icon-1"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<p>
+					<label for="" class="form-label">Comentario Entrega</label>
+					<form id="formStep0">
+						<div class="fv-row mb-10">
+							<textarea class="form-control" data-kt-autosize="true" name="CommentCero" id="CommentCero"></textarea>
+						</div>
+						<input type="hidden" class="form-control form-control-solid w-250px ps-14" name="EntregaMaterialReq" id="EntregaMaterialReq" />
+					</form>
+				</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn p-3 fs-8 me-3 text-white" onclick="$('#PasoLateral').modal('toggle');$('#RequestReasingID').val('REQ-'+$('#EntregaMaterialReq').val());" type="button" style="background-color:#E87E04">
+					&nbsp;
+					<i class="fas fa-share text-white"></i>Re-Asign
+				</button>
+				<button type="button" class="btn btn-primary p-3 me-3 fs-8" id="ApprovalCero">
+					<span class="indicator-label">
+						<i class="fa fa-check"></i> Approval
+					</span>
+					<span class="indicator-progress">
+						Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+					</span>
+				</button>
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" tabindex="-1" id="PasoLateral" data-bs-keyboard="false" data-bs-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title">Reasing Request</h3>
+				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<span class="svg-icon svg-icon-1"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<p>
+					<form id="formLateral">
+						<div class="fv-row input-group mb-5">
+							<label class="fw-semibold fs-6 mb-2 col-lg-12">Request:</label>
+							<span class="input-group-text" id="basic-addon1">
+								<i class="fas fa-info"></i>
+							</span>
+							<input type="text" class="form-control" id="RequestReasingID" name="RequestReasingID" aria-describedby="basic-addon1" readonly>
+						</div>
+						<div class="fv-row mb-5">
+							<label class="required fw-semibold fs-6 mb-2">Assigned To:</label>
+							<select id="UserReasing" name="UserReasing" class="form-select form-select-sm" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true" data-dropdown-parent="#PasoLateral">
+								<option value=""></option>
+								@foreach (var item in Model.AnpListReasingUsers)
+								{
+									<option value="@item.Value">@item.Text</option>
+								}
+							</select>
+						</div>
+						<div class="fv-row mb-5">
+							<label class="required fw-semibold fs-6 mb-2">Comments:</label>
+							<textarea type="text" name="CommentLateral" id="CommentLateral" class="form-control form-control-lg form-control" value="" onkeyup="if(this.value != ''){document.getElementById('AssingUser').disabled = false;}else{document.getElementById('AssingUser').disabled = true;}"></textarea>
+						</div>
+					</form>
+				</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary p-3 me-3 fs-8" id="AssingUser" onclick="" disabled>
+					<span class="indicator-label">
+						<i class="fas fa-save"></i> Assing
+					</span>
+					<span class="indicator-progress">
+						Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+					</span>
+				</button>
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" id="modal_steps_anp">
+	<div class="modal-dialog  modal-fullscreen">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title"><i class="fas fa-folder fs-1"></i> Datos de Entrada -> <span id="step1-code"></span></h3>
+				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<span class="svg-icon svg-icon-2x"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<p>
+					<div class="row mb-6">
+						<label class="col-lg-3 col-form-label fw-semibold fs-6">Aplication:</label>
+						<div class="col-lg-9">
+							<div class="row">
+								<div class="col-lg-12 fv-row fv-plugins-icon-container">
+									<input type="text" name="Aplication" id="Aplication" class="form-control form-control-lg  mb-3 mb-lg-0">
+									<div class="fv-plugins-message-container invalid-feedback"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row mb-6">
+						<label class="col-lg-3 col-form-label fw-semibold fs-6">Internal Service</label>
+						<div class="col-lg-9 fv-row fv-plugins-icon-container">
+							<div class="d-flex align-items-center mt-3">
+								<label class="form-check form-check-custom form-check-inline form-check-solid me-5">
+									<input class="form-check-input" name="internalYes" id="internalYes" type="checkbox">
+									<span class="fw-semibold ps-2 fs-6">
+										Yes
+									</span>
+								</label>
+								<label class="form-check form-check-custom form-check-inline form-check-solid">
+									<input class="form-check-input" name="internalNo" id="internalNo" type="checkbox">
+									<span class="fw-semibold ps-2 fs-6">
+										No
+									</span>
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="row mb-6">
+						<label class="col-lg-3 col-form-label fw-semibold fs-6">General dimensional inspection:</label>
+						<div class="col-lg-9 fv-row fv-plugins-icon-container">
+							<div class="table-responsive">
+								<table class="table table-striped  border gs-4">
+									<thead class="border">
+										<tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+											<th class="">Caracteristica</th>
+											<th class="">Unidad</th>
+											<th class="">Min</th>
+											<th class="">Max</th>
+											<th class="">Medición</th>
+											<th class="">Conclusión</th>
+										</tr>
+									</thead>
+									<tbody id="BodyGeneralDimensional" class="border">
+									</tbody>
+								</table>
+@*								<table class="table table-striped  border gs-4 d-none" id="TablaAddDimensionalInspection">
+									<thead class="border">
+										<tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+											<th class="">Caracteristicas Adicionales</th>
+											<th class="">Unidad</th>
+											<th class="">Min</th>
+											<th class="">Max</th>
+											<th class="">Medición</th>
+											<th class="">Conclusión</th>
+											<th class=""></th>
+										</tr>
+									</thead>
+									<tbody id="BodyDimensionalInspectAdd" class="border">
+									</tbody>
+								</table>*@
+								<div id="TablaAddDimensionalInspection"></div>
+								<span id="new_datoEntrada_1"></span>
+								<table class="table table-bordered table-hover" id = "add_datoEntrada_1">
+                                    <tr>
+                                        <td width="26%">
+                                            <input type="text" class="form-control" name="caracteristica_1_ADD" id="caracteristica_1_ADD" value="" />
+                                        </td>
+                                        <td width="15%">
+											<select class="form-select " data-control="select2" data-placeholder="Select an option" name="unidad_1_ADD" id="unidad_1_ADD" onchange="unidad_primeraADD(this.value)" data-dropdown-parent="#modal_steps_anp">
+                                                <option value="0">-</option>
+													@foreach (var item in Model.AnpListUnits)
+													{
+													<option data-tipo="@item.Value" value="@item.Text">@item.Text</option>
+													}
+                                            </select>
+                                        </td>
+                                        <td width="10%"> <input type="text" class="form-control " readonly name="min_1_ADD" id="min_1_ADD" onkeypress="return filterFloat_2(event,this,'campo_1_ADD')"/> </td>
+                                        <td width="10%"> <input type="text" class="form-control " readonly name="max_1_ADD" id="max_1_ADD" onkeypress="return filterFloat_2(event,this,'campo_1_ADD')"/></td>
+                                        <td width="18%"> <input type="text" class="form-control " name="medicion_1_ADD" id="medicion_1_ADD" onkeypress="return filterFloat_2(event,this,'campo_1_ADD')" onkeyup="medicion_conclusion_ADD(1)"/></td>
+                                        <td width="30%">
+                                            <select class="form-control select2 " name="conclusion_1_ADD" id="conclusion_1_ADD" disabled>
+                                                <option value="-">-</option>
+                                                <option value="Dentro">Dentro</option>
+                                                <option value="Fuera">Fuera</option>
+                                            </select>
+                                        </td>
+                                        <td width="4%" align="center"> <a class="btn btn-icon-only blue" onclick="ajaxReg_1()"><i class="fa fa-plus text-success"></i></a> <input type="hidden" class="form-control" name="campo_1_ADD" id="campo_1_ADD"/></td>
+                                    </tr>
+                                </table>
+								<button class="p-2 fs-8 btn btn-success mb-3 me-3" onclick="new_Caracteristica(1)">
+									<i class="fas fa-plus"></i> New Specification
+								</button>
+								<span id="WarrantyStep_1"></span>
+							</div>
+						</div>
+						
+					</div>
+					<div class="row mb-6">
+						<label class="col-lg-3 col-form-label fw-semibold fs-6">General attributes inspection:</label>
+						<div class="col-lg-9 fv-row fv-plugins-icon-container">
+							<div class="table-responsive">
+								<form id="FormGralAttr" href="#">
+								<table class="table table-striped  border gs-4">
+									<thead class="border">
+										<tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+											<th class="">Caracteristica</th>
+											<th class="">Resultado</th>
+											<th class="">Conclusión</th>
+										</tr>
+									</thead>
+									<tbody id="BodyDimensinalInspect" class="border">
+									</tbody>
+								</table>
+								<table class="table table-striped  border gs-4 d-none" id="TablaAdditionalDimensional">
+									<thead class="border">
+										<tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+											<th class="">Caracteristicas Adicionales</th>
+											<th class="">Resultado</th>
+											<th class="">Conclusión</th>
+										</tr>
+									</thead>
+									<tbody id="BodyDimensinalInspectAdd" class="border">
+									</tbody>
+								</table>
+								</form>
+								<span id="new_datoEntrada_2"></span>
+								<table class="table table-striped  border gs-4" id="add_datoEntrada_2" style="display:none">
+									<tr>
+										<td width="33%">
+											<input type="text" class="form-control" name="caracteristica_2_ADD" id="caracteristica_2_ADD" value="" />
+										</td>
+										<td width="33%">
+											<input type="text" class="form-control" name="resultado_2_ADD" id="resultado_2_ADD" />
+										</td>
+										<td width="33%">
+											<select class="form-select" data-control="select2" name="conclusion_2_ADD" id="conclusion_2_ADD">
+												<option value="N/A">N/A</option>
+												<option value="Dentro">Dentro</option>
+												<option value="Fuera">Fuera</option>
+											</select>
+										</td>
+										<td width="4%" align="center"> <a class="btn btn-icon-only blue" onclick="ajaxReg_2()"><i class="fa fa-plus text-success"></i></a> <input type="hidden" class="form-control" name="campo_2_ADD" id="campo_2_ADD" /></td>
+									</tr>
+								</table>
+								<button class="p-2 fs-8 btn btn-success mb-3 me-3" onclick="new_Caracteristica(2)">
+									<i class="fas fa-plus"></i> New Inpsection
+								</button>
+								<span id="WarrantyStep_2"></span>
+							</div>
+						</div>
+					</div>
+					<div class="row mb-6">
+						<label class="col-lg-3 col-form-label fw-semibold fs-6">Dimensional Specifications:</label>
+						<div class="col-lg-9 fv-row fv-plugins-icon-container">
+							<div class="table-responsive">
+								<table class="table table-striped  border gs-4">
+									<thead class="border">
+										<tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+											<th class="">Caracteristica</th>
+											<th class="">Unidad</th>
+											<th class="">Min</th>
+											<th class="">Max</th>
+										</tr>
+									</thead>
+									<tbody id="BodyDimensionalSpecifications" class="border">
+									</tbody>
+								</table>
+								<table class="table table-striped  border gs-4 d-none" id="TablaAddDimensionalSpecifications">
+									<thead class="border">
+										<tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+											<th class="">Caracteristicas Adicionales</th>
+											<th class="">Unidad</th>
+											<th class="">Min</th>
+											<th class="">Max</th>
+											<th class=""></th>
+										</tr>
+									</thead>
+									<tbody id="BodyDimensionalSpecificationsAdd" class="border">
+									</tbody>
+								</table>
+								<span id="new_datoEntrada_3"></span>
+								<table class="table table-bordered table-hover" id = "add_datoEntrada_3">
+                                    <tr>
+                                        <td width="20%">
+                                            <input type="text" class="form-control" name="caracteristica_3_ADD" id="caracteristica_3_ADD" value="" />
+                                        </td>
+                                        <td width="15%">
+											<select class="form-select" data-control="select2" data-placeholder="Select an option" name="unidad_3_ADD" id="unidad_3_ADD" onchange="unidad_segundaADD(this.value)" data-dropdown-parent="#modal_steps_anp">
+                                                <option value="0">-</option>
+													@foreach (var item in Model.AnpListUnits)
+													{
+													<option data-tipo="@item.Value" value="@item.Text">@item.Text</option>
+													}
+                                            </select>
+                                        </td>
+                                        <td width="10%"> <input type="text" class="form-control" readonly name="min_3_ADD" id="min_3_ADD" onkeypress="return filterFloat_2(event,this,'campo_2_ADD')"/> </td>
+                                        <td width="10%"> <input type="text" class="form-control" readonly name="max_3_ADD" id="max_3_ADD" onkeypress="return filterFloat_2(event,this,'campo_2_ADD')"/></td>
+                                        <td width="4%" align="center"> <a class="btn btn-icon-only blue" onclick="ajaxReg_3()"><i class="fa fa-plus text-success"></i></a> <input type="hidden" class="form-control" name="campo_3_ADD" id="campo_3_ADD"/></td>
+                                    </tr>
+                                </table>
+								<button class="p-2 fs-8 btn btn-success mb-3 me-3" onclick="new_Caracteristica(3)">
+									<i class="fas fa-plus"></i> New Specification
+								</button>
+								<span id="WarrantyStep_3"></span>
+							</div>
+						</div>
+						
+					</div>
+					<div class="row mb-6">
+						<label class="col-lg-3 col-form-label fw-semibold fs-6">Comments:</label>
+						<div class="col-lg-9">
+							<div class="row">
+								<div class="col-lg-12 fv-row fv-plugins-icon-container">
+									<textarea class="form-control" data-kt-autosize="true" name="ComentariosStep1" id="ComentariosStep1"></textarea>
+									<div class="fv-plugins-message-container invalid-feedback"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row mb-6">
+						<label class="col-lg-3 col-form-label fw-semibold fs-6">History:</label>
+						<div class="col-lg-9 fv-row fv-plugins-icon-container">
+							<div class="table-responsive" id="ModalHistoryStep1"></div>
+						</div>
+						
+					</div>
+					<div class="row mb-6">
+						<label class="col-lg-3 col-form-label fw-semibold fs-6">Files:</label>
+						<div class="col-lg-3 fv-row fv-plugins-icon-container">
+							<div class="bg-info text-white mb-6"> Upload Files only in JPG, PNG, XLSX, DOCX or PDF format</div>
+
+							<form method="post" id="itForm" enctype="multipart/form-data" onsubmit="return false">
+                                <div class="col-lg-10 p-0">
+                                    <!--begin::Dropzone-->
+                                    <div class="dropzone dropzone-queue mb-2" id="kt_dropzonejs_example_2">
+                                        <div class="dropzone-panel mb-lg-0 mb-2">
+                                            <button type="button" class="dropzone-select btn btn-sm btn-primary me-2" id="attachFile" >Add files</button>
+                                            <button type="button" class="dropzone-upload btn btn-sm btn-primary me-2" onclick="$('#itForm').submit();" id="archivos" >Upload All</button>
+                                            <button type="button" class="dropzone-remove-all btn btn-sm btn-danger" >Remove All</button>
+                                        </div>
+                                        <div class="dropzone-items wm-200px">
+                                            <div class="dropzone-item" style="display:none">
+                                                <div class="dropzone-file">
+                                                    <div class="dropzone-filename" title="some_image_file_name.jpg">
+                                                        <span data-dz-name>some_image_file_name.jpg</span>
+                                                        <strong>(<span data-dz-size>340kb</span>)</strong>
+                                                    </div>
+                                                    <div class="dropzone-success text-success" data-dz-successmessage></div>
+                                                    <div class="dropzone-error" data-dz-errormessage></div>
+                                                </div>
+                                                <div class="dropzone-progress">
+                                                    <div class="progress">
+                                                        <div class="progress-bar bg-primary"
+                                                                role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-dz-uploadprogress>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="dropzone-toolbar">
+                                                    <span class="dropzone-start"><i class="bi bi-play-fill fs-3"></i></span>
+                                                    <span class="dropzone-cancel" data-dz-remove style="display: none;"><i class="bi bi-x fs-3"></i></span>
+                                                    <span class="dropzone-delete" data-dz-remove><i class="bi bi-x fs-1"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end::Dropzone-->
+                                </div>
+                            </form>
+						</div>
+						<label class="col-lg-3 col-form-label fw-semibold fs-6 p-0 text-center">Entrada de Datos: <br/>
+						<div id="fileStep1" class="p-2"></div>	
+						</label>
+						<label class="col-lg-3 col-form-label fw-semibold fs-6 p-0 text-center"> Mediciones y Pruebas: <br/>
+						<div id="fileDocStep1" class="p-2"></div>	
+						</label>
+					</div>
+					<div class="row mb-6">
+						<div class="separator border-1 my-10"></div>
+						<div class="d-flex flex-column-fluid  flex-center">
+						<div class="py-2">
+							<button class="btn btn-success p-3 fs-7 me-3" id="guardar" type="button" onclick="Guarda_DatosEntrada(1,0)" disabled>
+								<span class="indicator-label"><i class="fas fa-arrow-right"></i> Next</span>
+								<span class="indicator-progress">
+									Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
+							</button>
+								<button class="btn btn-primary p-3 fs-7 me-3" id="guardar_temp" type="button" onclick="Guarda_DatosEntrada(0,0)">
+								<span class="indicator-label"><i class="fas fa-save"></i> Save</span>
+								<span class="indicator-progress">
+									Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
+							</button>
+							<button class="btn bg-warning p-3 fs-7 me-3 text-white" id="FormAC" type="button">
+								<span class="indicator-label "><i class="fas fa-share text-white"></i> Re-assign</span>
+								<span class="indicator-progress">
+									Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
+							</button>
+							<button class="btn btn-danger p-3 fs-7 me-3" id="FormAC" type="button">
+								<span class="indicator-label"><i class="fas fa-times"></i> Reject</span>
+								<span class="indicator-progress">
+									Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
+							</button>
+						</div>
+						</div>
+					</div>
+				</p>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+@*loading...*@
+<script>
+	var button = document.querySelector("#BlockAnpControl");
+	var target = document.querySelector("#BlockAnpControl");
+
+	var BlockAnpApp = new KTBlockUI(target,
+		{
+			message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+		});
+</script>
+@*buttons.*@
+
+@*------------------------*@
+<script>
+	// Element to indecate
+	var button = document.querySelector("#ApprovalCero");
+
+	// Handle button click event
+	button.addEventListener("click", function () {
+		// Activate indicator
+		button.setAttribute("data-kt-indicator", "on");
+
+		// Disable indicator after 3 seconds
+		setTimeout(function () {
+			button.removeAttribute("data-kt-indicator");
+		}, 3000);
+	});
+</script>
+@*Datatable library*@
+<script>
+	"use strict";
+
+	// Class definition
+	var KTDatatablesButtons = function () {
+		// Shared variables
+		var table;
+		var datatable;
+
+		// Private functions
+		var initDatatable = function () {
+			// Set date data order
+			const tableRows = table.querySelectorAll('tbody tr');
+
+			tableRows.forEach(row => {
+				const dateRow = row.querySelectorAll('td');
+				const realDate = moment(dateRow[3].innerHTML, "DD MMM YYYY, LT").format(); // select date from 4th column in table
+				dateRow[3].setAttribute('data-order', realDate);
+			});
+
+			// Init datatable --- more info on datatables: https://datatables.net/manual/
+			datatable = $(table).DataTable({
+				//"bAutoWidth": false,
+				"info": false,
+				'order': [],
+				'pageLength': 100,
+				//"scrollY": "500px",
+				"scrollCollapse": true,
+				"sScrollX": "100%",
+
+			});
+		}
+
+		//Hook export buttons
+		var exportButtons = () => {
+			const documentTitle = 'Corrective_Action_Report';
+			var buttons = new $.fn.dataTable.Buttons(table, {
+				buttons: [
+					{
+						extend: 'excelHtml5',
+						title: documentTitle
+					},
+					{
+						extend: 'csvHtml5',
+						title: documentTitle
+
+					},
+					{
+						extend: 'pdfHtml5',
+						title: documentTitle
+					}
+				]
+			}).container().appendTo($('#table_CorrectiveA_export'));
+
+			// Hook dropdown menu click event to datatable export buttons
+			const exportButtons = document.querySelectorAll('#table_CorrectiveA_export_menu [data-kt-export]');
+			exportButtons.forEach(exportButton => {
+				exportButton.addEventListener('click', e => {
+					e.preventDefault();
+
+					// Get clicked export value
+					const exportValue = e.target.getAttribute('data-kt-export');
+					const target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+
+					// Trigger click event on hidden datatable export buttons
+					target.click();
+				});
+			});
+		}
+
+		// Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
+		var handleSearchDatatable = () => {
+			const filterSearch = document.querySelector('[data-kt-filter="search"]');
+			filterSearch.addEventListener('keyup', function (e) {
+				datatable.search(e.target.value).draw();
+			});
+		}
+
+		// Public methods
+		return {
+			init: function () {
+				table = document.querySelector('#table_DocsEdition');
+
+				if (!table) {
+					return;
+				}
+
+				initDatatable();
+				exportButtons();
+				handleSearchDatatable();
+			}
+		};
+	}();
+
+	// On document ready
+	KTUtil.onDOMContentLoaded(function () {
+		KTDatatablesButtons.init();
+	});
+</script>
+
+@*Button Info*@
+<script>
+	function info(req) {
+		$('#carrusel').html('');
+		$('#carrusel').addClass('d-none');
+		$('#Documents').attr('checked', false);
+		$('#Documents').prop("checked", false);
+		$('#modal_informationBody').removeAttr('style');
+		$('#TableBodyProviders').html('');
+		$('#title_info').html('Information from Request #' + req);
+		$('#modal_information').modal('show');
+
+		$('#Oem').attr('checked', false);
+		$('#Critical').attr('checked', false);
+		$('#Cost').attr('checked', false);
+		$('#Quality').attr('checked', false);
+		$('#Availability').attr('checked', false);
+		$('#NewProject').attr('checked', false);
+		$('#Others').attr('checked', false);
+
+		$.ajax({
+			url: "@Url.Action("ReqInformation","TMAnpControl")",
+			type: "post",
+			data: {
+				req: req
+			},
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("XSRF-TOKEN",
+					$('input:hidden[name="__RequestVerificationToken"]').val());
+			},
+		})
+			.done(function (result) {
+				if (result != null) {
+					if (result == 'Error') {
+						SystemServerError()
+					}
+					else if (result == 'noSession') {
+						swalExpired()
+					}
+					else if (result == 'Sorry') {
+						swalNoAuthorized()
+					}
+					else if (result == 'NoPage') {
+						swalNoAuthorized()
+					}
+					else {
+						var obj = JSON.parse(result);
+
+
+						$('#Requested').val(obj.InfoGeneral.Comprador);
+						$('#Vendor').val(obj.InfoGeneral.NombreProveedor);
+						$('#Item').val(obj.InfoGeneral.Producto);
+						$('#MiddleCode').val(obj.InfoGeneral.CodigoMedio);
+						$('#Engineering').val(obj.InfoGeneral.Ingeniero);
+						$('#QualityControl').val(obj.InfoGeneral.Calidad);
+
+						if (obj.InfoGeneral.OEM > 0) {
+							$('#Oem').attr('checked', true)
+						}
+						if (obj.InfoGeneral.ListaCritica > 0) {
+							$('#Critical').attr('checked', true)
+						}
+
+						$('#PartNumber').val(obj.InfoGeneral.Codigo);
+						$('#Job').val(obj.InfoGeneral.NumeroJob);
+
+						if (obj.InfoGeneral.Razon == 'costo') {
+							$('#Cost').attr('checked', true)
+						} else if (obj.InfoGeneral.Razon == 'quality') {
+							$('#Quality').attr('checked', true)
+						} else if (obj.InfoGeneral.Razon == 'availability') {
+							$('#Availability').attr('checked', true)
+						} else if (obj.InfoGeneral.Razon == 'project') {
+							$('#NewProject').attr('checked', true)
+						} else if (obj.InfoGeneral.Razon == 'otro') {
+							$('#Others').attr('checked', true)
+						}
+						$('#QualiyFails').val(obj.InfoGeneral.FallasCalidad);
+						$('#Reason').html(obj.InfoGeneral.Comentarios);
+						$('#StdCost').val(obj.InfoGeneral.CostoStandar);
+						$('#NewPrice').val(obj.InfoGeneral.NuevoPrecio);
+						$('#AnualCost').val(obj.InfoGeneral.ConsumoAnual);
+						$('#Balance').val(obj.InfoGeneral.Balance);
+						$('#TypeFile').val(obj.InfoGeneral.TipoArchivo);
+
+						var tablaProviders = '<thead>' +
+							'<tr class="fw-bold fs-6 text-gray-800">' +
+							'<th class="table-sort-desc"># </th>' +
+							'<th class="table-sort-asc"> Vendor </th>' +
+							'<th> Code </th>' +
+							'<th> STD-Cost </th>' +
+							'<th> Approved </th>' +
+							'</tr>' +
+							'</thead><tbody>';
+
+						for (let i = 0; i < obj.InfoTable.length; i++) {
+							var background = 'bg-opacity-75 bg-success';
+							var icono = 'fas fa-check-circle text-dark';
+							if (obj.InfoTable[i].Aprovado == 1) {
+								background = 'bg-opacity-75 bg-danger';
+								icono = 'fas fa-times-circle text-dark';
+							} else {
+
+							}
+							tablaProviders = tablaProviders + '<tr class="' + background + '">' +
+								'<td align="center" scope="row">' + (i + 1) + '</td>' +
+								'<td align="center">' + obj.InfoTable[i].NombreProveedor + '</td>' +
+								'<td align="center">' + obj.InfoTable[i].Codigo + '</td>' +
+								'<td align="center">$' + obj.InfoTable[i].CostoSTD + '</td>' +
+								'<td align="center"><i class="' + icono + '"></i></td>' +
+								'</tr>'
+						}
+						tablaProviders = tablaProviders + '</tbody>'
+						$('#TableBodyProviders').html(tablaProviders);
+
+						if (obj.DocumentosList.length > 0) {
+
+							$('#Documents').prop('disabled', false);
+
+							var carrusel = `<div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel"><div class="carousel-indicators">`;
+							var buttons = ``;
+							var items = ``;
+
+							for (let i = 0; i < obj.DocumentosList.length; i++) {
+								//console.log(obj.DocumentosList[i].FileName);
+								buttons = buttons + `<button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="` + i + `" class="active" aria-current="true" aria-label="Slide 1"></button>`
+							}
+
+							carrusel = carrusel + buttons + `<div class="carousel-inner">`;
+
+							for (let i = 0; i < obj.DocumentosList.length; i++) {
+								//console.log(obj.DocumentosList[i].FileName);
+								if (i == 0) {
+									carrusel = carrusel + `<div class="carousel-item active"><embed id="idRutaDoc" width="100%" height="900" type="application/pdf" src="https://mxesc1vapp001/fp_data_center/Planta${obj.DocumentosList[i].PlantaId}/anp-center/${obj.DocumentosList[i].Requisicion}/${obj.DocumentosList[i].Articulo}/${obj.DocumentosList[i].Proveedor}/${obj.DocumentosList[i].FileName}"></div>`
+								} else {
+									carrusel = carrusel + `<div class="carousel-item"><embed id="idRutaDoc" width="100%" height="900" type="application/pdf" src="https://mxesc1vapp001/fp_data_center/Planta${obj.DocumentosList[i].PlantaId}/anp-center/${obj.DocumentosList[i].Requisicion}/${obj.DocumentosList[i].Articulo}/${obj.DocumentosList[i].Proveedor}/${obj.DocumentosList[i].FileName}"></div>`
+								}
+							}
+
+							carrusel = carrusel + `</div>` +
+								`<button class="ccarousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">` +
+								`<span class="carousel-control-prev-icon text-inverse-dark bg-dark" aria-hidden="true" style="position:absolute;left:4%;top:0%"></span>` +
+								`<span class="visually-hidden">Previous</span>` +
+								`</button>` +
+								`<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">` +
+								`<span class="carousel-control-next-icon text-inverse-dark bg-dark" aria-hidden="true" style="position:absolute;left:20%"></span>` +
+								`<span class="visually-hidden">Next</span>` +
+								`</button>` +
+								`</div>`
+
+							$('#carrusel').html(carrusel);
+						} else {
+							$('#Documents').prop('disabled', true);
+						}
+
+					}
+				}
+				else {
+					SystemServerError()
+				}
+			})
+			.fail(function (xhr, status, error) {
+				swalErrorServer()
+			})
+	}
+</script>
+
+@*Datepickers*@
+<script>
+	//$("#ApertureDate").flatpickr();
+	$("#IdDeadLine").flatpickr({
+		dateFormat: "m-d-Y",
+		defaultDate: "today"
+	});
+
+	//$("#ApertureDate").flatpickr();
+	$("#IdPromiseDateReviewUpdate").flatpickr({
+		dateFormat: "m-d-Y",
+		defaultDate: "today"
+	});
+</script>
+
+@*Show Tablas*@
+@*<script>*@
+<script>
+	function new_Caracteristica(opcion) {
+		$("#add_datoEntrada_" + opcion).show();
+		$("select").select2();
+	}
+</script>
+<script>
+	var contadorNivel1 = -1;
+	var contadorNivel2 = -1;
+	var contadorNivel3 = -1;
+	var contadorAddNivel1 = -1;
+	var contadorAddNivel2 = -1;
+	var contadorAddNivel3 = -1;
+	var contadorGarantiasNivel1 = -1;
+	var contadorGarantiasNivel2 = -1;
+	var contadorGarantiasNivel3 = -1;
+
+</script>
+<script>
+	var totalRows_1 = 1;
+	var totalRows_2 = 1;
+	var totalRows_3 = 1;
+	var totalRows_4 = 1;
+	var totalRows_5 = 1;
+	var contadorPartes_1 = 1;
+	var contadorPartes_2 = 1;
+	var contadorPartes_3 = 1;
+	var contadorPartes_4 = 1;
+	var contadorPartes_5 = 1;
+
+	function ajaxReg_1() {
+	val_caracteristica = $("#caracteristica_1_ADD").val();
+	val_unidad         = $("#unidad_1_ADD").val();
+	val_min            = $("#min_1_ADD").val();
+	val_max            = $("#max_1_ADD").val();
+	val_medicion       = $("#medicion_1_ADD").val();
+	val_conclusion     = $("#conclusion_1_ADD").val();
+	if (val_caracteristica == "" || val_unidad == "" || val_min == "" || val_max == "" || val_medicion == "" || val_conclusion == "-") {
+		toastr['info']('This information is Invalid ', 'Alert');
+	} else {
+			contadorAddNivel1 = contadorAddNivel1 + 1;
+
+			var caracteristica_contenido = '<div class="col-lg-12"><table class="table table-bordered table-hover" id = "caracteristica_1_' + contadorPartes_1 + '"><tr><td width="15%"><input type="text" class="form-control formik" readonly name="caracteristica_1_ADD' + contadorPartes_1 + '" id="caracteristica_1_ADD' + contadorPartes_1 + '" data-bit="1" value="' + val_caracteristica + '"/></td><td width="15%"><input type="text" class="form-control formik" readonly name="unidad_1_ADD' + contadorPartes_1 + '" id="unidad_1_ADD' + contadorPartes_1 + '" value="' + val_unidad + '"/></td><td width="11%"><input type="text" class="form-control formik" readonly name="min_1_ADD' + contadorPartes_1 + '" id="min_1_ADD' + contadorPartes_1 + '" value="' + val_min + '"/></td><td width="11%"><input type="text" class="form-control formik" readonly name="max_1_ADD' + contadorPartes_1 + '" id="max_1_ADD' + contadorPartes_1 + '" value="' + val_max + '"/></td><td width="11%"><input type="text" class="form-control formik" readonly name="medicion_1_ADD' + contadorPartes_1 + '" id="medicion_1_ADD' + contadorPartes_1 + '" value="' + val_medicion + '"/></td><td width="11%"><div class="input-group"><input type="text" class="form-control formik" readonly name="conclusion_1_ADD' + contadorPartes_1 + '" id="conclusion_1_ADD' + contadorPartes_1 + '" value="' + val_conclusion + '"/><span class="input-group-addon" ></span ><span class="input-group-text" id="basic-addon2" onclick="EliminaCaracteristica(1,' + contadorPartes_1 + ');"><i class="fas fa-times text-danger" onclick="EliminaCaracteristica(1,' + contadorPartes_1 + ');"></i></span></div></td></tr></table>'
+		if (document.getElementById('new_datoEntrada_1').innerHTML != '') {
+			document.getElementById('new_datoEntrada_1').innerHTML = document.getElementById('new_datoEntrada_1').innerHTML + caracteristica_contenido;
+			document.getElementById('HiCantidad_1').value = contadorPartes_1;
+		} else {
+			document.getElementById('new_datoEntrada_1').innerHTML = '<input type="hidden" name="HiCantidad_1" id="HiCantidad_1" value="1"/>' + caracteristica_contenido;
+		}
+		totalRows_1++;
+		contadorPartes_1++;
+		$("#caracteristica_1_ADD").val('');
+		$("#medicion_1_ADD").val('');
+		$("#caracteristica_1_ADD").focus();
+		$('#unidad_1_ADD').val('0').trigger('change.select2');
+		$('#conclusion_1_ADD').val('-').trigger('change.select2');
+	}
+}
+
+
+	function ajaxReg_2() {
+		val_caracteristica = $("#caracteristica_2_ADD").val();
+		val_resultado = $("#resultado_2_ADD").val();
+		val_conclusion = $("#conclusion_2_ADD").val();
+		if (val_caracteristica == "" || val_resultado == "" || val_conclusion == "N/A" || val_conclusion == "") {
+			toastr['info']('This information is Invalid ', 'Alert');
+		} else {
+			contadorAddNivel2 = contadorAddNivel2 + 1;
+			//console.log(contadorAddNivel2);
+			var caracteristica_contenido = '<div class="col-lg-12"><table class="table table-bordered table-hover" id = "caracteristica_2_' + contadorPartes_2 + '"><tr><td width="33%"><input type="text" class="form-control formik" readonly name="caracteristica_2_ADD' + contadorPartes_2 + '" id="caracteristica_2_ADD' + contadorPartes_2 + '" value="' + val_caracteristica + '"/></td><td width="33%"><input type="text" class="form-control formik" readonly name="resultado_2_ADD' + contadorPartes_2 + '" id="resultado_2_ADD' + contadorPartes_2 + '" value="' + val_resultado + '"/></td><td width="33%"><div class="input-group"><input type="text" class="form-control formik" readonly name="conclusion_2_ADD' + contadorPartes_2 + '" id="conclusion_2_ADD' + contadorPartes_2 + '" value="' + val_conclusion + '"/><span class="input-group-addon" ></span ><span class="input-group-text" id="basic-addon2" onclick="EliminaCaracteristica(2,' + contadorPartes_2 + ')"><i class="fas fa-times text-danger" onclick="EliminaCaracteristica(2,' + contadorPartes_2 + ');"></i></span></div></td></tr></table></div>'
+			if (document.getElementById('new_datoEntrada_2').innerHTML != '') {
+				document.getElementById('new_datoEntrada_2').innerHTML = document.getElementById('new_datoEntrada_2').innerHTML + caracteristica_contenido;
+				document.getElementById('HiCantidad_2').value = contadorPartes_2;
+			} else {
+				document.getElementById('new_datoEntrada_2').innerHTML = '<input type="hidden" name="HiCantidad_2" id="HiCantidad_2" value="1"/>' + caracteristica_contenido;
+			}
+			totalRows_2++;
+			contadorPartes_2++;
+			$("#caracteristica_2_ADD").val('');
+			$("#resultado_2_ADD").val('');
+			$("#caracteristica_2_ADD").focus();
+			$('#conclusion_2_ADD').val('N/A').trigger('change.select2');
+		}
+	}
+
+	function ajaxReg_3() {
+		val_caracteristica = $("#caracteristica_3_ADD").val();
+		val_unidad         = $("#unidad_3_ADD").val();
+		val_min            = $("#min_3_ADD").val();
+		val_max            = $("#max_3_ADD").val();
+		if (val_caracteristica == "" || val_unidad =="" || val_min == "" || val_max == "") {
+			toastr['info']('This information is Invalid ', 'Alert');
+		} else {
+			contadorAddNivel3 = contadorAddNivel3 + 1;
+			var caracteristica_contenido = '<div class="col-lg-12"><table class="table table-bordered table-hover" id = "caracteristica_3_' + contadorPartes_3 +'" > <tr> <td width="25%" > <input type="text" class="form-control formik" readonly name = "caracteristica_3_ADD'+ contadorPartes_3 +'" id = "caracteristica_3_ADD' + contadorPartes_3 +'" value = "'+ val_caracteristica +'" /></td><td width = "25%"><input type="text" class="form-control formik" readonly name = "unidad_3_ADD' + contadorPartes_3 +'" id = "unidad_3_ADD' + contadorPartes_3 +'" value = "'+val_unidad+'" /></td><td width = "25%"><input type="text" class="form-control formik" readonly name = "min_3_ADD' + contadorPartes_3 +'" id = "min_3_ADD' + contadorPartes_3 +'" value = "'+val_min+'" /> </td><td width = "25%"><div class="input-group"> <input type="text" class="form-control formik" readonly name = "max_3_ADD' + contadorPartes_3 +'" id = "max_3_ADD' + contadorPartes_3 +'" value = "'+ val_max +'" /> <span class="input-group-addon"></span><span class="input-group-text" id="basic-addon2" onclick="EliminaCaracteristica(3,' + contadorPartes_3 + ')"><i class="fas fa-times text-danger" onclick = "EliminaCaracteristica(3,' + contadorPartes_3 + ');"></i></span></div></td></tr></table></div>'
+			if (document.getElementById('new_datoEntrada_3').innerHTML != '') {
+				document.getElementById('new_datoEntrada_3').innerHTML = document.getElementById('new_datoEntrada_3').innerHTML + caracteristica_contenido;
+				document.getElementById('HiCantidad_3').value = contadorPartes_3;
+			} else {
+				document.getElementById('new_datoEntrada_3').innerHTML = '<input type="hidden" name="HiCantidad_3" id="HiCantidad_3" value="1"/>' + caracteristica_contenido;
+			}
+			totalRows_3++;
+			contadorPartes_3++;
+			$("#caracteristica_3_ADD").val('');
+			$("#caracteristica_3_ADD").focus();
+			$('#unidad_3_ADD').val('0').trigger('change.select2');
+		}
+	}
+</script>
+@*--EliminarCaracteristicas--*@
+<script>
+	function EliminaCaracteristica(campo, id) {
+		//console.log(campo);
+		//console.log(id);
+		var input = ""
+		if (campo == 1) {
+			input = "caracteristica_1_"
+			//contadorAddNivel1 = contadorAddNivel1 - 1;
+		} else if (campo == 2) {
+			input = "caracteristica_2_"
+			//contadorAddNivel2 = contadorAddNivel2 - 1;
+		} else if (campo == 3) {
+			//contadorAddNivel3 = contadorAddNivel3 - 1;
+			input = "caracteristica_3_"
+		} else if (campo == 4) {
+			input = "caracteristica_4_"
+		} else {
+			input = "pruebas_5_"
+		}
+		$("#" + input + id).remove();
+	}
+</script>
+@*--Remover readonly--*@
+<script>
+function remove_readonlyCaracteristicaStep1(contador, nivel){
+	switch (nivel) {
+		case 1:
+			$("#unidad_1_ADD" + contador).prop("disabled", false);
+			$("#min_1_ADD" + contador).removeAttr("readonly");
+			$("#max_1_ADD" + contador).removeAttr("readonly");
+			$("#medicion_1_ADD" + contador).removeAttr("readonly");
+			$("#edit_1_ADD" + contador).hide();
+			$("#save_1_ADD" + contador).show();
+			break;
+
+		case 2:
+			$("#resultado_2_" + contador).removeAttr("readonly");
+			$("#conclusion_2_" + contador).prop("disabled", false);
+			$("#edit_2_" + contador).hide();
+			$("#save_2_" + contador).show();
+			break;
+
+		case 3:
+			$("#unidad_3_ADD" + contador).prop("disabled", false);
+			$("#min_3_ADD" + contador).removeAttr("readonly");
+			$("#max_3_ADD" + contador).removeAttr("readonly");
+			$("#edit_3_ADD" + contador).hide();
+			$("#save_3_ADD" + contador).show();
+			break;
+
+	}
+}
+</script>
+@*--Actualizar Caracteristica Adiccional--*@
+<script>
+	function update_MedicionesStep1(contador, id, nivel) {
+	switch (nivel) {
+		case 1:
+			$("#unidad_1_ADD" + contador).prop("disabled", true);
+			$("#min_1_ADD" + contador).attr("readonly", "readonly");
+			$("#max_1_ADD" + contador).attr("readonly", "readonly");
+			$("#medicion_1_ADD" + contador).attr("readonly", "readonly");
+			$("#edit_1_ADD" + contador).show();
+			$("#save_1_ADD" + contador).hide();
+			unidad     = $("#unidad_1_ADD" + contador).val();
+			minimo     = $("#min_1_ADD" + contador).val();
+			maximo     = $("#max_1_ADD" + contador).val();
+			medicion   = $("#medicion_1_ADD" + contador).val();
+			conclusion = $("#conclusion_1_ADD" + contador).val();
+
+			$.ajax({
+					url: "@Url.Action("UpdateDimensionalInspection","TMAnpControl")",
+					data: { id: id, nivel: nivel, unidad: unidad, minimo: minimo, maximo: maximo, medicion: medicion, conclusion: conclusion },
+					type: "POST",
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader("XSRF-TOKEN",
+							$('input:hidden[name="__RequestVerificationToken"]').val());
+					},
+				}).done(function (result) {
+					if (result != null) {
+						if (result == 'Error') {
+							SystemServerError()
+						}
+						if (result == 'noSession') {
+							swalExpired()
+						}
+						else if (result == 'Sorry') {
+							swalNoAuthorized()
+						}
+						else if (result == 'NoPage') {
+							swalNoAuthorized()
+						}
+						else if (result == 'Success') {
+							Swal.fire({
+								text: "The Operation has been successfully!",
+								icon: "success",
+								buttonsStyling: false,
+								allowEscapeKey: false,
+								allowOutsideClick: false,
+								confirmButtonText: "Ok, got it!",
+								customClass: {
+									confirmButton: "btn btn-primary"
+								}
+							}).then((result) => {
+								if (result.isConfirmed) {
+								}
+							});
+						}
+					}
+					else {
+						SystemServerError()
+					}
+
+				}).fail(function (error) {
+					swalErrorServer()
+				})
+
+			break;
+		case 2:
+			$("#resultado_2_" + contador).attr("readonly", "readonly");
+			$("#conclusion_2_" + contador).prop("disabled", true);
+			$("#edit_2_" + contador).show();
+			$("#save_2_" + contador).hide();
+			resultado = $("#resultado_2_" + contador).val();
+			conclusion = $("#conclusion_2_" + contador).val();
+
+				$.ajax({
+					url: "@Url.Action("UpdateGeneralAttr","TMAnpControl")",
+					data: { resultado: resultado, conclusion: conclusion, id: id },
+					type: "POST",
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader("XSRF-TOKEN",
+							$('input:hidden[name="__RequestVerificationToken"]').val());
+					},
+				}).done(function (result) {
+					if (result != null) {
+						if (result == 'Error') {
+							SystemServerError()
+						}
+						if (result == 'noSession') {
+							swalExpired()
+						}
+						else if (result == 'Sorry') {
+							swalNoAuthorized()
+						}
+						else if (result == 'NoPage') {
+							swalNoAuthorized()
+						}
+						else if (result == 'Success') {
+							Swal.fire({
+								text: "The Operation has been successfully!",
+								icon: "success",
+								buttonsStyling: false,
+								allowEscapeKey: false,
+								allowOutsideClick: false,
+								confirmButtonText: "Ok, got it!",
+								customClass: {
+									confirmButton: "btn btn-primary"
+								}
+							}).then((result) => {
+								if (result.isConfirmed) {
+								}
+							});
+						}
+					}
+					else {
+						SystemServerError()
+					}
+
+				}).fail(function (error) {
+					swalErrorServer()
+				})
+			//
+			break;
+		case 3:
+			$("#unidad_3_ADD" + contador).prop("disabled", true);
+			$("#min_3_ADD" + contador).attr("readonly", "readonly");
+			$("#max_3_ADD" + contador).attr("readonly", "readonly");
+			$("#edit_3_ADD" + contador).show();
+			$("#save_3_ADD" + contador).hide();
+			unidad = $("#unidad_3_ADD" + contador).val();
+			minimo = $("#min_3_ADD" + contador).val();
+			maximo = $("#max_3_ADD" + contador).val();
+
+			$.ajax({
+					url: "@Url.Action("UpdateDimensionalSpec","TMAnpControl")",
+					data: { id: id,nivel:nivel,unidad:unidad,minimo:minimo,maximo:maximo },
+					type: "POST",
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader("XSRF-TOKEN",
+							$('input:hidden[name="__RequestVerificationToken"]').val());
+					},
+				}).done(function (result) {
+					if (result != null) {
+						if (result == 'Error') {
+							SystemServerError()
+						}
+						if (result == 'noSession') {
+							swalExpired()
+						}
+						else if (result == 'Sorry') {
+							swalNoAuthorized()
+						}
+						else if (result == 'NoPage') {
+							swalNoAuthorized()
+						}
+						else if (result == 'Success') {
+							Swal.fire({
+								text: "The Operation has been successfully!",
+								icon: "success",
+								buttonsStyling: false,
+								allowEscapeKey: false,
+								allowOutsideClick: false,
+								confirmButtonText: "Ok, got it!",
+								customClass: {
+									confirmButton: "btn btn-primary"
+								}
+							}).then((result) => {
+								if (result.isConfirmed) {
+								}
+							});
+						}
+					}
+					else {
+						SystemServerError()
+					}
+
+				}).fail(function (error) {
+					swalErrorServer()
+				})
+			break;
+//
+	}
+}
+</script>
+<script>
+	function unidad_primera(dato, input) {
+		var data_attr = $("#unidad_1_" + input);
+		var valor = data_attr.find(':selected').data('tipo');
+		$("#min_1_" + input).val('');
+		$("#max_1_" + input).val('');
+		$("#medicion_1_" + input).val('');
+		$("#campo_1_" + input).val('');
+		$("#min_1_" + input).removeAttr("readonly");
+		$("#max_1_" + input).removeAttr("readonly");
+		$("#medicion_1_" + input).removeAttr("readonly");
+		$('#conclusion_1_' + input).val('N/A').trigger('change.select2');
+
+		if (valor == 1) {
+			$("#min_1_" + input).attr("placeholder", "0.0");
+			$("#max_1_" + input).attr("placeholder", "0.0");
+			$("#medicion_1_" + input).attr("placeholder", "0.0");
+			$("#campo_1_" + input).val(valor);
+		} else if (valor == 2) {
+			$("#min_1_" + input).attr("placeholder", "0.00");
+			$("#max_1_" + input).attr("placeholder", "0.00");
+			$("#medicion_1_" + input).attr("placeholder", "0.00");
+			$("#campo_1_" + input).val(valor);
+		} else if (valor == 3) {
+			$("#min_1_" + input).attr("placeholder", "0.000");
+			$("#max_1_" + input).attr("placeholder", "0.000");
+			$("#medicion_1_" + input).attr("placeholder", "0.000");
+			$("#campo_1_" + input).val(valor);
+		} else if (valor == 4) {
+			$("#min_1_" + input).attr("placeholder", "0.0000");
+			$("#max_1_" + input).attr("placeholder", "0.0000");
+			$("#medicion_1_" + input).attr("placeholder", "0.0000");
+			$("#campo_1_" + input).val(valor);
+		} else if (valor == 0) {
+			$("#min_1_" + input).val('0.0');
+			$("#max_1_" + input).val('0.0');
+			$("#medicion_1_" + input).val('0.0');
+			$('#conclusion_1_' + input).val('-').trigger('change.select2');
+		} else {
+			$("#min_1_" + input).val('');
+			$("#min_1_" + input).attr("placeholder", "");
+			$("#max_1_" + input).val('');
+			$("#max_1_" + input).attr("placeholder", "");
+			$("#medicion_1_" + input).val('');
+			$("#medicion_1_" + input).attr("placeholder", "")
+			$("#campo_1_" + input).val('');
+		}
+	}
+
+function unidad_segunda(dato, input) {
+	var data_attr = $("#unidad_3_" + input);
+	var valor = data_attr.find(':selected').data('tipo');
+	$("#min_3_" + input).val('');
+	$("#max_3_" + input).val('');
+	$("#campo_2_" + input).val('');
+	$("#min_3_" + input).removeAttr("readonly");
+	$("#max_3_" + input).removeAttr("readonly");
+
+	if (valor == 1) {
+		$("#min_3_" + input).attr("placeholder","0.0");
+		$("#max_3_" + input).attr("placeholder","0.0");
+		$("#campo_2_" + input).val(valor);
+	} else if (valor == 2) {
+		$("#min_3_" + input).attr("placeholder","0.00");
+		$("#max_3_" + input).attr("placeholder","0.00");
+		$("#campo_2_" + input).val(valor);
+	} else if(valor == 3){
+		$("#min_3_" + input).attr("placeholder","0.000");
+		$("#max_3_" + input).attr("placeholder","0.000");
+		$("#campo_2_" + input).val(valor);
+	} else if(valor == 4){
+		$("#min_3_" + input).attr("placeholder","0.0000");
+		$("#max_3_" + input).attr("placeholder","0.0000");
+		$("#campo_2_" + input).val(valor);
+	}else if(valor == 0){
+		$("#min_3_" + input).val('0.0');
+		$("#min_3_" + input).attr('readonly', true);
+		$("#max_3_" + input).val('0.0');
+		$("#max_3_" + input).attr('readonly', true);
+		$("#campo_2_" + input).val('0');
+	}else{
+		$("#min_3_" + input).val('');
+		$("#min_3_" + input).attr("placeholder", "");
+		$("#max_3_" + input).val('');
+		$("#max_3_" + input).attr("placeholder", "");
+		$("#campo_2_" + input).val('');
+	}
+}
+</script>
+<script>
+	function unidad_primeraADD_Step1(dato, input) {
+		var data_attr = $("#unidad_1_ADD" + input);
+		var valor = data_attr.find(':selected').data('tipo');
+		$("#min_1_ADD" + input).val('');
+		$("#max_1_ADD" + input).val('');
+		$("#medicion_1_ADD" + input).val('');
+		$("#campo_1_ADD_Step1" + input).val('');
+		$("#min_1_ADD" + input).removeAttr("readonly");
+		$("#max_1_ADD" + input).removeAttr("readonly");
+		$("#medicion_1_ADD" + input).removeAttr("readonly");
+		$('#conclusion_1_ADD' + input).val('N/A').trigger('change.select2');
+
+		if (valor == 1) {
+			$("#min_1_ADD" + input).attr("placeholder", "0.0");
+			$("#max_1_ADD" + input).attr("placeholder", "0.0");
+			$("#medicion_1_ADD" + input).attr("placeholder", "0.0");
+			$("#campo_1_ADD_Step1" + input).val(valor);
+		} else if (valor == 2) {
+			$("#min_1_ADD" + input).attr("placeholder", "0.00");
+			$("#max_1_ADD" + input).attr("placeholder", "0.00");
+			$("#medicion_1_ADD" + input).attr("placeholder", "0.00");
+			$("#campo_1_ADD_Step1" + input).val(valor);
+		} else if (valor == 3) {
+			$("#min_1_ADD" + input).attr("placeholder", "0.000");
+			$("#max_1_ADD" + input).attr("placeholder", "0.000");
+			$("#medicion_1_ADD" + input).attr("placeholder", "0.000");
+			$("#campo_1_ADD_Step1" + input).val(valor);
+		} else if (valor == 4) {
+			$("#min_1_ADD" + input).attr("placeholder", "0.0000");
+			$("#max_1_ADD" + input).attr("placeholder", "0.0000");
+			$("#medicion_1_ADD" + input).attr("placeholder", "0.0000");
+			$("#campo_1_ADD_Step1" + input).val(valor);
+		} else if (valor == 0) {
+			$("#min_1_ADD" + input).val('0.0');
+			$("#max_1_ADD" + input).val('0.0');
+			$("#medicion_1_ADD" + input).val('0.0');
+			$('#conclusion_1_ADD' + input).val('-').trigger('change.select2');
+		} else {
+			$("#min_1_ADD" + input).val('');
+			$("#min_1_ADD" + input).attr("placeholder", "");
+			$("#max_1_ADD" + input).val('');
+			$("#max_1_ADD" + input).attr("placeholder", "");
+			$("#medicion_1_ADD" + input).val('');
+			$("#medicion_1_ADD" + input).attr("placeholder", "")
+			$("#campo_1_ADD_Step1" + input).val('');
+		}
+	}
+</script>
+@*--New General Dimensional Inspection--*@
+<script>
+	function unidad_primeraADD(dato) {
+	var data_attr = $("#unidad_1_ADD");
+	var valor = data_attr.find(':selected').data('tipo');
+	$("#min_1_ADD").val('');
+	$("#max_1_ADD").val('');
+	$("#campo_1_ADD").val('');
+	$("#min_1_ADD").removeAttr("readonly");
+	$("#max_1_ADD").removeAttr("readonly");
+
+	if (valor == 1) {
+		$("#min_1_ADD").attr("placeholder", "0.0");
+		$("#max_1_ADD").attr("placeholder", "0.0");
+		$("#campo_1_ADD").val(valor);
+	} else if (valor == 2) {
+		$("#min_1_ADD").attr("placeholder", "0.00");
+		$("#max_1_ADD").attr("placeholder", "0.00");
+		$("#campo_1_ADD").val(valor);
+	} else if (valor == 3) {
+		$("#min_1_ADD").attr("placeholder", "0.000");
+		$("#max_1_ADD").attr("placeholder", "0.000");
+		$("#campo_1_ADD").val(valor);
+	} else if (valor == 4) {
+		$("#min_1_ADD").attr("placeholder", "0.0000");
+		$("#max_1_ADD").attr("placeholder", "0.0000");
+		$("#campo_1_ADD").val(valor);
+	} else if (valor == 0) {
+		$("#min_1_ADD").val('0.0');
+		$("#min_1_ADD").attr('readonly', true);
+		$("#max_1_ADD").val('0.0');
+		$("#max_1_ADD").attr('readonly', true);
+		$("#campo_1_ADD").val('0');
+	} else {
+		$("#min_1_ADD").val('');
+		$("#min_1_ADD").attr("placeholder", "");
+		$("#max_1_ADD").val('');
+		$("#max_1_ADD").attr("placeholder", "");
+		$("#campo_1_ADD").val('');
+	}
+}
+
+function unidad_primeraADD_3_Step1(dato, input) {
+	var data_attr = $("#unidad_3_ADD" + input);
+	var valor = data_attr.find(':selected').data('tipo');
+	$("#min_3_ADD" + input).val('');
+	$("#max_3_ADD" + input).val('');
+	$("#campo_3_ADD" + input).val('');
+	$("#min_3_ADD" + input).removeAttr("readonly");
+	$("#max_3_ADD" + input).removeAttr("readonly");
+	
+	if (valor == 1) {
+		$("#min_3_ADD" + input).attr("placeholder", "0.0");
+		$("#max_3_ADD" + input).attr("placeholder", "0.0");
+		$("#campo_3_ADD" + input).val(valor);
+	} else if (valor == 2) {
+		$("#min_3_ADD" + input).attr("placeholder", "0.00");
+		$("#max_3_ADD" + input).attr("placeholder", "0.00");
+		$("#campo_3_ADD" + input).val(valor);
+	} else if (valor == 3) {
+		$("#min_3_ADD" + input).attr("placeholder", "0.000");
+		$("#max_3_ADD" + input).attr("placeholder", "0.000");
+		$("#campo_3_ADD" + input).val(valor);
+	} else if (valor == 4) {
+		$("#min_3_ADD" + input).attr("placeholder", "0.0000");
+		$("#max_3_ADD" + input).attr("placeholder", "0.0000");
+		$("#campo_3_ADD" + input).val(valor);
+	} else if (valor == 0) {
+		$("#min_3_ADD" + input).val('0.0');
+		$("#max_3_ADD" + input).val('0.0');
+	} else {
+		$("#min_3_ADD" + input).val('');
+		$("#min_3_ADD" + input).attr("placeholder", "");
+		$("#max_3_ADD" + input).val('');
+		$("#max_3_ADD" + input).attr("placeholder", "");
+		$("#campo_3_ADD" + input).val('');
+	}
+}
+</script>
+<script>
+	var decimal = "";
+
+function filterFloat(evt, input, campo, contador) {
+	decimal = $('#'+campo+contador).val();
+	var key = window.Event ? evt.which : evt.keyCode;
+	var chark = String.fromCharCode(key);
+	var tempValue = input.value + chark;
+	if (key >= 48 && key <= 57) {
+		if (filter(tempValue) === false) {
+			return false;
+		} else {
+			return true;
+		}
+	} else {
+		if (key == 8 || key == 13 || key == 0) {
+			return true;
+		} else if (key == 46) {
+			if (filter(tempValue) === false) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+}
+
+function filter(__val__) {
+	var preg = /^([0-9]+\.?[0-9]{0,2})$/;
+	if(decimal == 1){
+		preg = /^([0-9]+\.?[0-9]{0,1})$/;
+	}else if(decimal == 2){
+		preg = /^([0-9]+\.?[0-9]{0,2})$/;
+	}else if(decimal == 3){
+		preg = /^([0-9]+\.?[0-9]{0,3})$/;
+	}else{
+		preg = /^([0-9]+\.?[0-9]{0,4})$/;
+	}
+	if (preg.test(__val__) === true) {
+		return true;
+	} else {
+		return false;
+	}
+}
+function unidad_segundaADD(dato) {
+	var data_attr = $("#unidad_3_ADD");
+	var valor = data_attr.find(':selected').data('tipo');
+	$("#min_3_ADD").val('');
+	$("#max_3_ADD").val('');
+	$("#campo_2_ADD").val('');
+	$("#min_3_ADD").removeAttr("readonly");
+	$("#max_3_ADD").removeAttr("readonly");
+
+	if (valor == 1) {
+		$("#min_3_ADD").attr("placeholder", "0.0");
+		$("#max_3_ADD").attr("placeholder", "0.0");
+		$("#campo_2_ADD").val(valor);
+	} else if (valor == 2) {
+		$("#min_3_ADD").attr("placeholder", "0.00");
+		$("#max_3_ADD").attr("placeholder", "0.00");
+		$("#campo_2_ADD").val(valor);
+	} else if (valor == 3) {
+		$("#min_3_ADD").attr("placeholder", "0.000");
+		$("#max_3_ADD").attr("placeholder", "0.000");
+		$("#campo_2_ADD").val(valor);
+	} else if (valor == 4) {
+		$("#min_3_ADD").attr("placeholder", "0.0000");
+		$("#max_3_ADD").attr("placeholder", "0.0000");
+		$("#campo_2_ADD").val(valor);
+	} else if (valor == 0) {
+		$("#min_3_ADD").val('0.0');
+		$("#min_3_ADD").attr('readonly', true);
+		$("#max_3_ADD").val('0.0');
+		$("#max_3_ADD").attr('readonly', true);
+		$("#campo_2_ADD").val('0');
+	} else {
+		$("#min_3_ADD").val('');
+		$("#min_3_ADD").attr("placeholder", "");
+		$("#max_3_ADD").val('');
+		$("#max_3_ADD").attr("placeholder", "");
+		$("#campo_2_ADD").val('');
+	}
+}
+
+function filterFloat_2(evt, input, campo) {
+	decimal = $('#' + campo).val();
+	var key = window.Event ? evt.which : evt.keyCode;
+	var chark = String.fromCharCode(key);
+	var tempValue = input.value + chark;
+	if (key >= 48 && key <= 57) {
+		if (filter_2(tempValue) === false) {
+			return false;
+		} else {
+			return true;
+		}
+	} else {
+		if (key == 8 || key == 13 || key == 0) {
+			return true;
+		} else if (key == 46) {
+			if (filter_2(tempValue) === false) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+}
+
+function filter_2(__val__) {
+	var preg = /^([0-9]+\.?[0-9]{0,2})$/;
+	if (decimal == 1) {
+		preg = /^([0-9]+\.?[0-9]{0,1})$/;
+	} else if (decimal == 2) {
+		preg = /^([0-9]+\.?[0-9]{0,2})$/;
+	} else if (decimal == 3) {
+		preg = /^([0-9]+\.?[0-9]{0,3})$/;
+	} else {
+		preg = /^([0-9]+\.?[0-9]{0,4})$/;
+	}
+	if (preg.test(__val__) === true) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function medicion_conclusion(opcion, nivel) {
+	minimo   = parseFloat($("#min_"+opcion+"_" + nivel).val());
+	maximo   = parseFloat($("#max_"+opcion+"_" + nivel).val());
+	medicion = parseFloat($("#medicion_"+opcion+"_" + nivel).val());
+	if (medicion >= minimo && medicion <= maximo) {
+		$("#conclusion_"+opcion+"_" + nivel).val('Dentro').trigger('change.select2');
+	} else {
+		$("#conclusion_"+opcion+"_" + nivel).val('Fuera').trigger('change.select2');
+	}
+}
+
+
+function medicion_conclusion_ADD(opcion, nivel) {
+	minimo = parseFloat($("#min_" + opcion + "_ADD").val());
+	maximo = parseFloat($("#max_" + opcion + "_ADD").val());
+	medicion = parseFloat($("#medicion_" + opcion + "_ADD").val());
+	if (medicion >= minimo && medicion <= maximo) {
+		$("#conclusion_" + opcion + "_ADD").val('Dentro').trigger('change.select2');
+	} else {
+		$("#conclusion_" + opcion + "_ADD").val('Fuera').trigger('change.select2');
+	}
+}
+
+
+function medicion_conclusion_1_ADD(opcion, nivel) {
+	minimo = parseFloat($("#min_1_ADD" + nivel + "").val());
+	maximo = parseFloat($("#max_1_ADD" + nivel + "").val());
+	medicion = parseFloat($("#medicion_1_ADD" + nivel + "").val());
+	if (medicion >= minimo && medicion <= maximo) {
+		$("#conclusion_1_ADD" + opcion + "").val('Dentro').trigger('change.select2');
+	} else {
+		$("#conclusion_1_ADD" + opcion + "").val('Fuera').trigger('change.select2');
+	}
+}
+</script>
+@*==============Steps ANP*@
+@*Step-1 - Assignament*@
+<script>
+	function setEngineer() {
+		var formData = new FormData();
+
+		formData.append("Requestid", $("#EnginnerReq").val());
+		formData.append("Engineerid", $("#Engineer").val());
+		BlockAnpApp.block()
+		$.ajax({
+			url: "@Url.Action("assingEngineer","TMAnpControl")",
+			data: formData,
+			type: "POST",
+			processData: false,
+			contentType: false,
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("XSRF-TOKEN",
+					$('input:hidden[name="__RequestVerificationToken"]').val());
+			},
+		}).done(function (result) {
+			if (result != null) {
+				if (result == 'Error') {
+					SystemServerError()
+				}
+				if (result == 'noSession') {
+					swalExpired()
+				}
+				else if (result == 'Sorry') {
+					swalNoAuthorized()
+				}
+				else if (result == 'NoPage') {
+					swalNoAuthorized()
+				}
+				else {
+					if (result == 'Success') {
+						Swal.fire({
+							text: "The Assignment has been successfully!",
+							icon: "success",
+							buttonsStyling: false,
+							allowEscapeKey: false,
+							allowOutsideClick: false,
+							confirmButtonText: "Ok, got it!",
+							customClass: {
+								confirmButton: "btn btn-primary"
+							}
+						}).then((result) => {
+							if (result.isConfirmed) {
+								showReport(@ViewData["MenuTaskId"])
+
+								$('#AssignamentEng').modal('hide');
+								$('body').removeClass('modal-open');
+								$('.modal-backdrop').remove();
+								BlockAnpApp.release()
+
+							}
+						});
+					}
+				}
+			}
+			else {
+				SystemServerError()
+			}
+
+		}).fail(function (error) {
+			swalErrorServer()
+		});
+	}
+</script>
+@*Step-0 - Assignament*@
+<script>
+	function approvalCero() {
+		var formData = new FormData();
+
+		formData.append("Comment", $("#CommentCero").val());
+		formData.append("ReqID", $("#EntregaMaterialReq").val());
+
+		BlockAnpApp.block()
+		$.ajax({
+			url: "@Url.Action("saveStepCero","TMAnpControl")",
+			data: formData,
+			type: "POST",
+			processData: false,
+			contentType: false,
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("XSRF-TOKEN",
+					$('input:hidden[name="__RequestVerificationToken"]').val());
+			},
+		}).done(function (result) {
+			if (result != null) {
+				if (result == 'Error') {
+					SystemServerError()
+				}
+				if (result == 'noSession') {
+					swalExpired()
+				}
+				else if (result == 'Sorry') {
+					swalNoAuthorized()
+				}
+				else if (result == 'NoPage') {
+					swalNoAuthorized()
+				}
+				else {
+					if (result == 'Success') {
+						Swal.fire({
+							text: "The Operation has been successfully!",
+							icon: "success",
+							buttonsStyling: false,
+							allowEscapeKey: false,
+							allowOutsideClick: false,
+							confirmButtonText: "Ok, got it!",
+							customClass: {
+								confirmButton: "btn btn-primary"
+							}
+						}).then((result) => {
+							if (result.isConfirmed) {
+								showReport(@ViewData["MenuTaskId"])
+
+								$('#EntregaMaterial').modal('hide');
+								$('body').removeClass('modal-open');
+								$('.modal-backdrop').remove();
+								BlockAnpApp.release()
+
+							}
+						});
+					}
+				}
+			}
+			else {
+				SystemServerError()
+			}
+
+		}).fail(function (error) {
+			swalErrorServer()
+		});
+	}
+</script>
+@*Step-0 - User Resing*@
+<script>
+	function setUserReasing() {
+
+		if ($("#UserReasing").val() != '' && $("#UserReasing").val() != null) {
+			var formData = new FormData();
+
+			formData.append("Comment", $("#CommentLateral").val());
+			formData.append("RequestID", $("#EntregaMaterialReq").val());
+			formData.append("UsuarioID", $("#UserReasing").val());
+			formData.append("Nivel", nivelGlobal);
+			BlockAnpApp.block()
+			$.ajax({
+				url: "@Url.Action("reasingTask","TMAnpControl")",
+				data: formData,
+				type: "POST",
+				processData: false,
+				contentType: false,
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("XSRF-TOKEN",
+						$('input:hidden[name="__RequestVerificationToken"]').val());
+				},
+			}).done(function (result) {
+				nivelGlobal = 0;
+				if (result != null) {
+					if (result == 'Error') {
+						SystemServerError()
+					}
+					if (result == 'noSession') {
+						swalExpired()
+					}
+					else if (result == 'Sorry') {
+						swalNoAuthorized()
+					}
+					else if (result == 'NoPage') {
+						swalNoAuthorized()
+					}
+					else {
+						if (result == 'Success') {
+							Swal.fire({
+								text: "The Operation has been successfully!",
+								icon: "success",
+								buttonsStyling: false,
+								allowEscapeKey: false,
+								allowOutsideClick: false,
+								confirmButtonText: "Ok, got it!",
+								customClass: {
+									confirmButton: "btn btn-primary"
+								}
+							}).then((result) => {
+								if (result.isConfirmed) {
+									showReport(@ViewData["MenuTaskId"])
+
+									$('#PasoLateral').modal('hide');
+									$('#EntregaMaterial').modal('hide');
+									$('body').removeClass('modal-open');
+									$('.modal-backdrop').remove();
+									BlockAnpApp.release()
+
+								}
+							});
+						}
+					}
+				}
+				else {
+					SystemServerError()
+				}
+
+			}).fail(function (error) {
+				swalErrorServer()
+			});
+		}
+	}
+</script>
+@*========== End Steps*@
+@*Open Modal Steps*@
+<script>
+	function openSteps(nivel, request,codigomedio) {
+		codigoMedioGlobal = codigomedio;
+		for (i = 0; i < 4; i++) {
+			$("#add_datoEntrada_" + i).hide();
+		}
+		if (nivel == -1) {
+			$('#AssignamentEng').modal('toggle');
+		}
+		else if (nivel == 0) {
+			$('#EntregaMaterial').modal('toggle');
+		}
+		else if (nivel == 1) {
+			BlockAnpApp.block()
+
+			$("#BodyDimensinalInspect").html('');
+			$("#BodyGeneralDimensional").html('');
+			$("#TablaAddDimensionalInspection").html('');
+			
+			$('#WarrantyStep_1').html('');
+			$('#WarrantyStep_2').html('');
+			$('#WarrantyStep_3').html('');
+
+			$('#TablaAdditionalDimensinal').addClass('d-none');
+			$('#TablaAdditionalDimensional').addClass('d-none');
+
+			document.getElementById('internalYes').checked = false;
+			document.getElementById('internalNo').checked = false;
+			document.getElementById("internalYes").disabled = false;
+			document.getElementById("internalNo").disabled = false;
+
+			$.ajax({
+				url: "@Url.Action("getModalStep1","TMAnpControl")",
+				data: {
+					RequestID: request,Nivel: nivel,CodigoMedio: codigoMedioGlobal,
+				},
+				type: "POST",
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("XSRF-TOKEN",
+						$('input:hidden[name="__RequestVerificationToken"]').val());
+				},
+			}).done(function (result) {
+
+				var obj = JSON.parse(result);
+				var tablaDimensionalInspection = "";
+				var tablaDimensionalInspectionAdditional = "";
+				$('#fileStep1').html('');
+				$('#fileDocStep1').html('');
+
+				$("#Aplication").val(obj.Step1Info[0].DescripcionAplicacion);
+				if (obj.Step1Info[0].ServicioInterno == 1) {
+					document.getElementById('internalYes').checked = true;
+				} else {
+					document.getElementById('internalNo').checked = true;
+				}
+
+				document.getElementById("internalYes").disabled = true;
+				document.getElementById("internalNo").disabled = true;
+
+				$("#ComentariosStep1").val(obj.Step1Info[0].Comentarios);
+				fanpGlobal = obj.Step1Info[0].ID_FANP;
+				aplicacionGlobal = obj.Step1Info[0].DescripcionAplicacion;
+				if(obj.Step1Info[0].Garantia != '' && obj.Step1Info[0].Garantia != null){
+					Swal.fire({
+					  title: '<p style="font-size:3rem!Important;">Warranty</p>',
+					  heightAuto:true,
+					  width:1000,
+					  //color: '#716add',
+					  html: '<p class=" text-danger" style="font-size:2rem!Important;">'+obj.Step1Info[0].Garantia+'</p>',
+					  icon: 'warning',
+						iconColor: '#f1416c',
+					  showCancelButton: false,
+					  allowOutsideClick: false,
+					  allowEscapeKey: false,
+					  confirmButtonColor: '#3085d6',
+					  confirmButtonText: '<h1 class="text-white">Me doy por Enterado(a).</h1>'
+					}).then((result) => {
+					  if (result.isConfirmed) {
+					  }
+					})
+				}
+				//Tabla General attributes inspection
+				for (var i = 0; i < obj.Step1InfoAttrInspection.length; i++) {
+					if (obj.Step1InfoAttrInspection[i].Tipo == 1) {
+						if (obj.Step1InfoAttrInspection[i].Resultado == null) {
+							var resultado = '';
+							var bit = ``;
+						} else {
+							var resultado = obj.Step1InfoAttrInspection[i].Resultado;
+							var bit = `data-bit="1"`;
+						}
+
+						contadorNivel2 = i;
+
+						tablaDimensionalInspection = tablaDimensionalInspection +
+							'<tr>' +
+							'<td>' + i + '-' + obj.Step1InfoAttrInspection[i].DescripcionCaracteristica + '<input type="hidden" class="form-control formik" name="caracteristica_2_' + i + '" id="caracteristica_2_' + i + '" value="' + obj.Step1InfoAttrInspection[i].ID_Caracteristica + '" '+ bit +'  /></td>' +
+							'<td><input type="text" class="form-control" name="resultado_2_' + i + '" id="resultado_2_' + i + '" value="' + resultado + '"/></td>' +
+							'<td><select class="form-select" data-control="select2" name="conclusion_2_' + i + '" id="conclusion_2_' + i + '" data-dropdown-parent="#modal_steps_anp">  <option value="N/A">N/A</option><option value="Dentro">Dentro</option><option value="Fuera">Fuera</option></select></td>' +
+							'</tr>';
+
+					}
+				}
+
+				$("#BodyDimensinalInspect").html(tablaDimensionalInspection);
+
+				for (var i = 0; i < obj.Step1InfoAttrInspection.length; i++) {
+					if (obj.Step1InfoAttrInspection[i].Tipo == 1) {
+						if(obj.Step1InfoAttrInspection[i].Conclusion != null){
+							$('#conclusion_2_' + i).val(obj.Step1InfoAttrInspection[i].Conclusion);
+						}else{
+							$('#conclusion_2_' + i).val('N/A');
+						}
+					}
+				}
+
+
+				for (var i = 0; i < obj.Step1InfoAttrInspection.length; i++) {
+					e = 0;
+					if (obj.Step1InfoAttrInspection[i].Tipo == 2) {
+						contadorAddNivel2 = e;
+						tablaDimensionalInspectionAdditional = tablaDimensionalInspectionAdditional +
+							'<tr>' +
+							'<td>' + e + '-' + obj.Step1InfoAttrInspection[e].DescripcionCaracteristica + '<input type="hidden" class="form-control formik" name="caracteristica_2_ADD' + e + '" id="caracteristica_2_ADD' + e + '" data-bit="1" value="' + obj.Step1InfoAttrInspection[e].ID_Caracteristica + '"/></td>' +
+							'<td><input type="text" readonly class="form-control formik" name="resultado_2_ADD' + e + '" id="resultado_2_ADD' + e + '" value="' + obj.Step1InfoAttrInspection[e].Resultado + '"/></td>' +
+							'<td><select class="form-select formik" data-control="select2"  name="conclusion_2_ADD' + e + '" id="conclusion_2_ADD' + e + '" data-dropdown-parent="#modal_steps_anp">  <option value="N/A">N/A</option><option value="Dentro">Dentro</option><option value="Fuera">Fuera</option></select></td>' +
+							'<td>' +
+							'<a href="javascript:;" class="btn btn-primary p-3 fs-7 me-3" id="edit_2_ADD' + e + '" onmouseup="remove_readonlyCaracteristicaStep1(' + e + ', 2)"> ' +
+								'<i class="fas fa-edit"> </i> ' +
+							'</a> ' +
+							'<a href = "javascript:;" class="btn btn-success p-3 fs-7 me-3" style="display:none" id = "save_2_ADD' + e + '" onmouseup = "update_MedicionesStep1(' + e + ',' + obj.Step1InfoAttrInspection[e].ID_Caracteristica + ',2)" >' +
+								'<i class="fas fa-save"> </i>' + 
+							'</a> ' +
+							'</td>'+
+							'</tr>';
+							e++
+
+					}
+				}
+
+				if (tablaDimensionalInspectionAdditional.length > 0) { $('#TablaAdditionalDimensional').removeClass('d-none'); }
+				$("#BodyDimensinalInspectAdd").html(tablaDimensionalInspectionAdditional);
+
+				for (var i = 0; i < obj.Step1InfoAttrInspection.length; i++) {
+					if (obj.Step1InfoAttrInspection[i].Tipo == 2) {
+						$('#conclusion_2_' + (i + 1)).val(obj.Step1InfoAttrInspection[i].Conclusion);
+
+					}
+				}
+
+				//General dimensional inspection
+				var tablaGralDimensional = "";
+				if (obj.Step1InfoDimensional.length > 0) {
+					for (let i = 0; i < obj.Step1InfoDimensional.length; i++) {
+						if (obj.Step1InfoDimensional[i].Tipo == 1) {
+							contadorNivel1 = i;
+						tablaGralDimensional = tablaGralDimensional + `<tr>`+
+								`<td>` + i + `.-` + obj.Step1InfoDimensional[i].DescripcionCaracteristica + `<input type="hidden" class="form-control formik" name="caracteristica_1_` + i + `" id="caracteristica_1_` + i + `" value="` + obj.Step1InfoDimensional[i].ID_Caracteristica + `" /></td>` +
+								`<td><select class="form-select formik" onchange="unidad_primera(this.value,0)" data-control="select2" name="unidad_1_` + i + `" id="unidad_1_` + i + `" data-dropdown-parent="#modal_steps_anp"> <option value="0">-</option><option value="N/A" data-tipo = "0">N/A</option></select></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="min_1_` + i + `" id="min_1_` + i + `" value="` + obj.Step1InfoDimensional[i].Minimo + `" onkeypress="return filterFloat(event,this,'campo_1_',` + i + `)"></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="max_1_` + i + `" id="max_1_` + i + `" value="` + obj.Step1InfoDimensional[i].Maximo + `" onkeypress="return filterFloat(event,this,'campo_1_',` + i + `)"></td>` +
+								`<td><input readonly type="text" class="form-control " name="medicion_1_` + i + `" id="medicion_1_` + i + `" value="` + obj.Step1InfoDimensional[i].Medicion + `" onkeypress="return filterFloat(event,this,'campo_1_',` + i + `)" onkeyup="medicion_conclusion(1,` + i + `)"></td>` +
+								`<td><select disabled class="form-select formik" data-control="select2" name="conclusion_1_` + i + `" id="conclusion_1_` + i + `">  <option value="N/A">N/A</option><option value="Dentro">Dentro</option><option value="Fuera">Fuera</option></select></td>` +
+						`</tr>`
+						}			
+					}
+							
+					$(`#BodyGeneralDimensional`).html(tablaGralDimensional);
+							
+				}
+
+				for (let e = 0; e < obj.Step1InfoDimensional.length; e++) {
+					if (obj.Step1InfoDimensional[e].Tipo == 1) {
+
+						for (let i = 0; i < obj.AnpListUnits.length; i++) {
+							$('#unidad_1_' + e).append('<option value="' + obj.AnpListUnits[i].Text + '" data-tipo="'+obj.AnpListUnits[i].ID+'">' + obj.AnpListUnits[i].Text + '</option>');
+						}
+					}
+				}
+				
+				e = 0;
+				for (var i = 0; i < obj.Step1InfoDimensional.length; i++) {
+					if (obj.Step1InfoDimensional[i].Tipo == 1) {
+						$('#conclusion_1_' + i).val(obj.Step1InfoDimensional[i].Conclusion);
+						$('#unidad_1_' + i).val(obj.Step1InfoDimensional[i].Unidad);
+						e++;
+					}
+				}
+				
+				
+				var tablaGralAddDimensional = `<table class="table table-striped  border gs-4  fs-6">`;
+				tablaGralAddDimensional = tablaGralAddDimensional + `<thead class="border">` +
+                                            `<tr>` +
+                                                `<th class="p-2"> Caracteristica </th>` +
+                                                `<th class="p-2"> Unidad </th>` +
+                                                `<th class="p-2"> Min </th>` +
+												`<th class="p-2"> Max </th>` +
+                                                `<th class="p-2"> Medición </th>` +
+												`<th class="p-2"> Conclusión </th>` +
+                                            `</tr>` +
+										`</thead>` +
+                                        `<tbody class="border">`
+
+				if (obj.Step1InfoDimensional.length > 0) {
+					for (let i = 0; i < obj.Step1InfoDimensional.length; i++) {
+					
+						if (obj.Step1InfoDimensional[i].Tipo == 2) {
+							contadorAddNivel1 = e;
+							//console.log(obj.Step1InfoDimensional[e].DescripcionCaracteristica);
+						tablaGralAddDimensional = tablaGralAddDimensional + `<tr>`+
+								`<td>` + e + `.-` + obj.Step1InfoDimensional[e].DescripcionCaracteristica + `<input type="hidden" class="form-control formik" name="caracteristica_1_ADD` + e + `" id="caracteristica_1_ADD` + e + `" data-bit="1" value="` + obj.Step1InfoDimensional[e].ID_Caracteristica + `"/></td>` +
+								`<td><select class="form-select formik" disabled data-control="select2" name="unidad_1_ADD` + e + `" id="unidad_1_ADD` + e + `" onchange="unidad_primeraADD_Step1(this.value,1)" data-dropdown-parent="#modal_steps_anp"><option value="0">-</option><option value="N/A" data-tipo = "0">N/A</option></select></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="min_1_ADD` + e + `" id="min_1_ADD` + e + `" value="` + obj.Step1InfoDimensional[e].Minimo + `" data-tipo="6" onkeypress="return filterFloat(event,this,'campo_1_ADD_Step1',`+ e +`)"></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="max_1_ADD` + e + `" id="max_1_ADD` + e + `" value="` + obj.Step1InfoDimensional[e].Maximo + `" onkeypress="return filterFloat(event,this,'campo_1_ADD_Step1',` + e + `)"></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="medicion_1_ADD` + e + `" id="medicion_1_ADD` + e + `" value="` + obj.Step1InfoDimensional[e].Medicion + `" onkeypress="return filterFloat(event,this,'campo_1_ADD_Step1',` + e + `)" onkeyup="medicion_conclusion_1_ADD(1,` + e + `)"></td>` +
+								`<td><select disabled class="form-select formik" data-control="select2" name="conclusion_1_ADD` + e + `" id="conclusion_1_ADD` + e + `" data-dropdown-parent="#modal_steps_anp">  <option value="N/A">N/A</option><option value="Dentro">Dentro</option><option value="Fuera">Fuera</option></select></td>` +
+								`<td><a href="javascript:;" class="btn btn-primary p-3 fs-7 me-3" id="edit_1_ADD` + e + `" onmouseup="remove_readonlyCaracteristicaStep1(` + e + `, 1)"> ` +
+								`<i class="fas fa-edit"> </i> ` +
+							`</a> ` +
+								`<a href = "javascript:;" class="btn btn-success p-3 fs-7 me-3" style="display:none" id = "save_1_ADD` + e + `" onmouseup = "update_MedicionesStep1(` + e + `,` + obj.Step1InfoDimensional[e].ID_Caracteristica + `,1)" >` +
+								`<i class="fas fa-save"> </i>` + 
+							`</a></td>` + 
+						`</tr>`
+						e++;
+						}			
+					}
+					
+					tablaGralAddDimensional = tablaGralAddDimensional + `</tbody></table>`
+					$('#TablaAddDimensionalInspection').html(tablaGralAddDimensional);
+							
+				}
+
+
+				for (let e = 0; e < obj.Step1InfoDimensional.length; e++) {
+					if (obj.Step1InfoDimensional[e].Tipo == 2) {
+						for (let i = 0; i < obj.AnpListUnits.length; i++) {
+							$('#unidad_1_ADD' + e).append('<option value="' + obj.AnpListUnits[i].Text + '" data-tipo="' + obj.AnpListUnits[i].ID + '">' + obj.AnpListUnits[i].Text + '</option>');
+						}
+					}
+				}
+
+				for (var i = 0; i < obj.Step1InfoDimensional.length; i++) {
+					if (obj.Step1InfoDimensional[i].Tipo == 2) {
+						$('#conclusion_1_ADD' + (i)).val(obj.Step1InfoDimensional[i].Conclusion);
+						$('#unidad_1_ADD' + (i)).val(obj.Step1InfoDimensional[i].Unidad);
+						
+					}
+				}
+
+				if (tablaGralAddDimensional.length > 0) { $('#TablaAddDimensionalInspection').removeClass('d-none'); }
+				//
+
+				///Dimensional Specifications
+				var tablaDimensionalSpecifications = "";
+
+				if (obj.Step1InfoDimensionalSpecifications.length > 0) {
+					for (let i = 0; i < obj.Step1InfoDimensionalSpecifications.length; i++) {
+						if (obj.Step1InfoDimensionalSpecifications[i].Tipo == 1) {
+						contadorNivel3 = i;
+						var minimo = '';
+						var maximo = '';
+						if(obj.Step1InfoDimensionalSpecifications[i].Minimo != null){
+							minimo = obj.Step1InfoDimensionalSpecifications[i].Minimo;
+						}
+						if (obj.Step1InfoDimensionalSpecifications[i].Maximo != null) {
+								maximo = obj.Step1InfoDimensionalSpecifications[i].Maximo;
+						}
+						tablaDimensionalSpecifications = tablaDimensionalSpecifications + `<tr>`+
+								`<td>` + i + `.-` + obj.Step1InfoDimensionalSpecifications[i].DescripcionCaracteristica + `<input type="hidden" class="form-control formik" name="caracteristica_3_` + i + `" id="caracteristica_3_` + i + `" value="` + obj.Step1InfoDimensionalSpecifications[i].ID_Caracteristica + `" /></td>` +
+								`<td><select class="form-select formik" onchange="unidad_segunda(this.value,` + i + `)" data-control="select2" name="unidad_3_` + i + `" id="unidad_3_` + i + `" data-dropdown-parent="#modal_steps_anp"> <option value="0">-</option><option value="N/A" data-tipo = "0">N/A</option></select></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="min_3_` + i + `" id="min_3_` + i + `" value="` + minimo + `" onkeypress="return filterFloat(event,this,'campo_2_',` + i + `)"></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="max_3_` + i + `" id="max_3_` + i + `" value="` + maximo + `" onkeypress="return filterFloat(event,this,'campo_2_',` + i + `)"></td>` +
+						`</tr>`
+						}			
+					}
+							
+					$('#BodyDimensionalSpecifications').html(tablaDimensionalSpecifications);
+							
+				}
+
+				for (let e = 0; e < obj.Step1InfoDimensionalSpecifications.length; e++) {
+					if (obj.Step1InfoDimensionalSpecifications[e].Tipo == 1) {
+
+						for (let i = 0; i < obj.AnpListUnits.length; i++) {
+							$('#unidad_3_' + e).append('<option value="' + obj.AnpListUnits[i].Text + '" data-tipo="'+obj.AnpListUnits[i].ID+'">' + obj.AnpListUnits[i].Text + '</option>');
+						}
+					}
+				}
+				
+				e = 0;
+				for (var i = 0; i < obj.Step1InfoDimensionalSpecifications.length; i++) {
+					if (obj.Step1InfoDimensionalSpecifications[i].Tipo == 1) {
+						if (obj.Step1InfoDimensionalSpecifications[i].Unidad != null) {
+							$('#unidad_3_' + i).val(obj.Step1InfoDimensionalSpecifications[i].Unidad);
+						}else{
+							$('#unidad_3_' + i).val(0);
+						}
+						e++;
+					}
+				}
+				
+				var tablaDimensionalSpecificationsAdd = "";
+				if (obj.Step1InfoDimensionalSpecifications.length > 0) {
+					for (let i = 0; i < obj.Step1InfoDimensionalSpecifications.length; i++) {
+						if (obj.Step1InfoDimensionalSpecifications[i].Tipo == 2) {
+							contadorAddNivel3 = e;
+						tablaDimensionalSpecificationsAdd = tablaDimensionalSpecificationsAdd + `<tr>`+
+								`<td>` + e + `.-` + obj.Step1InfoDimensionalSpecifications[e].DescripcionCaracteristica + `<input type="hidden" class="form-control formik" name="caracteristica_3_ADD` + e + `" id="caracteristica_3_ADD` + e + `" data-bit="1" value="` + obj.Step1InfoDimensionalSpecifications[e].ID_Caracteristica + `"/></td>` +
+								`<td><select class="form-select formik" disabled data-control="select2" name="unidad_3_ADD` + e + `" id="unidad_3_ADD` + e + `" onchange="unidad_primeraADD_3(this.value,1)" data-dropdown-parent="#modal_steps_anp"><option value="0">-</option><option value="N/A" data-tipo = "0">N/A</option></select></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="min_3_ADD` + e + `" id="min_3_ADD` + e + `" value="` + obj.Step1InfoDimensionalSpecifications[e].Minimo + `" data-tipo="6" onkeypress="return filterFloat(event,this,'campo_3_ADD',`+ e +`)"></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="max_3_ADD` + e + `" id="max_3_ADD` + e + `" value="` + obj.Step1InfoDimensionalSpecifications[e].Maximo + `" onkeypress="return filterFloat(event,this,'campo_3_ADD',` + e + `)"></td>` +
+								`<td><a href="javascript:;" class="btn btn-primary p-3 fs-7 me-3" id="edit_3_ADD` + e + `" onmouseup="remove_readonlyCaracteristicaStep1(` + e + `, 3)"> ` +
+								`<i class="fas fa-edit"> </i> ` +
+							`</a> ` +
+								`<a href = "javascript:;" class="btn btn-success p-3 fs-7 me-3" style="display:none" id = "save_3_ADD` + e + `" onmouseup = "update_MedicionesStep1(` + e + `,` + obj.Step1InfoDimensionalSpecifications[e].ID_Caracteristica + `,3)" >` +
+								`<i class="fas fa-save"> </i>` + 
+							`</a></td>`+
+						`</tr>`
+						e++;
+						}			
+					}
+							
+					$('#BodyDimensionalSpecificationsAdd').html(tablaDimensionalSpecificationsAdd);
+							
+				}
+
+
+				for (let e = 0; e < obj.Step1InfoDimensionalSpecifications.length; e++) {
+					
+					if (obj.Step1InfoDimensionalSpecifications[e].Tipo == 2) {
+						
+						for (let i = 0; i < obj.AnpListUnits.length; i++) {
+							
+							$('#unidad_3_ADD' + e).append('<option value="' + obj.AnpListUnits[i].Text + '" data-tipo="' + obj.AnpListUnits[i].ID + '">' + obj.AnpListUnits[i].Text + '</option>');
+							//console.log(obj.AnpListUnits[i].Text);
+							//console.log(obj.AnpListUnits[i].ID);
+						}
+					}
+				}
+
+			
+				for (var i = 0; i < obj.Step1InfoDimensionalSpecifications.length; i++) {
+					
+					if (obj.Step1InfoDimensionalSpecifications[i].Tipo == 2) {
+						console.log(i);
+						$('#unidad_3_ADD' + (i)).val(obj.Step1InfoDimensionalSpecifications[i].Unidad);
+						
+						//console.log(obj.Step1InfoDimensionalSpecifications[i].Unidad);
+					
+					}
+				}
+
+				if (tablaDimensionalSpecificationsAdd.length > 0) { $('#TablaAddDimensionalSpecifications').removeClass('d-none'); }
+				///
+				if (obj.ReportAnpHistoryModal.length > 0) {
+					var spanModalHistory = '<ul>';
+					for (var i = 0; i < obj.ReportAnpHistoryModal.length; i++) {
+						spanModalHistory = '<li>'+obj.ReportAnpHistoryModal[i].Icono+'&nbsp;'+obj.ReportAnpHistoryModal[i].ComentarioRevision +' - <div class="text-light-primary bg-primary">Solution:</div>'+ obj.ReportAnpHistoryModal[i].ComentarioLiberado +'</li>'
+					}
+					spanModalHistory = spanModalHistory + '</ul>';
+				}
+				else{
+					$('#ModalHistoryStep1').html('-');
+				}
+
+				var fileStep1 = '';
+				if (obj.ReturnStepFiles.length > 0) {
+					fileStep1 = fileStep1 + `<div id="carousel`+requestGlobalID+`" class="carousel slide" data-bs-touch="false">` +
+											  `<div class="carousel-inner">`
+												for (var i = 0; i < obj.ReturnStepFiles.length; i++) {
+													if(i == 0) {
+													fileStep1 = fileStep1 + `<div class="carousel-item active">` +
+														`<img src="https://mxesc1vapp001/photocenter/Planta`+obj.ReturnStepFiles[i].PlantaId+`/fanp/`+codigoMedioGlobal+`/`+requestGlobalID+`/Step`+nivelGlobal+`/`+obj.ReturnStepFiles[i].FileName+`" class="d-block w-100">`+
+													`</div>`
+													}else{
+													fileStep1 = fileStep1 +`<div class="carousel-item">`+
+														`<img src="https://mxesc1vapp001/photocenter/Planta`+obj.ReturnStepFiles[i].PlantaId+`/fanp/`+codigoMedioGlobal+`/`+requestGlobalID+`/Step`+nivelGlobal+`/`+obj.ReturnStepFiles[i].FileName+`" class="d-block w-100">`+
+													`</div>`
+													}
+												}
+					fileStep1 = fileStep1 + `</div>` +
+											  `<button class="carousel-control-prev" type="button" data-bs-target="#carousel`+requestGlobalID+`" data-bs-slide="prev" style="background:black; opacity: 0.2;">`+
+												`<span class="carousel-control-prev-icon" aria-hidden="true"></span>`+
+												`<span class="visually-hidden">Previous</span>`+
+											  `</button>`+
+						`<button class="carousel-control-next" type="button" data-bs-target="#carousel` + requestGlobalID + `" data-bs-slide="next" style="background:black; opacity: 0.2;">` +
+												`<span class="carousel-control-next-icon" aria-hidden="true"></span>`+
+												`<span class="visually-hidden">Next</span>`+
+											  `</button>`+
+											`</div>`
+					
+					$('#fileStep1').html(fileStep1);
+				}else{
+					$('#fileStep1').html('<div class="bg-info text-white mb-6">No Drawings or Images</div>');
+					
+				}
+				var fileDocStep1 = '';
+				var textoIco = '';
+				var textoFile = '';
+
+				if (obj.ReturnStepFilesDoc.length > 0) {
+					fileDocStep1 = '<ul>';
+					for (var i = 0; i < obj.ReturnStepFilesDoc.length; i++) {
+						//console.log(obj.ReturnStepFilesDoc[i].FileName.split('.').pop());
+						if (obj.ReturnStepFilesDoc[i].FileName.split('.').pop() == 'pdf') { textoIco = 'danger'; textoFile = 'pdf'; } else if (obj.ReturnStepFilesDoc[i].FileName.split('.').pop() == 'xls' || obj.ReturnStepFilesDoc[i].FileName.split('.').pop() == 'xlsx') { textoIco = 'success'; textoFile = 'excel'; } else { textoIco = 'primary'; textoFile = 'word'; }
+					fileDocStep1 = fileDocStep1 +
+							`<li class="text-start ms-20"><a href="https:/ / mxesc1vapp001 / photocenter / Planta` + obj.ReturnStepFilesDoc[i].PlantaId + ` / fanp / ` + codigoMedioGlobal + ` / ` + requestGlobalID + ` / Step` + nivelGlobal + ` / ` + obj.ReturnStepFilesDoc[i].FileName + `" target="_blank"><i class="fas fa-file-` + textoFile + ` fs-2 text-` + textoIco + `" ></i>&nbsp;` + obj.ReturnStepFilesDoc[i].FileName + `</a > </li>`
+					}
+					fileDocStep1 = fileDocStep1 + '</ul>';
+					$('#fileDocStep1').html(fileDocStep1);
+				}else{
+					$('#fileDocStep1').html('<div class="bg-info text-white mb-6">No Documents</div>');
+				}
+
+				var tablaWarrantyStep1 = `<table class="table-striped  border gs-4 col-lg-12 fs-5">`;
+				tablaWarrantyStep1 = tablaWarrantyStep1 + `<thead class="border">` +
+                                            `<tr bgcolor="#C8D046">` +
+                                                `<th colspan="6" class="p-2"> Control de Componentes - Puntos de Garantias. </th>` +
+                                            `</tr>` + 
+                                            `<tr bgcolor="#E1E5EC">` +
+                                                `<th class="p-2"> Caracteristica </th>` +
+                                                `<th class="p-2"> Unidad </th>` +
+                                                `<th class="p-2"> Min </th>` +
+												`<th class="p-2"> Max </th>` +
+                                                `<th class="p-2"> Medición </th>` +
+												`<th class="p-2"> Conclusión </th>` +
+                                            `</tr>` +
+										`</thead>` +
+                                        `<tbody class="border">`
+				if (obj.AnpInfoWarranty.length > 0) {
+					for (let i = 0; i < obj.AnpInfoWarranty.length; i++) {
+						if (obj.AnpInfoWarranty[i].Orden == 1) {
+						contadorGarantiasNivel1 = i;
+						tablaWarrantyStep1 = tablaWarrantyStep1 + `<tr>`+
+								`<td>` + i + `.-` + obj.AnpInfoWarranty[i].DescripcionCaracteristica + `<input type="hidden" class="form-control formik" name="caracteristica_1_Garantia` + i + `" id="caracteristica_1_Garantia` + i + `" data-bit="1" value="`+obj.AnpInfoWarranty[i].ID_Caracteristica+`" /></td>` +
+								`<td><select class="form-select formik" data-control="select2" name="unidad_1_Garantia` + i + `" id="unidad_1_Garantia` + i + `" onchange="unidades_Garantias(1,`+ i +`),"><option value="0">-</option><option value="N/A" data-tipo = "0">N/A</option></select></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="min_1_Garantia` + i + `" id="min_1_Garantia` + i + `" value="` + obj.AnpInfoWarranty[i].Minimo + `" data-tipo="6" onkeypress="return filterFloat_Garantias(event,this,'campo_1_Garantia',` + i + `)"></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="max_1_Garantia` + i + `" id="max_1_Garantia` + i + `" value="` + obj.AnpInfoWarranty[i].Maximo + `" onkeypress="return filterFloat_Garantias(event,this,'campo_1_Garantia',` + i + `)"></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="medicion_1_Garantia` + i + `" id="medicion_1_Garantia` + i + `" value="` + obj.AnpInfoWarranty[i].Medicion + `" onkeypress="return filterFloat_Garantias(event,this,'campo_1_Garantia',` + i + `)" onkeyup="medicion_conclusion_Garantias(1,` + i + `)"></td>` +
+								`<td><select class="form-select formik" data-control="select2" name="conclusion_1_Garantia` + (i + 1) + `" id="conclusion_1_Garantia` + (i + 1) + `" disabled>  <option value="N/A">N/A</option><option value="Dentro">Dentro</option><option value="Fuera">Fuera</option></select><input type="hidden" class="form-control formik" value="` + obj.AnpInfoWarranty[i].Tipo + `" name="campo_1_Garantia` + i + `" id="campo_1_Garantia` + i + `"/></td>` +
+						`</tr>`
+						}else{
+							tablaWarrantyStep1 = ``
+							$('#WarrantyStep_1').html(tablaWarrantyStep1);
+						}			
+					}
+					tablaWarrantyStep1= tablaWarrantyStep1 + "</table>"		
+					$('#WarrantyStep_1').html(tablaWarrantyStep1);
+							
+				}
+
+				for (let e = 0; e < obj.AnpInfoWarranty.length; e++) {
+					if (obj.AnpInfoWarranty[e].Orden == 1) {
+
+						for (let i = 0; i < obj.AnpListUnits.length; i++) {
+							$('#unidad_1_Garantia' + e).append('<option value="' + obj.AnpListUnits[i].Text + '" data-tipo="' + obj.AnpListUnits[i].ID + '">' + obj.AnpListUnits[i].Text + '</option>');
+						}
+					}
+				}
+
+				for (var i = 0; i < obj.AnpInfoWarranty.length; i++) {
+					if (obj.AnpInfoWarranty[i].Tipo == 1) {
+						$('#unidad_1_Garantia' + i).val(obj.AnpInfoWarranty[i].Unidad);
+					}
+				}
+
+
+				var tablaWarrantyStep2 = `<table class="table-striped  border gs-4 col-lg-12 fs-5">`;
+				tablaWarrantyStep2 = tablaWarrantyStep2 + `<thead class="border">` +
+                                            `<tr bgcolor="#C8D046">` +
+                                                `<th colspan="3" class="p-2"> Control de Componentes - Puntos de Garantias. </th>` +
+                                            `</tr>` + 
+                                            `<tr bgcolor="#E1E5EC">` +
+                                                `<th class="p-2"> Caracteristica </th>` +
+                                                `<th class="p-2"> Resultado </th>` +
+                                                `<th class="p-2"> Conclusión </th>` +
+                                            `</tr>` +
+					`</thead>` +
+                                        `<tbody class="border">`
+				if (obj.AnpInfoWarranty.length > 0) {
+					for (let i = 0; i < obj.AnpInfoWarranty.length; i++) {
+						if (obj.AnpInfoWarranty[i].Orden == 2) {
+						contadorGarantiasNivel1 = i;
+						tablaWarrantyStep2 = tablaWarrantyStep2 + `<tr>`+
+								`<td>` + i + `.-` + obj.AnpInfoWarranty[i].DescripcionCaracteristica + `<input type="hidden" class="form-control formik" name="caracteristica_2_Garantia` + i + `" id="caracteristica_2_Garantia` + i + `" value="` + obj.AnpInfoWarranty[i].ID_Caracteristica + `" /></td>` +
+								`<td><input  type="text" class="form-control" name="resultado_2_Garantia` + i + `" id="resultado_2_Garantia` + i + `" value="` + obj.AnpInfoWarranty[i].Resultado + `" ></td>` +
+								`<td><select class="form-select formik" data-control="select2" name="conclusion_2_Garantia` + (i + 1) + `" id="conclusion_2_Garantia` + (i + 1) + `" >  <option value="N/A">N/A</option><option value="Dentro">Dentro</option><option value="Fuera">Fuera</option></select><input type="hidden" class="form-control formik" value="` + obj.AnpInfoWarranty[i].Tipo + `" name="campo_1_Garantia` + i + `" id="campo_1_Garantia` + i + `"/></td>` +
+						`</tr>`
+						}else{
+							tablaWarrantyStep2 = ``
+							$('#WarrantyStep_2').html(tablaWarrantyStep2);
+						}			
+					}
+					tablaWarrantyStep2 = tablaWarrantyStep2 + "</tbody></table>"		
+					$('#WarrantyStep_2').html(tablaWarrantyStep2);
+
+
+					for (var i = 0; i < obj.AnpInfoWarranty.length; i++) {
+						if (obj.AnpInfoWarranty[i].Orden == 2) {
+							$('#conclusion_2_Garantia' + (i + 1)).val(obj.Step1InfoAttrInspection[i].Conclusion);
+
+						}
+					}
+							
+				}else{
+					tablaWarrantyStep2 = ``
+					$('#WarrantyStep_2').html(tablaWarrantyStep2);
+				}
+
+				var tablaWarrantyStep3 = `<table class="table-striped  border gs-4 col-lg-12 fs-5">`;
+				tablaWarrantyStep3 = tablaWarrantyStep3 + `<thead class="border">` +
+															`<tr bgcolor="#C8D046">` +
+																`<th colspan="4" class="p-2"> Control de Componentes - Puntos de Garantias. </th>` +
+															`</tr>` + 
+															`<tr bgcolor="#E1E5EC">` +
+																`<th class="p-2"> Caracteristica </th>` +
+																`<th class="p-2"> Unidad </th>` +
+																`<th class="p-2"> Min </th>` +
+																`<th class="p-2"> Max </th>` +
+															`</tr>` +
+														`</thead>` +
+														`<tbody class="border">`
+				if (obj.AnpInfoWarranty.length > 0) {
+					for (let i = 0; i < obj.AnpInfoWarranty.length; i++) {
+						if (obj.AnpInfoWarranty[i].Orden == 3) {
+						contadorGarantiasNivel3 = i;
+						tablaWarrantyStep3 = tablaWarrantyStep3 + `<tr>`+
+								`<td>` + i + `.-` + obj.AnpInfoWarranty[i].DescripcionCaracteristica + `<input type="hidden" class="form-control formik" name="caracteristica_3_Garantia` + i + `" id="caracteristica_3_Garantia` + i + `" value="`+obj.AnpInfoWarranty[i].ID_Caracteristica+`" /></td>` +
+								`<td><select class="form-select formik" data-control="select2" name="unidad_3_Garantia` + i + `" id="unidad_3_Garantia` + i + `" onchange="unidades_Garantias(3,` + i + `),"><option value="0">-</option><option value="N/A" data-tipo = "0">N/A</option></select></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="min_3_Garantia` + i + `" id="min_3_Garantia` + i + `" value="` + obj.AnpInfoWarranty[i].Minimo + `" onkeypress="return filterFloat_Garantias(event,this,'campo_3_Garantia',` + i + `)"></td>` +
+								`<td><input readonly type="text" class="form-control formik" name="max_3_Garantia` + i + `" id="max_3_Garantia` + i + `" value="` + obj.AnpInfoWarranty[i].Maximo + `" onkeypress="return filterFloat_Garantias(event,this,'campo_3_Garantia',` + i + `)"></td><input type="hidden" class="form-control formik" value="` + obj.AnpInfoWarranty[i].Tipo + `"  name="campo_3_Garantia` + i + `" id="campo_3_Garantia` + i + `"/>` +
+						`</tr>`
+						}			
+					}
+					tablaWarrantyStep3 = tablaWarrantyStep3 + "</tbody></table>"		
+					$('#WarrantyStep_3').html(tablaWarrantyStep3);
+
+
+					for (var i = 0; i < obj.AnpInfoWarranty.length; i++) {
+					if (obj.AnpInfoWarranty[i].Orden == 3) {
+
+						$('#unidad_3_Garantia' + (i + 1)).val(obj.AnpInfoWarranty[i].Unidad);
+					}
+					}
+							
+				}
+
+				for (let e = 0; e < obj.AnpInfoWarranty.length; e++) {
+					if (obj.AnpInfoWarranty[e].Orden == 3) {
+
+						for (let i = 0; i < obj.AnpListUnits.length; i++) {
+							$('#unidad_3_Garantia' + e).append('<option value="' + obj.AnpListUnits[i].Text + '" data-tipo="' + obj.AnpListUnits[i].ID + '">' + obj.AnpListUnits[i].Text + '</option>');
+						}
+					}
+				}
+
+				for (var i = 0; i < obj.AnpInfoWarranty.length; i++) {
+					if (obj.AnpInfoWarranty[i].Orden == 3) {
+						$('#unidad_3_Garantia' + i).val(obj.AnpInfoWarranty[i].Unidad);
+					}
+				}
+				
+				$('#modal_steps_anp').modal('toggle');
+				$("select").select2();
+				BlockAnpApp.release()
+
+			}).fail(function (error) {
+				swalErrorServer()
+			});
+
+		}
+	}
+</script>
+@*========== End Modals Open*@
+@*============================================ Start Forms Validation*@
+@*Form Validation*@
+<script>
+	var FormCero = document.getElementById('formStep0');
+
+	var validatorFormCero = FormValidation.formValidation(
+		FormCero,
+		{
+			fields: {
+				'CommentCero': {
+					validators: {
+						notEmpty: {
+							message: 'Comment is required.'
+						}
+					}
+				},
+
+			},
+
+			plugins: {
+				trigger: new FormValidation.plugins.Trigger(),
+				bootstrap: new FormValidation.plugins.Bootstrap5({
+					rowSelector: '.fv-row',
+					eleInvalidClass: '',
+					eleValidClass: ''
+				})
+			}
+		}
+	);
+
+	// Submit button handler
+	var FormCero = document.getElementById('ApprovalCero');
+
+	FormCero.addEventListener('click', function (e) {
+		// Prevent default button action
+		e.preventDefault();
+
+		// Validate form before submit
+		if (validatorFormCero) {
+			validatorFormCero.validate().then(function (status) {
+				if (status == 'Valid') {
+					FormCero.setAttribute('data-kt-indicator', 'on');
+					FormCero.disabled = true;
+					setTimeout(function () {
+						FormCero.removeAttribute('data-kt-indicator');
+						FormCero.disabled = false;
+
+						approvalCero()
+
+					}, 1000);
+				}
+				else {
+					FormCero.setAttribute('data-kt-indicator', 'on');
+					FormCero.disabled = true;
+					setTimeout(function () {
+						FormCero.removeAttribute('data-kt-indicator');
+						FormCero.disabled = false;
+						swal.fire({
+							text: "Sorry, looks like there are some empty inputs detected, please try again.",
+							icon: "error",
+							buttonsStyling: false,
+							confirmButtonText: "Ok, got it!",
+							customClass: {
+								confirmButton: "btn font-weight-bold btn-light-primary"
+							}
+						});
+
+					}, 150);
+				}
+			});
+		}
+	});
+</script>
+
+<script>
+	var FormLateral = document.getElementById('formLateral');
+
+	var validatorFormLateral = FormValidation.formValidation(
+		FormLateral,
+		{
+			fields: {
+				'CommentLateral': {
+					validators: {
+						notEmpty: {
+							message: 'Comment is required.'
+						}
+					}
+				},
+				'UserReasing': {
+					validators: {
+						notEmpty: {
+							message: 'Option is required'
+						}
+					}
+				},
+
+			},
+
+			plugins: {
+				trigger: new FormValidation.plugins.Trigger(),
+				bootstrap: new FormValidation.plugins.Bootstrap5({
+					rowSelector: '.fv-row',
+					eleInvalidClass: '',
+					eleValidClass: ''
+				})
+			}
+		}
+	);
+
+	// Submit button handler
+	var FormLateral = document.getElementById('AssingUser');
+
+	FormLateral.addEventListener('click', function (e) {
+		// Prevent default button action
+		e.preventDefault();
+
+		// Validate form before submit
+		if (validatorFormLateral) {
+			validatorFormLateral.validate().then(function (status) {
+				if (status == 'Valid') {
+					FormLateral.setAttribute('data-kt-indicator', 'on');
+					FormLateral.disabled = true;
+					setTimeout(function () {
+						FormCero.removeAttribute('data-kt-indicator');
+						FormCero.disabled = false;
+						//if($('UserReasing').val() != '' && $('UserReasing').val() != null){
+						setUserReasing()
+						//}
+					}, 1000);
+				}
+				else {
+					FormCero.setAttribute('data-kt-indicator', 'on');
+					FormCero.disabled = true;
+					setTimeout(function () {
+						FormCero.removeAttribute('data-kt-indicator');
+						FormCero.disabled = false;
+						swal.fire({
+							text: "Sorry, looks like there are some empty inputs detected, please try again.",
+							icon: "error",
+							buttonsStyling: false,
+							confirmButtonText: "Ok, got it!",
+							customClass: {
+								confirmButton: "btn font-weight-bold btn-light-primary"
+							}
+						});
+
+					}, 150);
+				}
+			});
+		}
+	});
+</script>
+@*========== End FormValidation ==*@
+<script>
+	//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        // set the dropzone container id
+        var id = "#kt_dropzonejs_example_2";
+        var dropzone = document.querySelector(id);
+
+        // set the preview element template
+        var previewNode = dropzone.querySelector(".dropzone-item");
+        previewNode.id = "";
+        var previewTemplate = previewNode.parentNode.innerHTML;
+        previewNode.parentNode.removeChild(previewNode);
+        
+        var myDropzone = new Dropzone(id, { // Make the whole body a dropzone
+            url: "@Url.Action("FTPUpload","TMAnpControl")",
+            parallelUploads: 1,
+            acceptedFiles: '.jpg,.jpeg,.png,.xlsx,.docx,.pdf',
+            previewTemplate: previewTemplate,
+            maxFilesize: 30, // Max filesize in MB
+            autoQueue: false, // Make sure the files aren't queued until manually added
+            previewsContainer: id + " .dropzone-items", // Define the container to display the previews
+            clickable: id + " .dropzone-select", // Define the element that should be used as click trigger to select files.
+            init: function() {
+                this.on("success", function(file, responseText)
+                {
+                    if(responseText != null)
+                    {
+                        if (responseText == 'Error') {
+                            SystemServerError()
+                            BlockPantalla.release();
+                            document.getElementById('archivos').disabled = true;
+                            document.getElementById('attachFile').disabled = true;
+                        }
+                        if (responseText == 'noSession') {
+                            swalExpired()
+                            BlockPantalla.release();
+                        }
+                        else if (responseText == 'Sorry') {
+                            swalNoAuthorized()
+                            BlockPantalla.release();
+                        }
+                        else if (responseText == 'NoPage') {
+                            swalNoAuthorized()
+                            BlockPantalla.release();
+                        } 
+                        else 
+                        {
+                            if (responseText == "success") 
+                            {
+                                file.previewElement.querySelector('[data-dz-successmessage]').textContent = "success";
+                            }
+                            else {
+                                Swal.fire({
+                                    title: '<h1>The next file can not Upload:</h1> <br> <p class="text-danger">' + file.name,
+                                    icon: "danger",
+                                    width: '450px',
+                                    showCancelButton: false,
+                                    buttonsStyling: false,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    confirmButtonText: "Ok",
+                                    customClass: {
+                                        confirmButton: "btn btn-danger"
+                                    }
+                                })
+                            }
+                        }
+                    }
+                });
+            }
+
+        });
+
+        myDropzone.on("addedfile", function(file) {
+            // Hookup the start button
+            file.previewElement.querySelector(id + " .dropzone-start").onclick = function() { myDropzone.enqueueFile(file) };
+            const dropzoneItems = dropzone.querySelectorAll('.dropzone-item');
+            dropzoneItems.forEach(dropzoneItem => {
+                dropzoneItem.style.display = '';
+            });
+            dropzone.querySelector('.dropzone-upload').style.display = "inline-block";
+            dropzone.querySelector('.dropzone-remove-all').style.display = "inline-block";
+        });
+
+        // Update the total progress bar
+        myDropzone.on("totaluploadprogress", function(progress) {
+            const progressBars = dropzone.querySelectorAll('.progress-bar');
+            progressBars.forEach(progressBar => {
+                progressBar.style.width = progress + "%";
+            });
+        });
+
+        myDropzone.on("sending", function(file, xhr, data) {
+            // Show the total progress bar when upload starts
+            const progressBars = dropzone.querySelectorAll('.progress-bar');
+            progressBars.forEach(progressBar => {
+                progressBar.style.opacity = "1";
+            });
+            // And disable the start button
+            file.previewElement.querySelector(id + " .dropzone-start").setAttribute("disabled", "disabled");
+            data.set("CodigoMedio", codigoMedioGlobal);
+            data.set("RequestID", requestGlobalID);
+            data.set("Nivel", nivelGlobal);
+            data.set("__RequestVerificationToken", $('input:hidden[name="__RequestVerificationToken"]').val());
+        });
+
+        // Hide the total progress bar when nothing's uploading anymore
+        myDropzone.on("complete", function(progress) {
+            const progressBars = dropzone.querySelectorAll('.dz-complete');
+            setTimeout(function() {
+                progressBars.forEach(progressBar => {
+                    progressBar.querySelector('.progress-bar').style.opacity = "0";
+                    progressBar.querySelector('.progress').style.opacity = "0";
+                    progressBar.querySelector('.dropzone-start').style.opacity = "0";
+                });
+            }, 300);
+        });
+
+        // Setup the buttons for all transfers
+        dropzone.querySelector(".dropzone-upload").addEventListener('click', function() {
+            myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
+        });
+
+        // Setup the button for remove all files
+        dropzone.querySelector(".dropzone-remove-all").addEventListener('click', function() {
+            dropzone.querySelector('.dropzone-upload').style.display = "none";
+            dropzone.querySelector('.dropzone-remove-all').style.display = "none";
+            myDropzone.removeAllFiles(true);
+        });
+
+        // On all files completed upload
+        myDropzone.on("queuecomplete", function(progress) {
+            const uploadIcons = dropzone.querySelectorAll('.dropzone-upload');
+            uploadIcons.forEach(uploadIcon => {
+                uploadIcon.style.display = "none";
+            });
+        });
+
+        // On all files removed
+        myDropzone.on("removedfile", function(file) {
+            if (myDropzone.files.length < 1) {
+                dropzone.querySelector('.dropzone-upload').style.display = "none";
+                dropzone.querySelector('.dropzone-remove-all').style.display = "none";
+            }
+        });
+        //show the modal with it
+
+        //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+</script>
+<script>
+	function unidades_Garantias(nivel, input) {
+		var data_attr = $("#unidad_" + nivel + "_Garantia" + input);
+		var valor = data_attr.find(':selected').data('tipo');
+
+		$("#min_" + nivel + "_Garantia" + input).val('');
+		$("#max_" + nivel + "_Garantia" + input).val('');
+		$("#min_" + nivel + "_Garantia" + input).removeAttr("readonly");
+		$("#max_" + nivel + "_Garantia" + input).removeAttr("readonly");
+
+		if (nivel != 3) {
+			$("#medicion_" + nivel + "_Garantia" + input).val('');
+			$("#campo_" + nivel + "_Garantia" + input).val('');
+			$("#medicion_" + nivel + "_Garantia" + input).removeAttr("readonly");
+			$("#conclusion_" + nivel + "_Garantia" + input).val('-').trigger('change.select2');
+
+			if (valor == 1) {
+				$("#min_" + nivel + "_Garantia" + input).attr("placeholder", "0.0");
+				$("#max_" + nivel + "_Garantia" + input).attr("placeholder", "0.0");
+				$("#medicion_" + nivel + "_Garantia" + input).attr("placeholder", "0.0");
+				$("#campo_" + nivel + "_Garantia" + input).val(valor);
+			} else if (valor == 2) {
+				$("#min_" + nivel + "_Garantia" + input).attr("placeholder", "0.00");
+				$("#max_" + nivel + "_Garantia" + input).attr("placeholder", "0.00");
+				$("#medicion_" + nivel + "_Garantia" + input).attr("placeholder", "0.00");
+				$("#campo_" + nivel + "_Garantia" + input).val(valor);
+			} else if (valor == 3) {
+				$("#min_" + nivel + "_Garantia" + input).attr("placeholder", "0.000");
+				$("#max_" + nivel + "_Garantia" + input).attr("placeholder", "0.000");
+				$("#medicion_" + nivel + "_Garantia" + input).attr("placeholder", "0.000");
+				$("#campo_" + nivel + "_Garantia" + input).val(valor);
+			} else if (valor == 4) {
+				$("#min_" + nivel + "_Garantia" + input).attr("placeholder", "0.0000");
+				$("#max_" + nivel + "_Garantia" + input).attr("placeholder", "0.0000");
+				$("#medicion_" + nivel + "_Garantia" + input).attr("placeholder", "0.0000");
+				$("#campo_" + nivel + "_Garantia" + input).val(valor);
+			} else if (valor == 0) {
+				$("#min_" + nivel + "_Garantia" + input).val('0.0');
+				$("#max_" + nivel + "_Garantia" + input).val('0.0');
+				$("#medicion_" + nivel + "_Garantia" + input).val('0.0');
+				$("#conclusion_" + nivel + "_Garantia" + input).val('-').trigger('change.select2');
+			} else {
+				$("#min_" + nivel + "_Garantia" + input).val('');
+				$("#min_" + nivel + "_Garantia" + input).attr("placeholder", "");
+				$("#max_" + nivel + "_Garantia" + input).val('');
+				$("#max_" + nivel + "_Garantia" + input).attr("placeholder", "");
+				$("#medicion_" + nivel + "_Garantia" + input).val('');
+				$("#medicion_" + nivel + "_Garantia" + input).attr("placeholder", "")
+				$("#campo_" + nivel + "_Garantia" + input).val('');
+			}
+		} else {
+			if (valor == 1) {
+				$("#min_" + nivel + "_Garantia" + input).attr("placeholder", "0.0");
+				$("#max_" + nivel + "_Garantia" + input).attr("placeholder", "0.0");
+				$("#campo_" + nivel + "_Garantia" + input).val(valor);
+			} else if (valor == 2) {
+				$("#min_" + nivel + "_Garantia" + input).attr("placeholder", "0.00");
+				$("#max_" + nivel + "_Garantia" + input).attr("placeholder", "0.00");
+				$("#campo_" + nivel + "_Garantia" + input).val(valor);
+			} else if (valor == 3) {
+				$("#min_" + nivel + "_Garantia" + input).attr("placeholder", "0.000");
+				$("#max_" + nivel + "_Garantia" + input).attr("placeholder", "0.000");
+				$("#campo_" + nivel + "_Garantia" + input).val(valor);
+			} else if (valor == 4) {
+				$("#min_" + nivel + "_Garantia" + input).attr("placeholder", "0.0000");
+				$("#max_" + nivel + "_Garantia" + input).attr("placeholder", "0.0000");
+				$("#campo_" + nivel + "_Garantia" + input).val(valor);
+			} else if (valor == 0) {
+				$("#min_" + nivel + "_Garantia" + input).val('0.0');
+				$("#max_" + nivel + "_Garantia" + input).val('0.0');
+				$('#conclusion_"+nivel+"_Garantia' + input).val('-').trigger('change.select2');
+			} else {
+				$("#min_" + nivel + "_Garantia" + input).val('');
+				$("#min_" + nivel + "_Garantia" + input).attr("placeholder", "");
+				$("#max_" + nivel + "_Garantia" + input).val('');
+				$("#max_" + nivel + "_Garantia" + input).attr("placeholder", "");
+				$("#campo_" + nivel + "_Garantia" + input).val('');
+			}
+		}
+	}
+
+	var decimal = "";
+	function filterFloat_Garantias(evt, input, campo, contador) {
+		decimal = $('#' + campo + contador).val();
+		var key = window.Event ? evt.which : evt.keyCode;
+		var chark = String.fromCharCode(key);
+		var tempValue = input.value + chark;
+		if (key >= 48 && key <= 57) {
+			if (filter(tempValue) === false) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			if (key == 8 || key == 13 || key == 0) {
+				return true;
+			} else if (key == 46) {
+				if (filter(tempValue) === false) {
+					return false;
+				} else {
+					return true;
+				}
+			} else {
+				return false;
+			}
+		}
+	}
+
+	function medicion_conclusion_Garantias(opcion, nivel) {
+		minimo = parseFloat($("#min_" + opcion + "_Garantia" + nivel).val());
+		maximo = parseFloat($("#max_" + opcion + "_Garantia" + nivel).val());
+		medicion = parseFloat($("#medicion_" + opcion + "_Garantia" + nivel).val());
+		if (medicion >= minimo && medicion <= maximo) {
+			$("#conclusion_" + opcion + "_Garantia" + nivel).val('Dentro').trigger('change.select2');
+		} else {
+			$("#conclusion_" + opcion + "_Garantia" + nivel).val('Fuera').trigger('change.select2');
+		}
+	}
+</script>
+ <script>
+async function Guarda_DatosEntrada(opcion,rechazar){
+	var Cantidad_1          = contadorNivel1;
+	var Cantidad_2          = contadorNivel2;
+	var Cantidad_3			= contadorNivel3;
+	var CantidadADD_1		= contadorAddNivel1;
+	var CantidadADD_2       = contadorAddNivel2;
+	var CantidadADD_3       = contadorAddNivel3;
+	var CantidadGarantias_1 = contadorGarantiasNivel1;
+	var CantidadGarantias_2 = contadorGarantiasNivel2;
+	var CantidadGarantias_3 = contadorGarantiasNivel3;
+	var solicitud           = requestGlobalID;
+	var fanp                = fanpGlobal;
+	var aplicacion          = aplicacionGlobal;
+	if(aplicacion == null){
+		aplicacion = $('#Aplication').val();
+	}
+	var servicio_interno    = '';
+	var comentarios = $("#ComentariosStep1").val();
+		//console.log(CantidadADD_2);
+	if(document.getElementById('internalYes').checked == true){servicio_interno = 1; }
+	if(document.getElementById('internalNo').checked == true){servicio_interno = 0; }
+	CantidadADD_1 = CantidadADD_1 + 1;
+	CantidadADD_2 = CantidadADD_2 + 1;
+	CantidadADD_3 = CantidadADD_3 + 1;
+	//console.log(servicio_interno);
+
+		var bitVacios = 0;
+		$('.formik').each(function () {
+		//console.log($(this).val());
+        var campos = $(this).val();
+		if(this.id != ''){
+        if (campos != '' ){
+				//console.log(this.id + ' no vacios ' + $(this).val());
+				//console.log(this.id);
+			}else{
+				bitVacios = 1;
+				console.log(this.id + ' vacios ' + $(this).val());
+				//console.log(this.id);
+			}
+		}
+        });
+
+
+	if(comentarios == "" || aplicacion == ""){
+		toastr['info']('Esta opción requiere la información de la APLICACION y COMENTARIOS', 'Alerta!!');
+	}else{
+		if(bitVacios == 1){
+			Swal.fire(
+			  'Alert!',
+			  'Existen campos incompletos favor de validar la información!',
+			  'warning'
+			)
+		}else{
+				
+				if (aplicacion != '' && servicio_interno >= 0 && comentarios != '') {
+
+
+					await  $.ajax({
+						url: "@Url.Action("saveStep1Data","TMAnpControl")",
+						type: "post",
+						//dataType: 'json',
+						contentType: 'application/x-www-form-urlencoded; charset=UTF-8', 
+						data: {
+							Aplicacion: aplicacion,
+							Serivicio:servicio_interno,
+							Comentarios:comentarios,
+							Nivel:0,
+							Fanp : fanpGlobal,
+							RequestID : requestGlobalID,
+						},
+						beforeSend: function (xhr) {
+							xhr.setRequestHeader("XSRF-TOKEN",
+								$('input:hidden[name="__RequestVerificationToken"]').val());
+						},
+					})
+					.done(function (result) {
+						if (result != null) {
+							if (result != 'Success') {
+								errores = errores + 1;
+							}
+						}
+						else {
+							//SystemServerError()
+						}
+					})
+					.fail(function (xhr, status, error) {
+						//swalErrorServer()
+					})
+				}
+
+
+				errores = 0;
+				if(Cantidad_1 > -1){
+
+					for (i = 0; i <= Cantidad_1; i++){
+						Caracteristica = $("#caracteristica_1_" + i).val();
+						if (Caracteristica != undefined) {
+						await $.ajax({
+							async: true,
+							url: "@Url.Action("saveStep1Nivel1","TMAnpControl")",
+							type: "post",
+							//dataType: 'json',
+							contentType: 'application/x-www-form-urlencoded; charset=UTF-8', 
+							data: {
+								CaracteristicaId: $("#caracteristica_1_" + i).val(),
+								Unidad:$("#unidad_1_" + i).val(),
+								Minimo:$("#min_1_" + i).val(),
+								Maximo:$("#max_1_" + i).val(),
+								Medicion:$("#medicion_1_" + i).val(),
+								Conclusion:$("#conclusion_1_" + i).val(),
+								Nivel:1,
+								Tipo:1,
+								Fanp : fanpGlobal,
+								RequestID : requestGlobalID,
+								Update: document.querySelector("#caracteristica_1_" + i).dataset.bit
+							},
+							beforeSend: function (xhr) {
+								xhr.setRequestHeader("XSRF-TOKEN",
+									$('input:hidden[name="__RequestVerificationToken"]').val());
+							},
+						})
+						.done(function (result) {
+							if (result != null) {
+								if (result != 'Success') {
+									errores = errores + 1;
+								}
+							}
+							else {
+								SystemServerError()
+							}
+						})
+						.fail(function (xhr, status, error) {
+							swalErrorServer()
+						})
+
+					
+						}
+					}
+					//break;
+
+				}
+
+				erroresadd = 0;
+				if (CantidadADD_1 > -1) {
+					for (i = 1; i <= CantidadADD_1; i++){
+						Caracteristica = $("#caracteristica_1_ADD" + i).val();
+
+						if (Caracteristica != undefined) {
+						await $.ajax({
+							async: true,
+							url: "@Url.Action("saveStep1Nivel1","TMAnpControl")",
+							type: "post",
+							//dataType: 'json',
+							contentType: 'application/x-www-form-urlencoded; charset=UTF-8', 
+							data: {
+								Caracteristica: $("#caracteristica_1_ADD" + i).val(),
+								Unidad:$("#unidad_1_ADD" + i).val(),
+								Minimo:$("#min_1_ADD" + i).val(),
+								Maximo:$("#max_1_ADD" + i).val(),
+								Medicion:$("#medicion_1_ADD" + i).val(),
+								Conclusion:$("#conclusion_1_ADD" + i).val(),
+								Nivel:1,
+								Tipo:2,
+								Fanp : fanpGlobal,
+								RequestID : requestGlobalID,
+								Update: document.querySelector("#caracteristica_1_ADD" + i).dataset.bit
+							},
+							beforeSend: function (xhr) {
+								xhr.setRequestHeader("XSRF-TOKEN",
+									$('input:hidden[name="__RequestVerificationToken"]').val());
+							},
+						})
+						.done(function (result) {
+							if (result != null) {
+								if (result != 'Success') {
+											erroresadd = erroresadd + 1;
+								}
+							}
+							else {
+								SystemServerError()
+							}
+						})
+						.fail(function (xhr, status, error) {
+							swalErrorServer()
+						})
+						}
+
+
+					}
+					//break;
+				}
+
+				////*Garantias Nivel 1*//
+				errorwarranty1 = 0
+				if(CantidadGarantias_1 > -1){
+					for (i = 0; i < CantidadGarantias_1; i++){
+
+						Caracteristica = $("#caracteristica_1_Garantia" + i).val();
+						if (Caracteristica != undefined) {
+						await $.ajax({
+							async: true,
+							url: "@Url.Action("saveStep1Nivel1","TMAnpControl")",
+							type: "post",
+							contentType: 'application/x-www-form-urlencoded; charset=UTF-8', 
+							data: {
+								Caracteristica: $("#caracteristica_1_Garantia" + i).val(),
+								Unidad:$("#unidad_1_Garantia" + i).val(),
+								Minimo:$("#min_1_Garantia" + i).val(),
+								Maximo:$("#max_1_Garantia" + i).val(),
+								Medicion:$("#medicion_1_Garantia" + i).val(),
+								Conclusion:$("#conclusion_1_Garantia" + i).val(),
+								Nivel:1,
+								Tipo:3,
+								Fanp : fanpGlobal,
+								RequestID : requestGlobalID,
+								Update: document.querySelector("#caracteristica_1_Garantia" + i).dataset.bit
+							},
+							beforeSend: function (xhr) {
+								xhr.setRequestHeader("XSRF-TOKEN",
+									$('input:hidden[name="__RequestVerificationToken"]').val());
+							},
+						})
+						.done(function (result) {
+							if (result != null) {
+								if (result != 'Success') {
+											errorwarranty1 = errorwarranty1 + 1;
+								}
+							}
+							else {
+								SystemServerError()
+							}
+						})
+						.fail(function (xhr, status, error) {
+							swalErrorServer()
+						})
+						}
+					}
+					//break;
+				}
+				
+				error2 = 0;
+				if(Cantidad_2 > -1){
+					for (i = 0; i <= Cantidad_2; i++){
+						Caracteristica = $("#caracteristica_2_" + i).val();
+						if (Caracteristica != undefined) {
+
+							await  $.ajax({
+								async: true,
+								url: "@Url.Action("saveStep1Nivel2","TMAnpControl")",
+								type: "post",
+								contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+								data: {
+									CaracteristicaId: $("#caracteristica_2_" + i).val(),
+									Resultado: $("#resultado_2_" + i).val(),
+									Conclusion: $("#conclusion_2_" + i).val(),
+									Nivel:2,
+									Tipo:1,
+									Fanp : fanpGlobal,
+									RequestID : requestGlobalID,
+									Update: document.querySelector("#caracteristica_2_" + i).dataset.bit
+								},
+								beforeSend: function (xhr) {
+									xhr.setRequestHeader("XSRF-TOKEN",
+										$('input:hidden[name="__RequestVerificationToken"]').val());
+								},
+							})
+								.done(function (result) {
+									if (result != null) {
+										if (result != 'Success') {
+											error2 = error2 + 1;
+										}
+									}
+									else {
+										//SystemServerError()
+									}
+								})
+								.fail(function (xhr, status, error) {
+									//swalErrorServer()
+								})
+						}
+					}
+				}
+
+				error2add = 0;
+				if(CantidadADD_2 > -1){
+					for (i = 1; i <= CantidadADD_2; i++){
+
+						Caracteristica = $("#caracteristica_2_ADD" + i).val();
+						if (Caracteristica != undefined) {
+
+							await  $.ajax({
+								async: true,
+								url: "@Url.Action("saveStep1Nivel2","TMAnpControl")",
+								type: "post",
+								contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+								data: {
+									Caracteristica: $("#caracteristica_2_ADD" + i).val(),
+									Resultado: $("#resultado_2_ADD" + i).val(),
+									Conclusion: $("#conclusion_2_ADD" + i).val(),
+									Nivel:2,
+									Tipo:2,
+									Fanp : fanpGlobal,
+									RequestID : requestGlobalID,
+									Update: document.querySelector("#caracteristica_2_ADD" + i).dataset.bit
+								},
+								beforeSend: function (xhr) {
+									xhr.setRequestHeader("XSRF-TOKEN",
+										$('input:hidden[name="__RequestVerificationToken"]').val());
+								},
+							})
+								.done(function (result) {
+									if (result != null) {
+										if (result != 'Success') {
+											error2 = error2 + 1;
+										}
+									}
+									else {
+										//SystemServerError()
+									}
+								})
+								.fail(function (xhr, status, error) {
+									//swalErrorServer()
+								})
+						}
+					}
+				}
+
+
+				error2warranty = 0;
+				if(CantidadGarantias_2 > -1){
+					for (i = 0; i <= CantidadGarantias_2; i++) {
+						Caracteristica = $("#CantidadGarantias_2" + i).val();
+						if (Caracteristica != undefined) {
+
+							await  $.ajax({
+								async: true,
+								url: "@Url.Action("saveStep1Nivel2","TMAnpControl")",
+								type: "post",
+								contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+								data: {
+									Caracteristica: $("#CantidadGarantias_2" + i).val(),
+									Resultado: $("#resultado_2_Garantia" + i).val(),
+									Conclusion: $("#conclusion_2_Garantia" + i).val(),
+									Nivel:2,
+									Tipo:3,
+									Fanp : fanpGlobal,
+									RequestID : requestGlobalID,
+									Update: document.querySelector("#CantidadGarantias_2" + i).dataset.bit
+								},
+								beforeSend: function (xhr) {
+									xhr.setRequestHeader("XSRF-TOKEN",
+										$('input:hidden[name="__RequestVerificationToken"]').val());
+								},
+							})
+								.done(function (result) {
+									if (result != null) {
+										if (result != 'Success') {
+											//error2warranty = error2warranty + 1;
+										}
+									}
+									else {
+										//SystemServerError()
+									}
+								})
+								.fail(function (xhr, status, error) {
+									swalErrorServer()
+								})
+						}
+					}
+				}
+
+				errores3 = 0;
+				for (i = 0; i <= Cantidad_3; i++){
+					Caracteristica = $("#caracteristica_3_" + i).val();
+					if (Caracteristica != undefined) {
+					await $.ajax({
+						async: true,
+						url: "@Url.Action("saveStep1Nivel3","TMAnpControl")",
+						type: "post",
+						//dataType: 'json',
+						contentType: 'application/x-www-form-urlencoded; charset=UTF-8', 
+						data: {
+							CaracteristicaId: $("#caracteristica_3_" + i).val(),
+							Unidad:$("#unidad_3_" + i).val(),
+							Minimo:$("#min_3_" + i).val(),
+							Maximo:$("#max_3_" + i).val(),
+							Nivel:3,
+							Tipo:1,
+							Fanp : fanpGlobal,
+							RequestID : requestGlobalID,
+							Update: document.querySelector("#caracteristica_3_" + i).dataset.bit
+						},
+						beforeSend: function (xhr) {
+							xhr.setRequestHeader("XSRF-TOKEN",
+								$('input:hidden[name="__RequestVerificationToken"]').val());
+						},
+					})
+					.done(function (result) {
+						if (result != null) {
+							if (result != 'Success') {
+								errores3 = errores3 + 1;
+							}
+						}
+						else {
+							SystemServerError()
+						}
+					})
+					.fail(function (xhr, status, error) {
+						swalErrorServer()
+					})
+					}
+				}
+
+				erroresadd3 = 0;
+				if (CantidadADD_3 > -1) {
+					for (i = 1; i <= CantidadADD_3; i++){
+						Caracteristica = $("#caracteristica_3_ADD" + i).val();
+
+						if (Caracteristica != undefined) {
+						await $.ajax({
+							async: true,
+							url: "@Url.Action("saveStep1Nivel3","TMAnpControl")",
+							type: "post",
+							//dataType: 'json',
+							contentType: 'application/x-www-form-urlencoded; charset=UTF-8', 
+							data: {
+								Caracteristica: $("#caracteristica_3_ADD" + i).val(),
+								Unidad:$("#unidad_3_ADD" + i).val(),
+								Minimo:$("#min_3_ADD" + i).val(),
+								Maximo:$("#max_3_ADD" + i).val(),
+								Nivel:3,
+								Tipo:2,
+								Fanp : fanpGlobal,
+								RequestID : requestGlobalID,
+								Update: document.querySelector("#caracteristica_3_ADD" + i).dataset.bit
+							},
+							beforeSend: function (xhr) {
+								xhr.setRequestHeader("XSRF-TOKEN",
+									$('input:hidden[name="__RequestVerificationToken"]').val());
+							},
+						})
+						.done(function (result) {
+							if (result != null) {
+								if (result != 'Success') {
+											erroresadd3 = erroresadd3 + 1;
+								}
+							}
+							else {
+								SystemServerError()
+							}
+						})
+						.fail(function (xhr, status, error) {
+							swalErrorServer()
+						})
+						}
+
+
+					}
+				}
+
+				////*Garantias Nivel 1*//
+				errorwarranty3 = 0
+				if(CantidadGarantias_3 > -1){
+					for (i = 0; i < CantidadGarantias_3; i++){
+
+						Caracteristica = $("#caracteristica_3_Garantia" + i).val();
+						if (Caracteristica != undefined) {
+						await $.ajax({
+							async: true,
+							url: "@Url.Action("saveStep1Nivel3","TMAnpControl")",
+							type: "post",
+							contentType: 'application/x-www-form-urlencoded; charset=UTF-8', 
+							data: {
+								CaracteristicaId: $("#caracteristica_3_Garantia" + i).val(),
+								Unidad:$("#unidad_3_Garantia" + i).val(),
+								Minimo:$("#min_3_Garantia" + i).val(),
+								Maximo:$("#max_3_Garantia" + i).val(),
+								Nivel:3,
+								Tipo:3,
+								Fanp : fanpGlobal,
+								RequestID : requestGlobalID,
+								Update: document.querySelector("#caracteristica_3_Garantia" + i).dataset.bit
+							},
+							beforeSend: function (xhr) {
+								xhr.setRequestHeader("XSRF-TOKEN",
+									$('input:hidden[name="__RequestVerificationToken"]').val());
+							},
+						})
+						.done(function (result) {
+							if (result != null) {
+								if (result != 'Success') {
+											errorwarranty3 = errorwarranty3 + 1;
+								}
+							}
+							else {
+								SystemServerError()
+							}
+						})
+						.fail(function (xhr, status, error) {
+							swalErrorServer()
+						})
+						}
+					}
+				}
+
+
+				if(errores > 0 || erroresadd > 0 || errorwarranty1 > 0 || error2 > 0 || error2add > 0 || error2warranty > 0 || errores3 > 0 || erroresadd3 > 0 || errorwarranty3 > 0 ){
+					console.log('errores, algunos datos no se pudieron guardar correctamente favor de verificar la informacion');
+				}else{
+					console.log('Operacion Correcto');
+				}
+		}
+
+	
+	}
+}
+ </script>
+
+

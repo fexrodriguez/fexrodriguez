@@ -1,0 +1,241 @@
+﻿@using FactoryPlatform.Areas.Quality.Models.Reports.Modelos.ModelFeatureList
+@model R_ModelFeatureListViewModel
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+}
+
+<div class="post d-flex flex-column-fluid border" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <div id="BlockPantalla">
+            <div class="card p-5 mb-5">
+                <form asp-area="Quality" asp-action="FeaturesList" asp-controller="Reports" method="post" id="MainForm">
+                    <div class="row">
+                        <input type="hidden" name="SeccionId" id="IdSeccion" value="@Model.IdSeccion" />
+                        <input type="hidden" name="Tipo" id="Tipo" value="@Model.Tipo" />
+                        <div class="col-lg-2 fv-row mb-4">
+                            <label class="fs-6 form-label fw-bolder text-dark">Workstations</label>
+                            <select id="EstacionID" name="EstacionID" data-selected="@Model.EstacionID" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Stations--" data-allow-clear="true">
+                                <option></option>
+                                @foreach (var item in Model.WorkStation)
+                                {
+                                    <option value="@item.ID">@item.Descripcion</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-lg-3 fv-row mb-4">
+                            <label class="fs-6 form-label fw-bolder text-dark">Employees</label>
+                            <select id="EmployeeID" name="EmployeeID" data-selected="@Model.EmployeeID" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Employee--" data-allow-clear="true">
+                                <option></option>
+                                @foreach (var item in Model.Employees)
+                                {
+                                    <option value="@item.ID">@item.Descripcion</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-lg-3 fv-row pt-9 me-0">
+                            <button type="submit" class="btn btn-primary p-3  fs-8 me-3">
+                                <i class="fas fa-search"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            @if ((Model.EmployeeID > 0) && (Model.EstacionID > 0))
+            {
+                <div class="card p-5 mb-5">
+                    @if(Model.R_ModelFeatureList.Any())
+                    {
+                        <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                            <div class="card-title">
+                                <div class="d-flex align-items-center position-relative my-1">
+                                    <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                                    <input type="text" data-kt-filter="searchMFList" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+                                </div>
+                                <div id="TablaModelFeatureList_export" class="d-none"></div>
+                            </div>
+                            <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                    <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                                    Export Report
+                                </button>
+                                <div id="TablaModelFeatureList_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+                                    <div class="menu-item px-3">
+                                        <a href="#" class="menu-link px-3" data-kt-exportMFList="excel">
+                                            Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                                        </a>
+                                    </div>
+                                    <div class="menu-item px-3">
+                                        <a href="#" class="menu-link px-3" data-kt-exportMFList="csv">
+                                            Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                                        </a>
+                                    </div>
+                                    <div class="menu-item px-3">
+                                        <a href="#" class="menu-link px-3" data-kt-exportMFList="pdf">
+                                            Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div id="TablaModelFeatureList_buttons" class="d-none"></div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table id="TablaModelFeatureList" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+                                <thead>
+                                    <tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+                                        <th class="min-w-20px  align-middle border-end text-center">ID#</th>
+                                        <th class="min-w-50px  align-middle border-end text-center">Model</th>
+                                        <th class="min-w-200px align-middle border-end">Workstation</th>
+                                        <th class="min-w-200px align-middle border-end">Title</th>
+                                        <th class="min-w-200px align-middle border-end">Description</th>
+                                        <th class="min-w-200px align-middle border-end">Record date</th>
+                                        <th class="min-w-200px align-middle border-end">Record user</th>
+                                        <th class="min-w-50px align-middle border-end">Order</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var N1 = 1;
+                                        @foreach(var item in Model.R_ModelFeatureList)
+                                        {
+                                           <tr>
+                                                <td>@N1</td>
+                                                <td>@item.Modelo</td>
+                                                <td>@item.Estacion</td>
+                                                <td>@item.Titulo</td>
+                                                <td>@item.Descripcion</td>
+                                                <td>@item.FechaRegistro</td>
+                                                <td>@item.Personal</td>
+                                                <td>@item.Orden</td>
+                                            </tr>
+                                            N1++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning d-flex align-items-center p-5">
+                            <span class="svg-icon svg-icon-2x svg-icon-light me-4">
+                                <i class="fas fa-exclamation-triangle fs-2x text-warning"></i>
+                            </span>
+                            <div class="d-flex flex-column">
+                                <h6 class="text-warning">No data in the moment</h6>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+        document.querySelectorAll('[data-selected]').forEach(e => { e.value = e.dataset.selected });
+    </script>
+
+    @*Libreria datatable *@
+    <script type="text/javascript">
+        var KTDatatablesTablaModelFeatureList = function () {
+            var table;
+            var datatable;
+
+            var initDatatableModels = function () {
+                const tableRows = table.querySelectorAll('tbody tr');
+
+                tableRows.forEach(row => {
+                    const dateRow = row.querySelectorAll('td');
+                });
+
+                datatable = $(table).DataTable({
+                    "info": true,
+                    "order": [],
+                    "pageLength": 100,
+                    "scrollY": "500px",
+                    "scrollCollapse": true,
+                    "scrollX": true,
+                    "columns": [
+                        { className: "border-end  border-gray-400 border-start min-w-20px text-center", },
+                        { className: "border-end  border-gray-400 min-w-50px text-center", },
+                        { className: "border-end  border-gray-400 min-w-200px", },
+                        { className: "border-end  border-gray-400 min-w-200px", },
+                        { className: "border-end  border-gray-400 min-w-200px", },
+                        { className: "border-end  border-gray-400 min-w-200px", },
+                        { className: "border-end  border-gray-400 min-w-200px", },
+                        { className: "border-end  border-gray-400 min-w-50px", },
+                    ],
+
+                });
+            }
+
+            // Hook export buttons
+            var exportButtons = () => {
+                const documentTitle = 'Report Model Feature List';
+                var buttons = new $.fn.dataTable.Buttons(table, {
+                    buttons: [
+                        {
+                            extend: 'copyHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'csvHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            title: documentTitle
+                        }
+                    ]
+                }).container().appendTo($('#TablaModelFeatureList_buttons'));
+
+                const exportButtons = document.querySelectorAll('#TablaModelFeatureList_export_menu [data-kt-exportMFList]');
+                exportButtons.forEach(exportButton => {
+                    exportButton.addEventListener('click', e => {
+                        e.preventDefault();
+
+                        var exportValue = e.target.getAttribute('data-kt-exportMFList');
+                        var target = document.querySelector('div[id="TablaModelFeatureList_buttons"]');
+                        target = target.querySelector('.buttons-' + exportValue);
+
+                        target.click();
+                    });
+                });
+            }
+
+            var handleSearchDatatableModels = () => {
+                const filterSearch = document.querySelector('[data-kt-filter="searchMFList"]');
+                filterSearch.addEventListener('keyup', function (e) {
+                    datatable.search(e.target.value).draw();
+                });
+            }
+
+            return {
+                init: function () {
+                    table = document.querySelector('#TablaModelFeatureList');
+
+                    if (!table) {
+                        return;
+                    }
+
+                    initDatatableModels();
+                    exportButtons();
+                    handleSearchDatatableModels();
+                }
+            };
+        }();
+
+        KTUtil.onDOMContentLoaded(function () {
+            KTDatatablesTablaModelFeatureList.init();
+        });
+    </script>
+
+}

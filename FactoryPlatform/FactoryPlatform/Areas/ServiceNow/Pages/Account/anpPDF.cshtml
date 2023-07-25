@@ -1,0 +1,669 @@
+﻿@page "/ServiceNow/anpPDF"
+@model FactoryPlatform.Areas.ServiceNow.Pages.Account.anpPDFModel
+@{
+}
+<html lang="en">
+<!--begin::Head-->
+<head>
+    <base href="../../">
+    <title>FactoryPlatform - @ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="~/Images/SystemPictures/favicons.png" />
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <!--end::Fonts-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <!--end::Global Stylesheets Bundle-->
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body" class="bg-body" background="~/Images/SystemPictures/newLogo3.png">
+
+    @if (Model.ANP != null)
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid p-10 py-lg-15">
+                    <!-- begin::Wrapper-->
+                    @if (Model.ANP.ANP_Signatures.Count > 0)
+                    {
+                        var AnpSignatures = Model.ANP.ANP_Signatures.First();
+
+                        <div class="mw-lg-950px mx-auto w-100">
+                            <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                <tr class=" border-start border-bottom border-top border-end border-gray-900  fw-bolder text-gray-900">
+                                    <th class="align-middle text-center p-3 bg-gray-300" colspan="6" scope="colgroup">
+                                        <h1 class="card-title fs-1qx text-center">VEGE DE MEXICO S.A. DE C.V.</h1>
+                                    </th>
+                                </tr>
+                                <tr class=" border-bottom border-end border-gray-900 text-gray-900  fs-6 p-2">
+                                    <td class="p-2 border-start  border-gray-900  w-200px align-middle text-center">DEPARTAMENTO:</td>
+                                    <td class="p-2 w-300px align-middle text-center"> INGENIERIA (77)</td>
+                                    <td class="p-2 w-200px align-middle text-center">EDICION:</td>
+                                    <td class="p-2 w-200px align-middle text-center">1</td>
+                                    <td class="p-2   align-middle text-center" colspan="2" rowspan="3">
+                                        <img alt="Logo" src="~/Images/SystemPictures/LogoLkqNew.png" class="w-250px" />
+                                    </td>
+                                </tr>
+                                <tr class=" border-bottom border-end border-gray-900 text-gray-900  fs-6 p-2">
+                                    <td class="p-2  border-start border-gray-900 w-200px align-middle text-center ">CLAVE:</td>
+                                    <td class="p-2  w-300px align-middle text-center">
+                                        @{
+                                            AnpSignatures.Codigo = AnpSignatures.CodigoMedio == "ANQ" || AnpSignatures.CodigoMedio == "ANHMA" ? $"{AnpSignatures.CodigoMedio} - {AnpSignatures.Codigo}" : $"ANP-{AnpSignatures.Codigo}";
+                                        } @AnpSignatures.Codigo
+                                    </td>
+                                    <td class="p-2  w-200px align-middle text-center">FECHA:</td>
+                                    <td class="p-2  w-200px align-middle text-center"> @AnpSignatures.Fecha</td>
+                                </tr>
+                                <tr class="border border-bottom border-end border-gray-900 text-gray-900 fs-6 p-2">
+                                    <th class="p-2  w-200px align-middle text-center ">TIPO:</th>
+                                    <td class="p-2  w-300px align-middle text-center"> TODOS</td>
+                                    <td class="p-2  w-200px align-middle text-center">ELABORO:</td>
+                                    <td class="p-2  w-200px align-middle text-center">@AnpSignatures.Ingeniero</td>
+                                </tr>
+                                <tr class="border border-bottom border-end border-gray-900 border-gray-900 fw-bolder text-gray-900 ">
+                                    @if (AnpSignatures.Aprobado == 1)
+                                    {
+                                        <th style="background-color: #58FA82;" class="align-middle text-center p-2" colspan="6" scope="colgroup">@AnpSignatures.Codigo - @AnpSignatures.DescripcionCodigoMedio - @AnpSignatures.NombreProveedor - Approved</th>
+
+                                    }
+                                    else
+                                    {
+                                        <th style="background-color: #F78181;" class="align-middle text-center p-2" colspan="6" scope="colgroup">@AnpSignatures.Codigo - @AnpSignatures.DescripcionCodigoMedio - @AnpSignatures.NombreProveedor - Rejected</th>
+                                    }
+                                </tr>
+                                <tr class="border border-bottom border-end border-gray-900 text-gray-900 ">
+                                    <th class="align-middle p-2 bg-gray-100 fs-6" colspan="6" scope="colgroup">ANP Request Information:</th>
+                                </tr>
+                                <tr class="border border-bottom border-end border-gray-900 text-gray-900  fs-6 ">
+                                    <td class="p-2 align-middle w-200px fw-bolder">Requested by:</td>
+                                    <td class="p-2 align-middle w-300px  text-center">@AnpSignatures.Solicito</td>
+                                    <td class="p-2 align-middle w-200px fw-bolder">Supplier:</td>
+                                    <td class="p-2 align-middle w-100px  text-center">(@AnpSignatures.ClaveProveedor) @AnpSignatures.NombreProveedor</td>
+                                    <td class="p-2 align-middle w-200px fw-bolder">Item Code:</td>
+                                    <td class="p-2 align-middle w-200px  text-center">@AnpSignatures.Codigo</td>
+                                </tr>
+                                <tr class="border border-bottom border-end border-gray-900 text-gray-900  fs-6 ">
+                                    <td class="p-2 align-middle w-200px fw-bolder">Part Number Item-Supplier:</td>
+                                    <td class="p-2 align-middle w-300px text-center">@AnpSignatures.NumeroParte</td>
+                                    <td class="p-2 align-middle w-200px fw-bolder">Job:</td>
+                                    <td class="p-2 align-middle w-100px  text-center">@AnpSignatures.NumeroJob</td>
+                                    <td class="p-2 align-middle w-200px fw-bolder">Approval Reason:	</td>
+                                    <td class="p-2 align-middle w-200px text-center">@AnpSignatures.Razon</td>
+                                </tr>
+                                <tr class="border border-bottom border-end border-gray-900 text-gray-900  fs-6 ">
+                                    <td class="p-2 align-middle w-200px fw-bolder">Quality Fails(last year):</td>
+                                    <td class="p-2 align-middle w-300px text-center">@AnpSignatures.FallasCalidad</td>
+                                    <td class="p-2 align-middle w-200px fw-bolder">Comments to Approval Reason:</td>
+                                    <td class="p-2 align-middle w-100px text-center">@AnpSignatures.Comentarios</td>
+                                    <td class="p-2 align-middle w-200px fw-bolder">Type File:</td>
+                                    <td class="p-2 align-middle w-200px text-center">@AnpSignatures.TipoArchivo</td>
+                                </tr>
+                                <tr class="border border-bottom border-end border-gray-900 text-gray-900  fs-6 ">
+                                    <td class="p-2 align-middle w-200px fw-bolder">Request:	</td>
+                                    <td class="p-2 align-middle w-300px text-center">REQ-@AnpSignatures.ID_Request</td>
+                                    <td class="p-2 align-middle w-200px fw-bolder">Aplication:	</td>
+                                    <td class="p-2 align-middle w-100px text-center">@AnpSignatures.DescripcionAplicacion</td>
+                                    <td class="p-2 align-middle w-200px fw-bolder">Department:	</td>
+                                    <td class="p-2 align-middle w-200px text-center">77</td>
+                                </tr>
+                                <tr class="border  border-end border-gray-900 text-gray-900  fs-6 ">
+                                    <td class="p-2 border-bottom border-gray-900  align-middle w-200px fw-bolder">Standard Cost:	</td>
+                                    <td class="p-2 border-bottom border-gray-900 align-middle w-300px text-center"> $ @AnpSignatures.CostoStandar</td>
+                                    <td class="p-2 border-bottom border-gray-900 align-middle w-200px fw-bolder">New Cost:</td>
+                                    <td class="p-2 border-bottom border-gray-900 align-middle w-100px text-center"> $ @AnpSignatures.NuevoPrecio</td>
+                                    <td class="p-2 border-bottom border-gray-900 align-middle w-200px fw-bolder">Consumption Monthly:	</td>
+                                    <td class="p-2 border-bottom border-gray-900 align-middle w-200px text-center"> $ @AnpSignatures.ConsumoAnual</td>
+                                </tr>
+                            </table>
+
+                            @if (Model.ANP.DigitalDocumentsANP.Count > 0)
+                            {
+
+                                <div class="border border-bottom  border-gray-900 p-2 mb-10">
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 1.-General Inspection (Dimensional):
+                                    -----------------------------------------------------------------------------------------------*@
+
+                                    <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                        <tr class="border border-bottom border-gray-900 text-gray-900  ">
+                                            <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">1.-General Inspection (Dimensional):</td>
+                                        </tr>
+                                        <tr class="border  border-bottom border-gray-900 text-gray-900 bg-gray-300  fs-5">
+                                            <th class="p-2 align-middle w-50px text-center">#</th>
+                                            <th class="p-2 align-middle w-300px">Parametro</th>
+                                            <th class="p-2 align-middle w-100px text-center">Unidad</th>
+                                            <th class="p-2 align-middle w-100px text-center">Minimo</th>
+                                            <th class="p-2 align-middle w-100px text-center">Maximo</th>
+                                            <th class="p-2 align-middle w-100px text-center">Medicion</th>
+                                            <th class="p-2 align-middle w-100px text-center">Conclusion</th>
+                                        </tr>
+                                        @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 1).ToList().Any())
+                                        {
+                                            var rowcount = 1;
+                                            foreach (var ANP in Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 1).ToList())
+                                            {
+                                                <tr style="background-color: #@ANP.Color;" class="border border-bottom border-end border-gray-900 text-gray-900 fs-6">
+                                                    <th class="p-2 align-middle w-50px text-center">@rowcount</th>
+                                                    <th class="p-2 align-middle w-300px">@ANP.Descripcion</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Unidad</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Minimo</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Maximo</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Medicion</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Conclusion</th>
+                                                </tr>
+                                                rowcount++;
+                                            }
+                                        }
+                                    </table>
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 1.1.- General Inspection - Punto de Garntias:
+                                    -----------------------------------------------------------------------------------------------*@
+
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 2).ToList().Any())
+                                    {
+                                        var rowcount = 1;
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 2).First().Title :</td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 bg-gray-300  fs-5">
+                                                <th class="p-2 align-middle w-50px text-center">#</th>
+                                                <th class="p-2 align-middle w-300px">Parametro</th>
+                                                <th class="p-2 align-middle w-100px text-center">Unidad</th>
+                                                <th class="p-2 align-middle w-100px text-center">Minimo</th>
+                                                <th class="p-2 align-middle w-100px text-center">Maximo</th>
+                                                <th class="p-2 align-middle w-100px text-center">Medicion</th>
+                                                <th class="p-2 align-middle w-100px text-center">Conclusion</th>
+                                            </tr>
+                                            @foreach (var ANP in Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 2).ToList())
+                                            {
+                                                <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6" style="background-color: #@ANP.Color;">
+                                                    <th class="p-2 align-middle w-50px text-center">@rowcount</th>
+                                                    <th class="p-2 align-middle w-300px">@ANP.Descripcion</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Unidad</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Minimo</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Maximo</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Medicion</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Conclusion</th>
+                                                </tr>
+                                                rowcount++;
+                                            }
+                                        </table>
+                                    }
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 2.- General Inspection (Attributes):
+                                    -----------------------------------------------------------------------------------------------*@
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 3).ToList().Any())
+                                    {
+                                        var rowcount = 1;
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 3).First().Title: </td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900  bg-gray-300  fs-5">
+                                                <th class="p-2 align-middle w-50px">#</th>
+                                                <th class="p-2 align-middle w-200px">Parametro</th>
+                                                <th class="p-2 align-middle w-200px text-center">Resultado</th>
+                                                <th class="p-2 align-middle w-200px text-center">Conclusion</th>
+                                            </tr>
+                                            @foreach (var ANP in Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 3).ToList())
+                                            {
+                                                <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6" style="background-color: #@ANP.Color;">
+                                                    <td class="p-2 align-middle w-50px">@rowcount</td>
+                                                    <td class="p-2 align-middle w-200px">@ANP.Descripcion</td>
+                                                    <td class="p-2 align-middle w-200px text-center">@ANP.Resultado</td>
+                                                    <td class="p-2 align-middle w-200px text-center">@ANP.Conclusion</td>
+                                                </tr>
+                                                rowcount++;
+                                            }
+                                        </table>
+                                    }
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 2.1.- General Inspection - Puntos de Garantias:
+                                    -----------------------------------------------------------------------------------------------*@
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 4).ToList().Any())
+                                    {
+                                        var rowcount = 1;
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 4).First().Title: </td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900  bg-gray-300  fs-5">
+                                                <th class="p-2 align-middle w-50px">#</th>
+                                                <th class="p-2 align-middle w-200px">Parametro</th>
+                                                <th class="p-2 align-middle w-200px">Resultado</th>
+                                                <th class="p-2 align-middle w-200px">Conclusion</th>
+                                            </tr>
+                                            @foreach (var ANP in Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 4).ToList())
+                                            {
+                                                <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6" style="background-color: #@ANP.Color;">
+                                                    <td class="p-2 align-middle w-50px">@rowcount</td>
+                                                    <td class="p-2 align-middle w-200px">@ANP.Descripcion</td>
+                                                    <td class="p-2 align-middle w-200px">@ANP.Resultado</td>
+                                                    <td class="p-2 align-middle w-200px">@ANP.Conclusion</td>
+                                                </tr>
+                                                rowcount++;
+                                            }
+                                        </table>
+                                    }
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 3.- Comments (General Inspection)
+                                    -----------------------------------------------------------------------------------------------*@
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 5).ToList().Count > 0)
+                                    {
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900  ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 5).First().Title: </td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                                <td class="p-2 align-middle"> @AnpSignatures.FComentarios</td>
+                                            </tr>
+                                        </table>
+                                    }
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 4.- Dimensional Specifications
+                                    -----------------------------------------------------------------------------------------------*@
+
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 6).ToList().Any())
+                                    {
+                                        var rowcount = 1;
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 6).First().Title:</td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 bg-gray-300  fs-5">
+                                                <th class="p-2 align-middle w-50px text-center">#</th>
+                                                <th class="p-2 align-middle w-300px">Parametro</th>
+                                                <th class="p-2 align-middle w-100px text-center">Unidad</th>
+                                                <th class="p-2 align-middle w-100px text-center">Minimo</th>
+                                                <th class="p-2 align-middle w-100px text-center">Maximo</th>
+                                                <th class="p-2 align-middle w-100px text-center">Medicion</th>
+                                                <th class="p-2 align-middle w-100px text-center">Conclusion</th>
+                                            </tr>
+                                            @foreach (var ANP in Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 6).ToList())
+                                            {
+                                                <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6" style="background-color: #@ANP.Color;">
+                                                    <th class="p-2 align-middle w-50px text-center">@rowcount</th>
+                                                    <th class="p-2 align-middle w-300px">@ANP.Descripcion</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Unidad</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Minimo</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Maximo</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Medicion</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Conclusion</th>
+                                                </tr>
+                                                rowcount++;
+                                            }
+                                        </table>
+                                    }
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 4.1.- Dimensional Specifications - Puntos de Garantias
+                                    -----------------------------------------------------------------------------------------------*@
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 7).ToList().Any())
+                                    {
+                                        var rowcount = 1;
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 7).First().Title:</td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 bg-gray-300  fs-5">
+                                                <th class="p-2 align-middle w-50px text-center">#</th>
+                                                <th class="p-2 align-middle w-300px">Parametro</th>
+                                                <th class="p-2 align-middle w-100px text-center">Unidad</th>
+                                                <th class="p-2 align-middle w-100px text-center">Minimo</th>
+                                                <th class="p-2 align-middle w-100px text-center">Maximo</th>
+                                                <th class="p-2 align-middle w-100px text-center">Medicion</th>
+                                                <th class="p-2 align-middle w-100px text-center">Conclusion</th>
+                                            </tr>
+                                            @foreach (var ANP in Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 7).ToList())
+                                            {
+                                                <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6" style="background-color: #@ANP.Color;">
+                                                    <th class="p-2 align-middle w-50px text-center">@rowcount</th>
+                                                    <th class="p-2 align-middle w-300px">@ANP.Descripcion</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Unidad</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Minimo</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Maximo</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Medicion</th>
+                                                    <th class="p-2 align-middle w-100px text-center">@ANP.Conclusion</th>
+                                                </tr>
+                                                rowcount++;
+                                            }
+                                        </table>
+                                    }
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 5.- Attribute Specifications
+                                    -----------------------------------------------------------------------------------------------*@
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 8).ToList().Any())
+                                    {
+                                        var rowcount = 1;
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 8).First().Title: </td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 bg-gray-300  fs-5">
+                                                <th class="p-2 align-middle w-50px text-center">#</th>
+                                                <th class="p-2 align-middle w-400px ">Parametro</th>
+                                                <th class="p-2 align-middle w-100px text-center">Resultado</th>
+                                                <th class="p-2 align-middle w-100px text-center">Conclusion</th>
+                                            </tr>
+                                            @foreach (var ANP in Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 8).ToList())
+                                            {
+                                                <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6" style="background-color: #@ANP.Color;">
+                                                    <td class="p-2 align-middle w-50px text-center">@rowcount</td>
+                                                    <td class="p-2 align-middle w-400px ">@ANP.Descripcion</td>
+                                                    <td class="p-2 align-middle w-100px text-center">@ANP.Resultado</td>
+                                                    <td class="p-2 align-middle w-100px text-center">@ANP.Conclusion</td>
+                                                </tr>
+                                                rowcount++;
+                                            }
+                                        </table>
+                                    }
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 5.1.- Attribute Specifications - Puntos de Garantias
+                                    -----------------------------------------------------------------------------------------------*@
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 9).ToList().Any())
+                                    {
+                                        var rowcount = 1;
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 9).First().Title: </td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 bg-gray-300  fs-5">
+                                                <th class="p-2 align-middle w-50px text-center">#</th>
+                                                <th class="p-2 align-middle w-400px ">Parametro</th>
+                                                <th class="p-2 align-middle w-100px text-center">Resultado</th>
+                                                <th class="p-2 align-middle w-100px text-center">Conclusion</th>
+                                            </tr>
+                                            @foreach (var ANP in Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 9).ToList())
+                                            {
+                                                <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6" style="background-color: #@ANP.Color;">
+                                                    <td class="p-2 align-middle w-50px text-center">@rowcount</td>
+                                                    <td class="p-2 align-middle w-400px ">@ANP.Descripcion</td>
+                                                    <td class="p-2 align-middle w-100px text-center">@ANP.Resultado</td>
+                                                    <td class="p-2 align-middle w-100px text-center">@ANP.Conclusion</td>
+                                                </tr>
+                                                rowcount++;
+                                            }
+                                        </table>
+                                    }
+
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 6.- Tests
+                                    -----------------------------------------------------------------------------------------------*@
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 10).ToList().Any())
+                                    {
+                                        var rowcount = 1;
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 10).First().Title: </td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 bg-gray-300  fs-5">
+                                                <th class="p-2 align-middle w-50px text-center">#</th>
+                                                <th class="p-2 align-middle w-200px">Parametro</th>
+                                                <th class="p-2 align-middle w-200px">Conclusion</th>
+                                            </tr>
+                                            @foreach (var ANP in Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 10).ToList())
+                                            {
+                                                <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6" style="background-color: #@ANP.Color;">
+                                                    <td class="p-2 align-middle w-50px text-center">@rowcount</td>
+                                                    <td class="p-2 align-middle w-200px text-center">@ANP.Descripcion</td>
+                                                    <td class="p-2 align-middle w-200px text-center">@ANP.Conclusion</td>
+                                                </tr>
+                                                rowcount++;
+                                            }
+                                        </table>
+                                    }
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 7.- Comments (Tests)'
+                                    -----------------------------------------------------------------------------------------------*@
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 11).ToList().Any())
+                                    {
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 11).First().Title: </td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                                <td class="p-2 align-middle"> @AnpSignatures.FcomentariosMedicion</td>
+                                            </tr>
+                                        </table>
+                                    }
+
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 8.- Conclusions
+                                    -----------------------------------------------------------------------------------------------*@
+                                    @if (Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 12).ToList().Any())
+                                    {
+
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">@Model.ANP.DigitalDocumentsANP.Where(A => A.TipoID == 12).First().Title:</td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                                <td class="p-2 align-middle"> @AnpSignatures.FConclusiones</td>
+                                            </tr>
+                                        </table>
+                                    }
+
+
+                                    @*-----------------------------------------------------------------------------------------------
+                                    -- 9.- Conclusions - Critical Component:
+                                    -----------------------------------------------------------------------------------------------*@
+                                    @if (AnpSignatures.ListaCritica == 1)
+                                    {
+                                        <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                                <td class="align-middle p-2 bg-gray-100 fs-6" colspan="7" scope="colgroup">9.- Conclusions - Critical Component:</td>
+                                            </tr>
+                                            <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                                <td class="p-2 align-middle"> @AnpSignatures.ConclusionesDesviacion</td>
+                                            </tr>
+                                        </table>
+                                    }
+
+                                     <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-0">
+                                     <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 fw-bolder">
+                                            @if (AnpSignatures.Aprobado == 1)
+                                            {
+                                                <th style="background-color: #58FA82;" class="align-middle  text-center p-2" colspan="6" scope="colgroup">@AnpSignatures.Codigo - @AnpSignatures.NombreProveedor - Approved</th>
+
+                                            }
+                                            else
+                                            {
+                                                <th style="background-color: #F78181;" class="align-middle text-center p-2" colspan="6" scope="colgroup">@AnpSignatures.Codigo - @AnpSignatures.NombreProveedor - Rejected</th>
+                                            }
+                                        </tr>
+                                    </table>
+                                </div>
+                            }
+
+                           <div class="border border-bottom  border-gray-900 p-2 mb-10">
+                                  <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-0">
+
+                                    <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                        <td class="align-middle p-2 bg-gray-100 fs-6"> Drawings & Images: </td>
+                                    </tr>
+                                </table>
+
+                                <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                     <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                        <th class="align-middle p-2 bg-gray-300 text-center fw-bolder"> Datos de Entrada:</th>
+                                    </tr>
+                                    @if (Model.ANP.DatosEntrada.Any())
+                                    {
+                                        foreach (var foto in Model.ANP.DatosEntrada)
+                                        {
+                                            if (Model.ANP.Mediciones.Count == 1 && (foto.Split('.')[1] != "JPG" || foto.Split('.')[1] != "jpg" || foto.Split('.')[1] == "PNG" || foto.Split('.')[1] != "png"))
+                                            {
+                                                <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                                    <td class="p-2 aling-middle text-center">
+                                                        <span class="label label-sm label-primary "> No Drawings or Images </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+
+                                                if (foto.Split('.')[1] == "JPG" || foto.Split('.')[1] == "jpg" || foto.Split('.')[1] == "PNG" || foto.Split('.')[1] == "png")
+                                                {
+                                                    var ruta = $"https://mxesc1vapp001/photocenter/Planta{AnpSignatures.PlantaID}/fanp/{AnpSignatures.CodigoMedioR}/{AnpSignatures.ID_Request}/Step1/{foto}";
+
+                                                    <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                                        <td class="p-2 aling-middle text-center">
+                                                            <img src="@ruta" style="width: 290px;"><br>
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                            <td class="p-2 aling-middle text-center">
+                                                <span class="label label-sm label-primary "> No Drawings or Images </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+
+                                 <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                     <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                        <th class="align-middle p-2 bg-gray-300 text-center">Mediciones y Pruebas: </th>
+                                    </tr>
+                                    @if (Model.ANP.Mediciones.Count > 0)
+                                    {
+                                        foreach (var foto in Model.ANP.Mediciones)
+                                        {
+
+                                            if (Model.ANP.Mediciones.Count == 1 && (foto.Split('.')[1] != "JPG" || foto.Split('.')[1] != "jpg" || foto.Split('.')[1] == "PNG" || foto.Split('.')[1] != "png"))
+                                            {
+                                               <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                                    <td class="p-2 aling-middle text-center">
+                                                        <span class="label label-sm label-primary "> No Drawings or Images </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                if (foto.Split('.')[1] == "JPG" || foto.Split('.')[1] == "jpg" || foto.Split('.')[1] == "PNG" || foto.Split('.')[1] == "png")
+                                                {
+                                                    var ruta = $"https://mxesc1vapp001/photocenter/Planta{AnpSignatures.PlantaID}/fanp/{AnpSignatures.CodigoMedioR}/{AnpSignatures.ID_Request}/Step3/{foto}";
+
+                                                    <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                                        <td class="p-2 aling-middle text-center">
+                                                            <img src="@ruta" style="width: 290px;"><br>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                            <td class="p-2 aling-middle text-center">
+                                                <span class="label label-sm label-primary "> No Drawings or Images </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+
+                               <table class="table border border-gray-900 gy-7 gs-7 gx-7 mb-10">
+                                     <tr class="border border-top border-bottom border-end border-start border-gray-900 text-gray-900 ">
+                                        <th class="align-middle p-2 bg-gray-300  text-center "> Conclusiones:  </th>
+                                    </tr>
+                                    @if (Model.ANP.Conclusiones.Count > 0)
+                                    {
+                                        foreach (var foto in Model.ANP.Conclusiones)
+                                        {
+
+                                            if (Model.ANP.Mediciones.Count == 1 && (foto.Split('.')[1] != "JPG" || foto.Split('.')[1] != "jpg" || foto.Split('.')[1] == "PNG" || foto.Split('.')[1] != "png"))
+                                            {
+                                               <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                                    <td class="p-2 aling-middle text-center">
+                                                        <span class="label label-sm label-primary "> No Drawings or Images </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                if (foto.Split('.')[1] == "JPG" || foto.Split('.')[1] == "jpg" || foto.Split('.')[1] == "PNG" || foto.Split('.')[1] == "png")
+                                                {
+                                                    var ruta = $"https://mxesc1vapp001/photocenter/Planta{AnpSignatures.PlantaID}/fanp/{AnpSignatures.CodigoMedioR}/{AnpSignatures.ID_Request}/Step4/{foto}";
+
+                                                    <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                                        <td class="p-2 aling-middle text-center">
+                                                            <img src="@ruta" style="width: 290px;"><br>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr class="border border-top border-bottom border-end border-start border-gray-900 fs-6">
+                                            <td class="p-2 aling-middle text-center">
+                                                <span class="label label-sm label-primary "> No Drawings or Images </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+
+                            </div>
+                        </div>
+                    }
+
+                    <!-- end::Wrapper-->
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid text-center p-10 py-lg-15">
+                    <a class="mb-10 pt-lg-10">
+                        <img alt="Logo" src="~/Images/SystemPictures/LKQ.png" class="w-300px mb-5" />
+                    </a>
+                    <div class="pt-lg-10 mb-10">
+                        <h1 class="fw-bolder fs-4qx text-danger mb-10">System Error</h1>
+                        <div class="fw-bold fs-3 text-muted mb-15">
+                            @ViewData["Message"]
+                            <br />Please try again later.
+                        </div>
+                        <div class="text-center">
+                            <a href="/FactoryPlatform" class="btn btn-lg btn-primary fw-bolder">Go to homepage</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script>var hostUrl = "assets/";</script>
+    <!--begin::Javascript-->
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script src="~/assets/plugins/global/plugins.bundle.js"></script>
+    <script src="~/assets/js/scripts.bundle.js"></script>
+    <!--end::Global Javascript Bundle-->
+    <!--end::Javascript-->
+</body>
+<!--end::Body-->
+</html>

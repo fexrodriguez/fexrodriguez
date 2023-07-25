@@ -1,0 +1,200 @@
+﻿@using FactoryPlatform.Areas.Quality.Models.ControlPanel.ModelFeactures
+@model CP_ModelFeaturesViewModel
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+}
+
+<div class=" d-flex flex-column flex-row-fluid">
+	<!--begin::Header-->
+	<div id="kt_docs_header" class="docs-header mb-2 mb-lg-10">
+		<div class="container-fluid">
+			<div class="card-header">
+				<form asp-area="Quality" asp-action="Features" asp-controller="Reports" method="post" id="MainForm">
+				<div class="row">
+					<input type="hidden" name="SeccionId" id="IdSeccion" value="@Model.IdSeccion" />
+					<input type="hidden" name="Tipo" id="Tipo" value="@Model.Tipo" />
+					<input type="hidden" name="PlantaID" id="PlantaID" value="@Model.PlantaId" />
+					<div class="col-lg-2 fv-row mb-4">
+						<label class="fs-6 form-label fw-bolder text-dark">Modelo</label>
+						<input id="Modelo" name="Modelo" type="text" class="form-control ps-3 p-3 fs-8"  value="@Model.Modelo" placeholder="Modelo" autocomplete="off" autofocus />
+					</div>
+					<div class="col-lg-3 fv-row mb-4">
+						<label class="fs-6 form-label fw-bolder text-dark">Stations</label>
+						<select id="Estacion" name="Estacion" data-selected="@Model.Estacion" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Stations--" data-allow-clear="true">
+							<option></option>
+							@foreach(var item in Model.Quality_Workstations)
+							{
+								<option value="@item.Value">@item.Text</option>
+							}
+						</select>
+					</div>
+					<div class="col-lg-3 fv-row pt-9 me-0">
+						<button type="submit"  class="btn btn-primary p-3  fs-8 me-3">
+							<i class="fas fa-search"></i>Search
+						</button>
+					</div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!--end::Header-->
+	<!--begin::Content-->
+	@if ((Model.Modelo != null && Model.Modelo != "") && (Model.Estacion > 0))
+	{ 
+	<div class="docs-content d-flex flex-column flex-column-fluid" id="kt_docs_content">
+		<div class="container-fluid d-flex flex-column flex-lg-row" id="kt_docs_content_container">
+			<div class="card card-docs flex-row-fluid mb-2">
+				<div class="card-body">
+					@if(Model.CP_Q_ModelFeature.Any())
+					{
+						foreach (var item in Model.CP_Q_ModelFeature)
+							{
+							string DatosPictures = "";
+							int len = 1;
+							<div class="row">
+									
+								<div class="col-lg-6 fv-row mb-4">
+									@if(Model.FilesModelFeactures.Any())
+									{
+										var fileNames = Model.FilesModelFeactures.Where(f => f.RegistroId == item.ID_Registro).ToList();
+										@if (fileNames.Any())
+										{
+											<div class="w-500px me-5">
+												<div id="Caroucel-@item.ID_Registro" class="carousel slide" data-bs-ride="true">
+													@{
+														int CountActiveScore = 0;
+														int CountActivePic = 0;
+
+																	<div class="carousel-indicators">
+																		@foreach (var file in fileNames)
+															{
+																string Active = CountActiveScore > 0 ? "" : "active";
+																string Current = CountActiveScore > 0 ? "false" : "true";
+																			<button type="button" data-bs-target="#Caroucel-@item.ID_Registro" data-bs-slide-to="@CountActiveScore" aria-label="Slide @CountActiveScore" class="@Active" aria-current="@Current"></button>
+																CountActiveScore++;
+															}
+																	</div>
+																	<div class="carousel-inner">
+																		@foreach (var file in fileNames)
+															{
+																string Active = CountActivePic > 0 ? "" : "active";
+																var src = $"https://mxesc1vapp001/photocenter/Planta{item.PlantaID}/model-features/{item.Modelo}/{item.ID_Registro}/large/{file.FileName}";
+																DatosPictures = DatosPictures + file.FileName + ",";
+																			<div class="carousel-item @Active">
+																				<img src="@src" class="d-block w-100" alt="@file.FileName" onclick="OpenModalImage('@src')">
+																			</div>
+																CountActivePic++;
+															}
+																	</div>
+													}
+													<button class="carousel-control-prev" type="button" data-bs-target="#Caroucel-@item.ID_Registro" data-bs-slide="prev">
+														<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+														<span class="visually-hidden">Previous</span>
+													</button>
+													<button class="carousel-control-next" type="button" data-bs-target="#Caroucel-@item.ID_Registro" data-bs-slide="next">
+														<span class="carousel-control-next-icon" aria-hidden="true"></span>
+														<span class="visually-hidden">Next</span>
+													</button>
+												</div>
+											</div>
+										}
+										else
+										{
+											<div class="alert alert-danger d-flex align-items-center p-5 w-500px mt-6">
+												<span class="svg-icon svg-icon-2x svg-icon-light me-4">
+													<i class="fas fa-exclamation-triangle fs-2x text-danger"></i>
+												</span>
+												<div class="d-flex flex-column">
+													<h6 class="text-danger">There are not pictures for this feaute.</h6>
+												</div>
+											</div>
+										}
+									}
+									else
+									{
+										<div class="alert alert-danger d-flex align-items-center p-5 w-500px mt-6">
+											<span class="svg-icon svg-icon-2x svg-icon-light me-4">
+												<i class="fas fa-exclamation-triangle fs-2x text-danger"></i>
+											</span>
+											<div class="d-flex flex-column">
+												<h6 class="text-danger">There are not pictures for this feaute.</h6>
+											</div>
+										</div>
+									}
+								</div>
+									
+								<div class="col-lg-6 fv-row mb-4">
+									<div>
+										<h1 class="fw-bold mb-6 fs-1">
+											@item.Titulo
+										</h1>
+										<p class="fs-5 fw-bold mb-1">@item.Descripcion</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="border-gray-300 border-bottom border-bottom-dashed mb-4"></div>
+							}
+						
+					}else
+					{
+						<div class="alert alert-warning d-flex align-items-center p-5">
+							<span class="svg-icon svg-icon-2x svg-icon-light me-4"> 
+								<i class="fas fa-exclamation-triangle fs-2x text-warning"></i>
+							</span>
+							<div class="d-flex flex-column">
+								<h6 class="text-warning">No features at the moment</h6>
+								<span>Now you can start recording features for this model!.</span>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	}
+	<!--end::Content-->
+</div>
+
+@*Modal Photo viewe*@
+<div class="modal fade" tabindex="-1" id="PhotoViewer" data-bs-keyboard="false" data-bs-backdrop="static">
+	<div class="modal-dialog mw-1000px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title">Photo Viewer</h3>
+				<div class="btn btn-icon btn-sm ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="me-5 text-center">
+					<img id="IdPhotoView" class="d-block text-center w-950px" alt="PhotoViewer">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts{
+
+	@*Variables Globales*@
+	<script>
+		document.querySelectorAll('[data-selected]').forEach(e => { e.value = e.dataset.selected });
+		var IdSeccion = $('#IdSeccion').val();
+	</script>
+
+	@*Open modal Photo viewer*@
+	<script>
+		function OpenModalImage(src) {
+			$('#IdPhotoView').attr('src', `${src}`);
+			$('#PhotoViewer').modal('show')
+		}
+	</script>
+
+}

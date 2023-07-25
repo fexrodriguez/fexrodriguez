@@ -1,0 +1,2569 @@
+﻿@model DocumentListViewModel
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+}
+
+<div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <div id="kt_block">
+            <div class="card mb-7">
+
+                <div class="card-body p-5 mb-0" id="kt_block_ModelFeatures">
+                    <form id="frmBusqueda" asp-area="Quality" asp-controller="DocumentControl" asp-action="DocumentList" method="post">
+                        <input type="hidden" id="SeccionId" name="SeccionId" value="@Model.IdSeccion" />
+                        <input type="hidden" id="Tipo" name="Tipo" value="@Model.Tipo" />
+                        <div class="row">
+                            <div class="col-lg-3 fv-row mb-4">
+                                <label class="fs-6 form-label fw-bolder text-dark">Planta</label>
+                                <select id="Planta" name="Planta" onchange="SetCombo(this.value, 2)" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Plants--" data-allow-clear="true">
+                                    <option></option>
+                                    @foreach (var item in Model.Factories)
+                                    {
+                                        <option value="@item.ID_Planta">@item.Descripcion</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-lg-3 fv-row mb-4">
+                                <label class="fs-6 form-label fw-bolder text-dark">Departaments</label>
+                                <select id="Departament" name="Departament" onchange="SetCombo(this.value, 3)" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Departaments--" data-allow-clear="true">
+                                    <option></option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3 fv-row mb-4">
+                                <label class="fs-6 form-label fw-bolder text-dark">Stations</label>
+                                <select id="Stations" name="Stations" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Stations--" data-allow-clear="true">
+                                    <option></option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3 fv-row mb-4">
+                                <label class="fs-6 form-label fw-bolder text-dark">Status</label>
+                                <select id="Status" name="Status" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- All Status--" data-allow-clear="true">
+                                    <option></option>
+                                    <option value="1">Active</option>
+                                    <option value="2">Pending Approval</option>
+                                    <option value="4">Obsolete</option>
+                                    <option value="5">Pending Review</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 fv-row mb-5">
+                                <input id="Key" name="Key" type="text" class="form-control ps-3 p-3 fs-8" placeholder="Search by Key" autocomplete="off" autofocus />
+                            </div>
+                            <div class="col-lg-3 fv-row mb-5">
+                                <input id="DescriptionSearch" name="DescriptionSearch" type="text" class="form-control ps-3 p-3 fs-8" placeholder="Search by Description" autocomplete="off" autofocus />
+                            </div>
+                            <div class="col-lg-3 fv-row  me-0">
+                                <button type="button" onclick="SendFormCombos()" id="Search" class="btn btn-primary p-3 fs-8 me-3"><i class="fas fa-search"></i>Search</button>
+                                @if (Model.UsersPrivileges.Any())
+                                {
+                                    <button type="button" class="btn btn-success p-3 fs-8 me-3" data-bs-toggle="modal" data-bs-target="#modal-newDoc"><i class="fas fa-plus"></i> New Document</button>
+                                }
+                            </div>
+                        </div>
+                    </form>
+                    <div class="border border-gray-100 p-0 mb-0"></div>
+                </div>
+
+                @if (Model.StoresDocumentList.Any())
+                {
+                    <div class="card-body p-0" id="kt_block_DocTry">
+                        <div class="card-header align-items-center py-0 gap-2 gap-md-5">
+                            <div class="card-title">
+                                <div class="d-flex align-items-center position-relative my-1">
+                                    <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                                    <input type="text" data-kt-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Report" />
+                                </div>
+                                <div id="table_Docs_export" class="d-none"></div>
+                            </div>
+                            <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                    <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                                    <i class="fas fa-download"></i> Export report
+                                </button>
+                                <div id="table_Docs_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                                    <div class="menu-item px-3">
+                                        <a href="#" class="menu-link px-3" data-kt-export="excel">
+                                            Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                                        </a>
+                                    </div>
+                                    <div class="menu-item px-3">
+                                        <a href="#" class="menu-link px-3" data-kt-export="csv">
+                                            Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                                        </a>
+                                    </div>
+                                    <div class="menu-item px-3">
+                                        <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                                            Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                                <table id="table_Docs" class="table table-row-bordered border-gray-400 table-hover gy-5 gs-7">
+                                <thead>
+                                     <tr class="fw-bold fs-6 text-gray-800 border-top text-uppercase bg-gray-300 pt-0">
+                                        <td class="border-end border-start align-middle min-w-10px text-center">#Id</td>
+                                        <td class="border-end align-middle min-w-50px text-center">Docs</td>
+                                        <td class="border-end align-middle min-w-200px ">Key</td>
+                                        <td class="border-end align-middle min-w-300px ">Description</td>
+                                        <td class="border-end align-middle min-w-150px text-center">Revision Date</td>
+                                        <td class="border-end align-middle min-w-400px ">Change description</td>
+                                        <td class="border-end align-middle min-w-200px ">Responsable of change</td>
+                                        <td class="border-end align-middle min-w-400px ">Pre-approval</td>
+                                        <td class="border-end align-middle min-w-400px ">Final-signature</td>
+                                        <td class="border-end align-middle min-w-50px  text-center">Status</td>
+                                        <td class="border-end align-middle min-w-1000px ">Workstation</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                    int countId = 1;
+                                    foreach (var item in Model.StoresDocumentList)
+                                    {
+                                        var file = "";
+                                        var donw = "";
+                                        var anp = "";
+                                        <tr class="@item.Background">
+                                            <td class="">@countId</td>
+                                            <td class="">
+                                                @if (item.TipoDigital == 9)
+                                                {
+                                                    file = $"donwPdf('{item.DigitalID}', '{item.TipoDigital}', '{item.Ruta}', '1', 1)";
+                                                    anp = $"donwPdf('{item.DigitalID}', '{item.TipoDigital}', '{item.Ruta}', '1', 0)";
+
+                                                    <a class="p-0 btn btn-sm  me-2" onclick="@file">
+                                                        <i class="fas fa-file-alt text-primary fs-3"></i>
+                                                    </a>
+                                                    <a class="p-0 btn btn-sm" onclick="@anp">
+                                                        <i class="fas fa-file-download text-success fs-3"></i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    file = $"ShowDocument('{item.DigitalID}', '{item.TipoDigital}', '{item.TipoArchivo}', '{item.Clave}', '{item.RevisionID}', '{item.Ruta}', '1', '1')";
+
+                                                    <a class="p-0 btn btn-sm  me-2" onclick="@file">
+                                                        <i class="fas fa-file-alt text-primary fs-3"></i>
+                                                    </a>
+                                                    @if (item.TipoArchivo != null)
+                                                    {
+                                                        if (item.TipoArchivo != "Digital")
+                                                        {
+                                                            donw = $"https://mxesc1vapp001/fp_data_center/planta1/documents-center/{item.Clave}/{item.RevisionID}/{item.Clave}.{item.TipoArchivo}";
+                                                            <a class="p-0 btn btn-sm" target="_blank" href="@donw">
+                                                                <i class="fas fa-file-download text-success fs-3"></i>
+                                                            </a>
+                                                        }
+
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="">
+                                                <a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="showDocInfo(@item.RevisionID,'@item.Clave',@item.ID_Documento,'@item.StatusDocTxt', 0);">@item.Clave </a>
+                                            </td>
+                                            <td class=""> @item.DescDoc </td>
+                                            <td class="">@item.DateRevision</td>
+                                            <td class="">@item.ChangeDescription</td>
+                                            <td class="">@item.ResponsableChange</td>
+                                            <td class="">
+                                                <ul class=" mb-0">
+                                                    @foreach (var signPre in Model.DocumentList_Signature.Where(S => S.DocumentoId == item.ID_Documento && S.TipoFirma == 1).OrderBy(s => s.Nivel).ToList())
+                                                    {
+                                                        <li class=" mb-0">@signPre.FechaRegistro @if (!(signPre.FechaRegistro is null)) { Write("-"); } <i class="@signPre.Iconos @signPre.Color fs-3"></i>  @signPre.UsuarioVoBo</li>
+                                                    }
+                                                </ul>
+                                            </td>
+                                            <td class="">
+                                                <ul class=" mb-0">
+                                                    @foreach (var signFinal in Model.DocumentList_Signature.Where(S => S.DocumentoId == item.ID_Documento && S.TipoFirma == 2).OrderBy(s => s.Nivel).ToList())
+                                                    {
+                                                        <li class="mb-0"> @signFinal.FechaRegistro @if (!(signFinal.FechaRegistro is null)) { Write("-"); }  <i class="@signFinal.Iconos @signFinal.Color fs-3"></i>  @signFinal.UsuarioVoBo</li>
+                                                    }
+                                                </ul>
+                                            </td>
+                                            <td class=""> <span class="badge @item.StatusColor">@item.StatusDocTxt</span> </td>
+                                            <td class="">
+                                                @if (item.Stations != null)
+                                                {
+                                                    <p class="p-0 mb-0">@item.Stations</p>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-warning">There are no stations linked to this document.</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                        countId++;
+                                    }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal new Document*@
+<div class="modal fade" tabindex="-1" id="modal-newDoc" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog mw-750px">
+        <div class="modal-content">
+            <form id="FormNewDocument" method="post" action="#" class="form" autocomplete="off">
+                <div class="modal-header">
+                    <h3 class="modal-title">New Document</h3>
+                    <!--begin::Close-->
+                    <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+                    </a>
+                    <!--end::Close-->
+                </div>
+                <div class="modal-body">
+                    <div class="fv-row mb-10">
+                        <label for="RevisionActual" class="required form-label">Actual revision:</label>
+                        <input id="RevisionActual" name="RevisionActual" type="number" min="0" placeholder="Actual revision" class="form-control ps-3 p-3 fs-8" />
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="TipoDocumento" class="required form-label">Key:</label>
+                        <select id="TipoDocumento" name="TipoDocumento" class="form-select form-select-sm p-3 fs-8 mb-3" data-control="select2" data-placeholder="Select an option" data-allow-clear="true" onchange="Campos(this.value,$(this).find(':selected').data('id'))">
+                            <option></option>
+                            @foreach (var item in Model.DocumentsKeys)
+                            {
+                                <option value="@item.ID_Tipo" data-id="@item.Ejemplo">@item.ClaveTipoDoc - @item.DescTipoDoc</option>
+                            }
+                        </select>
+                        <div class="fv-row mb-0 p-0" id="datosAnp">
+                        </div>
+                        <input name="CantidadFields" id="CantidadFields" type="hidden" readonly="readonly" class="form-control ps-3 p-0 fs-8 mb-0" value="0" />
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="Title" class="required form-label">Title:</label>
+                        <input id="Title" name="Title" type="text" maxlength="200" class="form-control ps-3 p-3 fs-8" placeholder="Title" onClick="existDoc()" />
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="Description" class="required form-label">Description:</label>
+                        <input id="Description" name="Description" type="text" maxlength="200" class="form-control ps-3 p-3 fs-8" placeholder="Description" />
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="Product" class="required form-label">Product:</label>
+                        <textarea id="Product" name="Product" maxlength="200" class="form-control" data-kt-autosize="true"></textarea>
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label class="required form-label">Estimated end date:</label>
+                        <div class="position-relative d-flex align-items-center">
+                            <span class="svg-icon svg-icon-2 position-absolute mx-4"><i class="fas fa-calendar-alt fs-3"></i></span>
+                            <input id="DateEstimated" name="DateEstimated" class="form-control p-3 fs-8 ps-12" placeholder="Select a date" />
+                        </div>
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="ResponChange" class="required form-label">Responsible for the change:</label>
+                        <select id="ResponChange" name="ResponChange" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="Select an option" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.UsersReponsables.Where(R => R.Privilegio == 1).ToList())
+                            {
+                                var respons = $"{item.Responsable}  |  {item.Puesto}";
+                                <option value="@item.ID_Usuario">@respons</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="fv-row mb-0 p-0">
+                        <label for="OriginChange" class="required form-label">Origin of change</label>
+                        <select id="OriginChange" name="OriginChange" class="form-select form-select-sm p-3 fs-8 mb-0" data-control="select2" data-placeholder="Select an option" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var changes in Model.OriginChange)
+                            {
+                                <option value="@changes.Value">@changes.Text </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="fv-row pt-2 mb-10">
+                        <input id="OriginComment" name="OriginComment" type="text" class="form-control ps-3 p-3 fs-8" placeholder="Please enter comment the origin of the change" />
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="DescripChange" class="required form-label">Description of the change:</label>
+                        <input id="DescripChange" name="DescripChange" type="text" class="form-control ps-3 p-3 fs-8" placeholder="Description Change" />
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="Review" class="required form-label">Change review:</label>
+                        <input id="Review" name="Review" type="text" class="form-control ps-3 p-3 fs-8" placeholder="Change review" />
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="Validation" class="required form-label">Validation of the change:</label>
+                        <input id="Validation" name="Validation" type="text" class="form-control ps-3 p-3 fs-8" placeholder="Validate changes" />
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="Workstations" class="required form-label">Workstations:</label>
+                        <select id="Workstations" name="Workstations" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="Select an option" multiple="multiple">
+                            <option></option>
+                            @foreach (var item in Model.ProductionStations)
+                            {
+                                <option value="@item.ID_Estacion">@item.Descripcion</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="fv-row mb-10">
+                        <label for="Preapproval" class="required form-label">Pre-approval:</label>
+                        <select id="Preapproval" name="Preapproval" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="Select an option" multiple="multiple">
+                            <option></option>
+                            @foreach (var item in Model.UsersReponsables.Where(R => R.Privilegio == 2).ToList())
+                            {
+                                var respons = $"({item.Responsable})  |  ({item.Puesto})";
+                                <option value="@item.ID_Usuario">@respons</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="FinalSign" class="required form-label">Final-signature:</label>
+                        <select id="FinalSign" name="FinalSign" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="Select an option" multiple="multiple">
+                            <option></option>
+                            @foreach (var item in Model.UsersReponsables.Where(R => R.Privilegio == 3).ToList())
+                            {
+                                var respons = $"({item.Responsable})  |  ({item.Puesto})";
+                                <option value="@item.ID_Usuario">@respons</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="Original" class="required form-label">Original file:</label>
+                        <input id="Original" name="Original" accept=".xls, .xlsx, .csv, .docs, .doc, .ppt, .pptx" class="form-control ps-3 p-3 fs-8" type="file" />
+                    </div>
+                    <div class="fv-row mb-10">
+                        <label for="PDF" class="required form-label">PDF file:</label>
+                        <input id="PDF" name="PDF" accept=".pdf" class="form-control ps-3 p-3 fs-8" type="file" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-light p-3 fs-8 me-3" data-bs-dismiss="modal" aria-label="Close">Close</a>
+                    <button type="button" id="FormNewDocument_submit" class="btn btn-primary p-3 fs-8 me-3">
+                        <span class="indicator-label">Save</span>
+                        <span class="indicator-progress">
+                            Please wait...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*Modal show the Revision*@
+<div class="modal fade" id="modalDocRevison" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  mw-900px p-9">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    Document revision
+                </h2>
+                <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger" id="BtnNewRevision"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body p-10">
+
+                <div class="row mb-0">
+                    @if (Model.PrivilageNewReview.Any())
+                    {
+                        <div class="col-lg-9 fv-row mb-4 ">
+                            <button type="button" class="btn btn-success p-3 fs-8 me-2" onclick="NewDocRevision()" id="IdNewDocRevision">
+                                <i class="fas fa-plus"></i>New Revision
+                            </button>
+
+                            <button class="btn btn-warning p-3 fs-8 me-2" onclick="" id="RevBtnOrigin">
+                                <i class="fas fa-file-download text-white fs-3"></i> Original
+                            </button>
+
+                            <button class="btn btn-primary p-3 fs-8 me-2" onclick="" id="RevBtnPdf">
+                                <i class="fas fa-file-pdf text-white fs-3"></i>PDF Document
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                 <div class="alert alert-danger d-flex align-items-center p-5 mb-4 d-none" id="Obsoletarse">
+                    <span class="svg-icon svg-icon-2x svg-icon-light me-3"> <i class="fas fa-exclamation-triangle fs-2x text-danger"></i></span>
+                    <div class="d-flex flex-column">
+                        <span class="text-danger fs-4 fw-bold pt-2" id="IdObsoleto">The revision is going to be OBSOLETE</span>
+                    </div>
+                </div>
+                
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Key (1):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        @if (Model.UpdateKey.Any())
+                        {
+                            <button data-bs-toggle="modal" id="idKeyNew" data-bs-target="#UpdateKey" class="btn p-3 fs-8 me-2 " style="background-color:#36c6d3;"><i class="fas fa-sync-alt text-white"></i><span id="idKey" class="text-white"></span></button>
+                        }
+                        else
+                        {
+                            <span id="idKey" class="badge badge-success p-3 fs-8 me-2" style="background-color:#36c6d3;"></span>
+                        }
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Revision:</label>
+                    <div class="col-lg-2 border-end border-white p-5">
+                        <span id="idRevision" class="badge badge-success" style="background-color:#36c6d3;"></span>
+                    </div>
+
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Document type:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="idDocType"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Product:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="idProduct"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Owner:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="idOwner"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Applicant  (2):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idApplicant"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Record date:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idRecordDate"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Start date (3):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idStartDate"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Estimated end date (4):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idEstimatedDate"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Change manager (5):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idChangeManager"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Origin of change (6):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idOriginChange"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Description of change (7):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idDescripChange"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Review of Change (8):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idRewChange"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Validation of change (9):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idValChange"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 align-middle p-5">Workstations (10):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idWorkstation"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Pre-approval (12):</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idPreAppro"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Final-signature:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idFinalSig"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <div class="col-lg border-end border-white p-5">
+                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">Authorizations and rejects:</h1>
+                        <div class="table-responsive">
+                            <table class="table table-striped  gy-7 gs-7">
+                                <thead>
+                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                        <th class="">#</th>
+                                        <th class="">Signature</th>
+                                        <th class="">Date</th>
+                                        <th class="">Operation</th>
+                                        <th class="">Categorie</th>
+                                        <th class="">Reasons of reject</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td id="tdSignature" nowrap></td>
+                                        <td id="tdDate" nowrap></td>
+                                        <td id="tdOperation"></td>
+                                        <td nowrap><span id="spanIcono"></span><span id="tdCategorie"></span></td>
+                                        <td id="tdReason"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Revisions:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="idRevisions"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal to create a new Revision*@
+<div class="modal fade" tabindex="-1" id="modal-newDocRevision" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog mw-800px">
+        <div class="modal-content">
+            <form id="FormNewDocumentRevision" method="post" action="#" class="form" autocomplete="off">
+                <div class="modal-header">
+                    <h3 class="modal-title">New Doc.Revision</h3>
+                    <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+                    </a>
+                </div>
+                <div class="modal-body" id="modal-body-NewR">
+                    <div class="card-body border">
+                        <div class="scroll-y me-n6 pe-5" id="modal_newDocRevision_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}"
+                             data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#modal_newDocRevision_header" data-kt-scroll-wrappers="#modal_newDocRevision_scroll"
+                             data-kt-scroll-offset="100px">
+                            <div class="row mb-2 mt-1">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Key (1):</div>
+                                </div>
+                                <div class="col-xl-9">
+                                    <span class="badge badge-success fs-6" id="spanNewRevisionClave"></span> @*style="background-color:#36c6d3;"*@
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Actual revision:</div>
+                                </div>
+                                <div class="col-xl-9">
+                                    <span class="badge badge-success fs-6" id="ActualNewRevision"></span> @*style="background-color:#36c6d3;"*@
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3">New revision:</div>
+                                </div>
+                                <div class="col-xl-4 border-gray-300 fv-row">
+                                    <span class="badge badge-warning fs-6" id="SpanDocNewRevision"></span>
+                                    <input type="hidden" class="form-control p-3 fs-7" id="DocNewRevision" Name="DocNewRevision" placeholder="" value="" />
+                                </div>
+                                @if(Model.PrivilegeObsolete.Any())
+                                {
+                                <div class="col-xl-2 border-start fv-row">
+                                    <div class="form-check form-check-custom form-check-danger form-check-solid pt-2">
+                                        <label class="form-check-label fs-6 fw-bold mt-2 mb-3 me-3" for="">
+                                            Obsolete:
+                                        </label>
+                                        <input class="form-check-input border border-gray-400 h-20px w-20px" id="IdObsoleto" type="checkbox"/>
+                                    </div>
+                                </div>
+                                }
+                               
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3">Document type:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <span class="fs-7" id="DocTypeNewRevision"></span>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Title:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <div class="fv-row">
+                                        <input type="text" class="form-control p-3 fs-7" id="TitleNewRevision" name="TitleNewRevision" placeholder="" value="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Description:</div>
+                                </div>
+                                <div class="col-xl-9 fv-row">
+                                    <input type="text" class="form-control p-3 fs-7" id="DescriptionNewRevision" name="DescriptionNewRevision" placeholder="" value="" />
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Product:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <div class="fv-row ">
+                                        <textarea class="form-control fs-6" data-kt-autosize="true" id="ProductNewRevision" name="ProductNewRevision"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Owner:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <span class="fs-7" id="OwnerNewRevision"></span>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Applicant:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <span class="fs-7" id="ApplicantNewRevision"></span>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Record date:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <span class="fs-7" id="RecDateNewRevision"></span>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Latest revision:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <span class="fs-7" id="LatestNewRevision"></span>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-7 fw-bold mt-2 mb-3 ">Estimated end date:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <div class="position-relative d-flex align-items-center fv-row">
+                                        <span class="svg-icon svg-icon-2 position-absolute mx-4"><i class="fas fa-calendar-alt fs-3"></i></span>
+                                        <input class="form-control p-3 fs-7 ps-15" name="EndNewRevision" placeholder="Pick a date" id="EndNewRevision" value="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Responsible for the change:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <span class="fv-row">
+                                        <select class="form-select form-select-sm form-select p-3 fs-7" data-control="select2" data-selected="@Model.Id_Usuario" id="ResponsibleNewRevision" name="ResponsibleNewRevision" data-dropdown-parent="#modal-body-NewR" data-placeholder="Select an option" data-allow-clear="true">
+                                            <option></option>
+                                            @foreach (var item in Model.UsersReponsables.Where(R => R.Privilegio == 1).ToList())
+                                            {
+                                                var respons = $"{item.Responsable}  |  {item.Puesto}";
+                                                <option value="@item.ID_Usuario">@respons</option>
+                                            }
+                                        </select>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Origin of change:</div>
+                                </div>
+                                <div class="col-xl-9 fv-row">
+                                    <select class="form-select form-select-sm p-3 fs-7" data-control="select2" id="OriginNewRevision" name="OriginNewRevision" data-dropdown-parent="#modal-body-NewR" data-placeholder="Select an option" data-allow-clear="true">
+                                        <option></option>
+                                        @foreach (var changes in Model.OriginChange)
+                                        {
+                                            <option value="@changes.Value">@changes.Text </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3"></div>
+                                </div>
+                                <div class="col-xl-9 fv-row">
+                                    <input type="text" class="form-control p-3 fs-7 " id="CommentOriginNewRevision" name="CommentOriginNewRevision" placeholder="Please enter comment the origin of the change" value="" />
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Description of the change :</div>
+                                </div>
+                                <div class="col-xl-9 fv-row">
+                                    <input type="text" class="form-control p-3 fs-7 " id="DescChangeNewRevision" name="DescChangeNewRevision" placeholder="Please enter the description of the change" value="" />
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Change review :</div>
+                                </div>
+                                <div class="col-xl-9 fv-row ">
+                                    <input type="text" class="form-control p-3 fs-7 " id="ChangeNewRevision" name="ChangeNewRevision" placeholder="Please enter the change revision" value="" />
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Validation of the change :</div>
+                                </div>
+                                <div class="col-xl-9 fv-row ">
+                                    <input type="text" class="form-control p-3 fs-7" id="ValidationNewRevision" name="ValidationNewRevision" placeholder="Please enter the validation of the change" value="" />
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Workstations :</div>
+                                </div>
+                                <div class="col-xl-9 fv-row">
+                                    <select class="form-select form-select-sm p-3 fs-7" data-control="select2" id="WorkstationsNewRevision" name="WorkstationsNewRevision" data-dropdown-parent="#modal-body-NewR" data-close-on-select="false" data-placeholder="Select an option" multiple="multiple" data-allow-clear="true">
+                                        <option></option>
+                                        @foreach (var item in Model.ProductionStations)
+                                        {
+                                            <option value="@item.ID_Estacion">@item.Descripcion</option>
+                                        }
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Pre-approval :</div>
+                                </div>
+                                <div class="col-xl-9 fv-row">
+                                    <select class="form-select form-select-sm p-3 fs-7" data-control="select2" id="PreApprovalNewRevision" name="PreApprovalNewRevision" data-close-on-select="false" data-placeholder="-- Select an option --" data-allow-clear="true" multiple="multiple" data-dropdown-parent="#modal-body-NewR">
+                                        <option></option>
+                                        @foreach (var item in Model.UsersReponsables.Where(R => R.Privilegio == 2).ToList())
+                                        {
+                                            var respons = $"({item.Responsable})  |  ({item.Puesto})";
+                                            <option value="@item.ID_Usuario">@respons</option>
+                                        }
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Final-signature :</div>
+                                </div>
+                                <div class="col-xl-9 fv-row">
+                                    <select class="form-select form-select-sm p-3 fs-7" data-control="select2" id="FinalSignatureNewRevision" name="FinalSignatureNewRevision" data-close-on-select="false" data-placeholder="-- Select an option --" data-allow-clear="true" multiple="multiple" data-dropdown-parent="#modal-body-NewR">
+                                        <option></option>
+                                        @foreach (var item in Model.UsersReponsables.Where(R => R.Privilegio == 3).ToList())
+                                        {
+                                            var respons = $"({item.Responsable})  |  ({item.Puesto})";
+                                            <option value="@item.ID_Usuario">@respons</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">Original file:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <div class="fv-row">
+                                        <input id="OriginalFileNewRevision" name="OriginalFileNewRevision" accept=".xls, .xlsx, .csv, .docs, .doc, .ppt, .pptx" class="form-control ps-3 p-3 fs-8" type="file" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="separator my-10 mb-2 mt-2"></div>
+                            <div class="row mb-2">
+                                <div class="col-xl-3 border-gray-300 border-end">
+                                    <div class="fs-6 fw-bold mt-2 mb-3 ">PDF file:</div>
+                                </div>
+                                <div class="col-xl-9 ">
+                                    <div class="fv-row">
+                                        <input id="PDFNewRevision" name="PDFNewRevision" accept=".pdf" class="form-control ps-3 p-3 fs-8" type="file" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-light p-3 fs-8 me-3" data-bs-dismiss="modal" aria-label="Close">Close</a>
+                    <button type="button" id="FormNewRevi_submit" class="btn btn-primary p-3 fs-8 me-3">
+                        <span class="indicator-label">Save</span>
+                        <span class="indicator-progress">
+                            Please wait...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*Modal to Update the Key of a Document*@
+<div class="modal fade" tabindex="-1" id="UpdateKey" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog mw-650px">
+        <div class="modal-content">
+            <form id="FormUpdateKey" class="form" action="#" autocomplete="off">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="TituloDoc">Update Key</h2>
+                    <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+                    </a>
+                </div>
+                <div class="modal-body">
+                    <div class="fv-row mb-10">
+                        <label for="updKeyDocs" class="required form-label">Key:</label>
+                        <select id="updKeyDocs" name="updKeyDocs" class="form-select form-select-sm p-3 fs-8 mb-3" data-control="select2" data-placeholder="Select an option" data-allow-clear="true" data-dropdown-parent="#UpdateKey" onchange="ConsultaCombo(this.value,$(this).find(':selected').data('id'))">
+                            <option></option>
+                            @foreach (var item in Model.DocumentsKeys)
+                            {
+                                <option value="@item.ID_Tipo" data-id="@item.Ejemplo">@item.ClaveTipoDoc - @item.DescTipoDoc</option>
+                            }
+                        </select>
+                        <div class="fv-row mb-0 p-0" id="datosKeyUpdKey">
+                        </div>
+                        <input name="CtdFielUpdKey" id="CtdFielUpdKey" type="hidden" readonly="readonly" class="form-control ps-3 p-0 fs-8 mb-0" value="0" />
+                        <input name="idDocUpdKey" id="idDocUpdKey" type="hidden" readonly="readonly" class="form-control ps-3 p-0 fs-8 mb-0" value="0" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button id="ButtonUpdateKey" type="submit" class="btn btn-primary">
+                        <span class="indicator-label">
+                            Save
+                        </span>
+                        <span class="indicator-progress">
+                            Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalPdfs" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  modal-xl p-9">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="TituloDoc"></h2>
+                <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body">
+                <embed id="idRutaDoc" width="100%" height="1100" type="application/pdf" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="Form" asp-controller="DocViewer" asp-action="ExportToPDF" target="_blank" method="post">
+    <input value="" type="hidden" name="DigitalID" id="DigitalID" />
+    <input value="" type="hidden" name="TipoDigital" id="TipoDigital" />
+    <input value="" type="hidden" name="Ruta" id="Ruta" />
+    <input value="" type="hidden" name="PlantaID" id="PlantaID" />
+    <input value="" type="hidden" name="NewWind" id="NewWind" />
+</form>
+
+@section Scripts {
+
+    @*Datatable Library*@
+    <script type="text/javascript">
+        "use strict";
+
+        var KTDatatablesButtons = function () {
+            var table;
+            var datatable;
+
+            var initDatatable = function () {
+                const tableRows = table.querySelectorAll('tbody tr');
+
+                tableRows.forEach(row => {
+                    const dateRow = row.querySelectorAll('td');
+                    
+                });
+
+                datatable = $(table).DataTable({
+                    "info": false,
+                    'order': [],
+                    'pageLength': 100,
+                    "scrollY": "500px",
+                    "scrollCollapse": true,
+                    "scrollX": true,
+                     "columns": [
+                        {className: "border-end border-start border-gray-400 min-w-10px",},
+                        {className: "border-end border-gray-400 min-w-50px",},
+                        {className: "border-end border-gray-400 min-w-200px",},
+                        {className: "border-end border-gray-400 min-w-300px",},
+                        {className: "border-end border-gray-400 min-w-150px",},
+                        {className: "border-end border-gray-400 min-w-400px",},
+                        {className: "border-end border-gray-400 min-w-200px",},
+                        {className: "border-end border-gray-400 min-w-400px",},
+                        {className: "border-end border-gray-400 min-w-400px",},
+                        {className: "border-end border-gray-400 min-w-50px",},
+                        {className: "border-end border-gray-400 min-w-1000px",}
+                     ]
+                });
+            }
+
+            var exportButtons = () => {
+                const documentTitle = 'Document_List_Report';
+                var buttons = new $.fn.dataTable.Buttons(table, {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'csvHtml5',
+                            title: documentTitle
+
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            title: documentTitle
+                        }
+                    ]
+                }).container().appendTo($('#table_Docs_export'));
+
+                const exportButtons = document.querySelectorAll('#table_Docs_export_menu [data-kt-export]');
+                exportButtons.forEach(exportButton => {
+                    exportButton.addEventListener('click', e => {
+                        e.preventDefault();
+
+                        const exportValue = e.target.getAttribute('data-kt-export');
+                        const target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+
+                        target.click();
+                    });
+                });
+            }
+
+            var handleSearchDatatable = () => {
+                const filterSearch = document.querySelector('[data-kt-filter="search"]');
+                filterSearch.addEventListener('keyup', function (e) {
+                    datatable.search(e.target.value).draw();
+                });
+            }
+
+            return {
+                init: function () {
+                    table = document.querySelector('#table_Docs');
+
+                    if (!table) {
+                        return;
+                    }
+
+                    initDatatable();
+                    exportButtons();
+                    handleSearchDatatable();
+                }
+            };
+        }();
+
+        KTUtil.onDOMContentLoaded(function () {
+            KTDatatablesButtons.init();
+        });
+    </script>
+
+    @*Loading...*@
+    <script type="text/javascript">
+        var button = document.querySelector("#kt_block");
+        var target = document.querySelector("#kt_block");
+        var BlockPantalla = new KTBlockUI(target, {
+            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+        });
+    </script>
+
+    @*Minimize the Aside Menu*@
+    <script>
+        $(document).ready(function () {
+            $("#kt_body").attr("data-kt-aside-minimize", "on");
+        })
+    </script>
+
+    @*Variables Globales*@
+    <script type="text/javascript">
+        $("#DateEstimated").flatpickr(
+            {
+                dateFormat: "m-d-Y",
+                defaultDate: "today",
+                minDate: "today"
+            }
+        );
+
+        //$("#EndNewRevision").flatpickr(
+        //{dateFormat: "m-d-Y"});
+
+        var idDocGlobal = '';
+        var IdSeccionGlobal = $("#SeccionId").val();
+
+        idRevisionesGlobal = "";
+        TiposArchivoGlobal = "";
+    </script>
+
+    <script>
+        document.querySelectorAll('[data-selected]').forEach(e => { e.value = e.dataset.selected });
+    </script>
+
+    @*====================================== AJAX ======================================*@
+
+    @*Get Combos to search*@
+    <script type="text/javascript">
+        function SetCombo(ValueCombo, comboId) {
+            if (comboId == 2 && ValueCombo > 0) {
+                $("#Departament").empty();
+                $("#Stations").empty();
+
+                if (ValueCombo != "" || ValueCombo != null && comboId == 2 && $("#Departament").val() == '' && $("#Departament").val() == null) {
+                    $.ajax({
+                        url: "@Url.Action("DocViewerComboData","DC_DocumentList")",
+                        type: "post",
+                        data: {
+                            ValueCombo: ValueCombo,
+                            comboId: comboId,
+                            IdSeccion: IdSeccionGlobal
+                        },
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                    }).done(function (result) {
+                        if (result != null) {
+                             if (result == 'Error') 
+                            {
+                               SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else {
+                                var obj = JSON.parse(result);
+
+                                if (obj.ProductionDepartments.length > 0) {
+                                    $('#Departament').empty().trigger('change');
+
+                                    for (i = 0; i < obj.ProductionDepartments.length; i++) {
+                                        var newDep = new Option(obj.ProductionDepartments[i].Descripcion, obj.ProductionDepartments[i].ID_Departamento, false, false);
+                                        $('#Departament').append(newDep);
+                                    }
+                                    $('#Departament').val('0').trigger('change');
+                                    $('#Stations').val('0').trigger('change');
+                                    $('#Departament').val(null).trigger('change');
+                                }
+                            }
+                        }
+                        else {
+                            SystemServerError()
+                        }
+                    })
+                        .fail(function (xhr, status, error) {
+                            swalErrorServer()
+                        })
+                }
+            }
+
+            else if (comboId == 3 && ValueCombo > 0) {
+                if (ValueCombo == $("#Departament").val() && comboId == 3 && ValueCombo != null) {
+                    $.ajax({
+                        url: "@Url.Action("DocViewerComboData","DC_DocumentList")",
+                        type: "post",
+                        data: {
+                            ValueCombo: ValueCombo,
+                            comboId: comboId,
+                            IdSeccion: IdSeccionGlobal
+                        },
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                    }).done(function (result) {
+                        if (result != null) {
+                            if (result == 'Error') 
+                            {
+                               SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else {
+                                var obj = JSON.parse(result);
+
+                                if (obj.ProductionStations.length > 0) {
+                                    $('#Stations').empty().trigger('change');
+                                    for (i = 0; i < obj.ProductionStations.length; i++) {
+                                        var newDep = new Option(obj.ProductionStations[i].Descripcion, obj.ProductionStations[i].ID_Estacion, false, false);
+                                        $('#Stations').append(newDep);
+                                    }
+                                    $('#Stations').val('0').trigger('change');
+                                    $('#Stations').val(null).trigger('change');
+                                }
+                            }
+                        }
+                        else {
+                            SystemServerError()
+                        }
+                    }).fail(function (xhr, status, error) {
+                        swalExpired()
+                    })
+                }
+            }
+
+        }
+
+        $("#Planta").on("select2:clearing", function (e) {
+            $("#Departament").empty();
+            $("#Stations").empty();
+        });
+
+        $("#Departament").on("select2:clearing", function (e) {
+            $("#Stations").empty();
+        });
+    </script>
+
+    @*Show Document in PDF*@
+    <script type="text/javascript">
+        function ShowDocument(DigitalID, TipoDigital, TipoArchivo, Clave, RevisionID, Ruta, PlantaID, Down) {
+            if (TipoArchivo != 'Digital') {
+                BlockPantalla.block()
+                var ruta = 'https:/' + `/mxesc1vapp001/fp_data_center/planta${PlantaID}/documents-center/${Clave}/${RevisionID}/${Clave}.pdf`;
+                $("#idRutaDoc").attr("src", ruta);
+                $('#ModalPdfs').modal('toggle');
+                $('#TituloDoc').html(Clave);
+                BlockPantalla.release()
+            }
+            else {
+                BlockPantalla.block()
+
+                $.ajax({
+                    url: "@Url.Action("ExportToPDF","DocViewer")",
+                    type: "post",
+                    data: {
+                        DigitalID: DigitalID,
+                        TipoDigital: TipoDigital,
+                        TipoArchivo: TipoArchivo,
+                        Clave: Clave,
+                        RevisionID: RevisionID,
+                        Ruta: Ruta,
+                        Print: 1,
+                        IdSeccion: IdSeccionGlobal
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (result) {
+                    if (result != null) {
+                        if (result == 'Error') 
+                        {
+                            SystemServerError()
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else {
+                            var ruta = 'data:application/pdf;base64,' + result;
+
+                            $("#idRutaDoc").attr("src", ruta);
+
+                            BlockPantalla.release()
+                            $('#ModalPdfs').modal('toggle');
+                            $('#TituloDoc').html(Clave);
+                        }
+                    }
+                    else {
+                        SystemServerError()
+                        BlockPantalla.release()
+                    }
+                })
+                    .fail(function (xhr, status, error) {
+                         swalErrorServer()
+                    })
+            }
+        }
+
+        function donwPdf(DigitalID, TipoDigital, Ruta, PlantaID, Nw) {
+            if (DigitalID != '') {
+                if (Nw == 1) {
+                    $('#DigitalID').val(DigitalID);
+                    $('#TipoDigital').val(TipoDigital);
+                    $('#Ruta').val(Ruta);
+                    $('#PlantaID').val(PlantaID);
+                    $('#NewWind').val(1);
+                }
+                else {
+                    $('#DigitalID').val(DigitalID);
+                    $('#TipoDigital').val(TipoDigital);
+                    $('#Ruta').val(Ruta);
+                    $('#PlantaID').val(PlantaID);
+                    $('#NewWind').val(0);
+                }
+
+                $('#Form').submit();
+            }
+            else {
+                toastr.error("An error please wait!");
+            }
+        }
+    </script>
+
+    @*Search DocumentList*@
+    <script>
+        function SendFormCombos() {
+            var key = document.getElementById('Key').value;
+            var description = document.getElementById('DescriptionSearch').value;
+
+            if (($("#Departament").val() > 0 && $("#Stations").val() > 0) || ($("#Departament").val() > 0 && $("#Stations").val() > 0 && $("#Status").val() > 0) || key.length >= 2 || description.length > 2) {
+                document.getElementById("frmBusqueda").submit();
+            }
+            else 
+            {
+                if(key.length < 2)
+                {
+                   toastr.info("The key need to have more characters!");
+                }
+                else
+                {
+                    toastr.info("You need select plant , departament and station or search by key document!");
+                }
+            }
+        }
+    </script>
+
+    @*Combo de tipo de Claves*@
+    <script type="text/javascript">
+        function Campos(ValueCombo, dataid) {
+            if (ValueCombo != '') {
+                var text = document.getElementById("TipoDocumento").options[document.getElementById("TipoDocumento").selectedIndex].text.split(" ");
+
+                var combo = ValueCombo;
+                $.ajax({
+                    url: "@Url.Action("DocViewerComboData","DC_DocumentList")",
+                    type: "post",
+                    data: {
+                        ValueCombo: ValueCombo,
+                        comboId: 6,
+                        IdSeccion: IdSeccionGlobal
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (result) {
+                    if (result != null) {
+                        if (result == 'Error') 
+                        {
+                            SystemServerError()
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else {
+                            var obj = JSON.parse(result);
+
+                            var string = "";
+                            var tipo = "<td nowrap><input type='text' name='Campo'  id='Campo' class='form-control form-control-solid' value='" + text[0] + "' readonly></td>";
+                            var ejemplo = "<td nowrap width='30%'><input disabled type='text' class='form-control form-control-solid me-3' value='" + dataid + "'</td>"
+
+                            for (i = 0; i < obj.Keys_longitud.length; i++) {
+                                string = string + "<td nowrap><input type='" + obj.Keys_longitud[i].Tipo + "' class='form-control ps-3 p-3 fs-8 me-3' maxlength='" + obj.Keys_longitud[i].Longitud + "' name='Campo" + i + "' id='Campo" + i + "' required></td>"
+                            }
+
+                            string = "<div class='mb-0 '><table><tr>" + tipo + string + ejemplo + "<tr></table></div>"
+                            $("#datosAnp").html(string)
+                            $("#CantidadFields").val(parseInt(obj.Keys_longitud.length));
+                        }
+                    }
+                    else {
+                        SystemServerError()
+                    }
+                }).fail(function (xhr, status, error) {
+                    swalErrorServer()
+                })
+            }
+            else {
+                $("#datosAnp").html("");
+            }
+
+        }
+    </script>
+
+    @*Check if exist a document with the clave introducida *@
+    <script type="text/javascript">
+        function existDoc() {
+            var str = $('#Campo').val();
+
+            if (str != '' && str != null && str != undefined) {
+                var cantidad = $('#CantidadFields').val();
+                //var i;
+                for (var i = 0; i <= cantidad; i++) {
+                    if ($('#Campo' + i).val() != undefined && $('#Campo' + i).val() != '') {
+                        str += '-' + $('#Campo' + i).val();
+                    }
+                }
+
+                $.ajax({
+                    url: "@Url.Action("CheckDocs","DC_DocumentList")",
+                    type: "post",
+                    data: {
+                        Clave: str,
+                        IdSeccion: IdSeccionGlobal
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (result) {
+                    if (result != null) {
+                        if (result == 'Error') 
+                        {
+                            SystemServerError()
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else {
+                            if (result != 'NoExiste') {
+                                toastr['error']('The document already exists and Status is ' + result + '', 'Alert!');
+                                for (i = 0; i <= cantidad; i++) {
+                                    if ($('#Campo' + i).attr('readonly') != 'readonly') {
+                                        $('#Campo' + i).val('');
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    else {
+                        SystemServerError()
+                    }
+                })
+                    .fail(function (xhr, status, error) {
+                         swalErrorServer()
+                    })
+            }
+        }
+    </script>
+
+    @*Create New Document Funsion*@
+    <script type="text/javascript">
+        function NewDocument() {
+            //Validation of the files
+            var inputOriginal = document.getElementById("Original");
+            var inputPdf = document.getElementById("PDF");
+            var fileOriginal = inputOriginal.files;
+            var filePdf = inputPdf.files;
+            var formData = new FormData();
+
+            var files = /(.*?)\.(xls|xlsx|csv|docx|doc|ppt|pptx|pdf)$/;
+            var pdfValidate = /(.*?)\.(pdf)$/;
+
+            if (fileOriginal[0].name.match(files)) {
+                formData.append("Original", fileOriginal[0]);
+
+                if (filePdf[0].name.match(pdfValidate)) {
+                    formData.append("PDF", filePdf[0]);
+
+                    var str = $('#Campo').val();
+                    var cantidad = $('#CantidadFields').val();
+                    var i;
+                    var bit = 0;
+                    for (i = 0; i <= cantidad; i++) {
+                        if ($('#Campo' + i).val() != undefined && $('#Campo' + i).val() != '') {
+                            str += '-' + $('#Campo' + i).val();
+                            if (i == 0 && $('#Campo' + i).val() != '' && $('#Campo' + i).val() != undefined) {
+                                bit = 1;
+                            }
+                        }
+                    }
+
+                    if (bit > 0) {
+                        formData.append("Clave", str);
+                        formData.append("TipoDocumento", $('#TipoDocumento').val());
+                        formData.append("RevisionActual", $('#RevisionActual').val());
+                        formData.append("Title", $('#Title').val());
+                        formData.append("Description", $('#Description').val());
+                        formData.append("Comentarios", $('#Product').val());
+                        formData.append("DateEstimated", $('#DateEstimated').val());
+                        formData.append("ResponChange", $('#ResponChange').val());
+                        formData.append("OriginChange", $('#OriginChange').val());
+                        formData.append("OriginComment", $('#OriginComment').val());
+                        formData.append("DescripChange", $('#DescripChange').val());
+                        formData.append("Review", $('#Review').val());
+                        formData.append("Validation", $('#Validation').val());
+                        formData.append("Workstations", $('#Workstations').val());
+
+                        formData.append("Preapproval", $('#Preapproval').val());
+                        formData.append("FinalSign", $('#FinalSign').val());
+                        formData.append("IdSeccion", IdSeccionGlobal);
+
+                        $.ajax({
+                            url: "@Url.Action("NewDocument","DC_DocumentList")",
+                            data: formData,
+                            type: "POST",
+                            processData: false,
+                            contentType: false,
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("XSRF-TOKEN",
+                                    $('input:hidden[name="__RequestVerificationToken"]').val());
+                            },
+                        }).done(function (result) {
+                            if(result != null)
+                            {
+                                 if (result == 'Error') 
+                                {
+                                    SystemServerError()
+                                }
+                                if (result == 'noSession') {
+                                    swalExpired()
+                                }
+                                else if (result == 'Sorry') {
+                                    swalNoAuthorized()
+                                }
+                                else if (result == 'NoPage') {
+                                    swalNoAuthorized()
+                                }
+                                if (result == 'success') {
+                                    Swal.fire({
+                                        text: "The document has been successfully submitted!",
+                                        icon: "success",
+                                        buttonsStyling: false,
+                                        allowEscapeKey: false,
+                                        allowOutsideClick: false,
+                                        confirmButtonText: "Ok, got it!",
+                                        customClass: {
+                                            confirmButton: "btn btn-primary"
+                                        }
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.reload()
+                                        }
+                                    });
+                                }
+                            }
+                            else {
+                                SystemServerError()
+                            }
+                        }).fail(function (error) {
+                            swalErrorServer()
+                        });
+                    }
+                    else {
+                        SystemServerError()
+                    }
+                } else {
+                    toastr.error("The PDF input needs to be .pdf extension, please try againg.!");
+                }
+            }
+            else {
+                toastr.error("The kind of the extension that Origin File is not accept, please try againg with diferent file.!");
+            }
+        }
+    </script>
+
+    @*Get combo to Update Key*@
+    <script>
+        function ConsultaCombo(ValueCombo, dataid) {
+            if (ValueCombo != '') {
+                var text = document.getElementById("updKeyDocs").options[document.getElementById("updKeyDocs").selectedIndex].text.split(" ");
+
+                var combo = ValueCombo;
+                $.ajax({
+                    url: "@Url.Action("DocViewerComboData","DC_DocumentList")",
+                    type: "post",
+                    data: {
+                        ValueCombo: ValueCombo,
+                        comboId: 6,
+                        IdSeccion: IdSeccionGlobal
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (result) {
+                    if (result != null) {
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else {
+                            var obj = JSON.parse(result);
+
+                            var string = "";
+                            var tipo = "<td nowrap><input type='text' name='CampoUpdKey'  id='CampoUpdKey' class='form-control form-control-solid' value='" + text[0] + "' readonly></td>";
+                            var ejemplo = "<td nowrap width='30%'><input disabled type='text' class='form-control form-control-solid me-3' value='" + dataid + "'</td>"
+
+                            for (i = 0; i < obj.Keys_longitud.length; i++) {
+                                string = string + "<td nowrap><input type='" + obj.Keys_longitud[i].Tipo + "' class='form-control ps-3 p-3 fs-8 me-3' maxlength='" + obj.Keys_longitud[i].Longitud + "' name='CampoUpdKey" + i + "' id='CampoUpdKey" + i + "' required></td>"
+                            }
+
+                            string = "<div class='mb-0 '><table><tr>" + tipo + string + ejemplo + "<tr></table></div>"
+                            $("#datosKeyUpdKey").html(string)
+                            $("#CtdFielUpdKey").val(parseInt(obj.Keys_longitud.length));
+                            $("#idDocUpdKey").val(idDocGlobal);
+                        }
+                    }
+                    else {
+                        SystemServerError()
+                    }
+                })
+                    .fail(function (xhr, status, error) {
+                         swalErrorServer()
+                    })
+            } else {
+                $("#datosKeyUpdKey").html("");
+            }
+        }
+
+    </script>
+
+    @*Check Key and Update*@
+    <script type="text/javascript">
+        function existDocUpdKey() {
+            var str = $('#CampoUpdKey').val();
+
+            if (str != '' && str != null && str != undefined) {
+                var cantidad = $('#CtdFielUpdKey').val();
+                var i;
+                for (i = 0; i <= cantidad; i++) {
+                    if ($('#CampoUpdKey' + i).val() != undefined && $('#CampoUpdKey' + i).val() != '') {
+                        str += '-' + $('#CampoUpdKey' + i).val();
+                    }
+                }
+
+                $.ajax({
+                    url: "@Url.Action("CheckDocs","DC_DocumentList")",
+                    type: "post",
+                    data: {
+                        Clave: str,
+                        IdSeccion: IdSeccionGlobal
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                })
+                    .done(function (result) {
+                        if (result != null) {
+                            if (result == 'Error') 
+                            {
+                                SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else {
+
+                                if (result != 'NoExiste') {
+                                    toastr['error']('The document already exists and Status is ' + result + '', 'Alert!');
+                                    for (i = 0; i <= cantidad; i++) {
+                                        if ($('#CampoUpdKey' + i).attr('readonly') != 'readonly') {
+                                            $('#CampoUpdKey' + i).val('');
+                                        }
+                                    }
+                                } else {
+                                    $.ajax({
+                                        url: "@Url.Action("UpdateKey","DC_DocumentList")",
+                                        type: "post",
+                                        data: {
+                                            id: idDocGlobal,
+                                            reviews: idRevisionesGlobal,
+                                            typeFile: TiposArchivoGlobal,
+                                            NewClave: str
+                                        },
+                                        beforeSend: function (xhr) {
+                                            xhr.setRequestHeader("XSRF-TOKEN",
+                                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                                        },
+                                    })
+                                    .done(function (result) {
+                                        if (result != null) {
+                                            if (result == 'Error') 
+                                            {
+                                                SystemServerError()
+                                            }
+                                            if (result == 'noSession') {
+                                                swalExpired()
+                                            }
+                                            else if (result == 'Sorry') {
+                                                swalNoAuthorized()
+                                            }
+                                            else if (result == 'NoPage') {
+                                                swalNoAuthorized()
+                                            }
+                                            else {
+                                                if (result == 'Success') 
+                                                {
+                                                    Swal.fire({
+                                                        text: "Key successfully updated!",
+                                                        icon: "success",
+                                                        buttonsStyling: false,
+                                                        allowEscapeKey: false,
+                                                        allowOutsideClick: false,
+                                                        confirmButtonText: "Ok, got it!",
+                                                        customClass: {
+                                                            confirmButton: "btn btn-primary"
+                                                        }
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            location.reload()
+                                                        }
+                                                    });
+
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            SystemServerError()
+                                        }
+                                    })
+                                    .fail(function (xhr, status, error) 
+                                    {
+                                         swalErrorServer()
+                                    })
+
+                                }
+
+                            }
+                        }
+                        else {
+                            SystemServerError()
+                        }
+                    })
+                    .fail(function (xhr, status, error) 
+                    {
+                        swalExpired()
+                    })
+            }
+        }
+
+        function UpdateKey() 
+        {
+            var str = $('#CampoUpdKey').val();
+            var cantidad = $('#CtdFielUpdKey').val();
+            var i;
+            var bit = 0;
+
+            for (i = 0; i <= cantidad; i++) {
+                if ($('#CampoUpdKey' + i).val() != undefined && $('#CampoUpdKey' + i).val() != '') {
+                    str += '-' + $('#CampoUpdKey' + i).val();
+                    if (i == 0 && $('#CampoUpdKey' + i).val() != '' && $('#CampoUpdKey' + i).val() != undefined) {
+                        bit = 1;
+                    }
+                }
+            }
+
+            if (bit > 0) {
+                existDocUpdKey()
+            }
+            else {
+                toastr.error("The properties of the key are requered, please try againg.!");
+            }
+        }
+    </script>
+
+    @*Rellenar formulario de NewReview*@
+    <script type="text/javascript">
+        function NewDocRevision() {
+            $('#modalDocRevison').modal('toggle');
+            $('#modal-newDocRevision').modal('toggle');
+            $.ajax({
+                url: "@Url.Action("CheckRevision","DC_DocumentList")",
+                type: "post",
+                data: {
+                    Clave: $('#idKey').val(),
+                    Id: idDocGlobal,
+                    IdSeccion: IdSeccionGlobal
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            })
+                .done(function (result) {
+                    if (result != null) {
+                        if (result == 'Error') 
+                        {
+                            SystemServerError()
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else {
+                            var obj = JSON.parse(result);
+                            var x = document.getElementById("OriginNewRevision");
+                            var newStation = document.getElementById("WorkstationsNewRevision");
+
+                            $('#spanNewRevisionClave').html(obj[0].Clave);
+                            $('#ActualNewRevision').html(obj[0].RevisionID);
+                            $('#SpanDocNewRevision').html(obj[0].RevisionID + 1);
+                            $('#DocNewRevision').val(obj[0].RevisionID + 1);
+                            $('#DocTypeNewRevision').html(obj[0].DocType);
+                            $('#TitleNewRevision').val(obj[0].Title);
+                            $('#ProductNewRevision').val(obj[0].Product);
+                            $('#DescriptionNewRevision').val(obj[0].Descripcion);
+                            $('#OwnerNewRevision').html(obj[0].Owner);
+                            $('#ApplicantNewRevision').html(obj[0].Applicant);
+                            $('#RecDateNewRevision').html(obj[0].RecordDate);
+                            $('#LatestNewRevision').html(obj[0].StartDate);
+                            $('#EndNewRevision').val(obj[0].EstimatedEnd);
+                            $('#ResponsibleNewRevision').val(@Model.Id_Usuario).trigger('change');
+                            for (i = 0; i < x.length; i++) {
+                                if (x.options[i].text == obj[0].OriginOfChange) {
+                                    $('#OriginNewRevision').val(x.options[i].value).trigger('change');
+                                }
+                            }
+                            $('#CommentOriginNewRevision').val(obj[0].OrigenComentario);
+                            $('#DescChangeNewRevision').val(obj[0].DescripcionOfChange);
+                            $('#ChangeNewRevision').val(obj[0].ReviewOfChange);
+                            $('#ValidationNewRevision').val(obj[0].ValidationOfChange);
+
+                            datosStations = [];
+                            arrayStations = obj[0].Workstationid.split('*');
+                            for (j = 0; j < arrayStations.length; j++) {
+                                datosStations.push(arrayStations[j]);
+                            }
+                            $('#WorkstationsNewRevision').val(datosStations).trigger('change');
+
+                            datosPreapproval = [];
+                            arrayPreapproval = obj[0].PreApprovalid.split('*');
+                            for (j = 0; j < arrayPreapproval.length; j++) {
+                                datosPreapproval.push(arrayPreapproval[j]);
+
+                            }
+                            $('#PreApprovalNewRevision').val(datosPreapproval).trigger('change');
+
+                            datosFinalSignature = [];
+                            arrayFinalSignature = obj[0].FinalSignatureid.split('*');
+                            for (j = 0; j < arrayFinalSignature.length; j++) {
+                                datosFinalSignature.push(arrayFinalSignature[j]);
+
+                            }
+                            $('#FinalSignatureNewRevision').val(datosFinalSignature).trigger('change');
+                        }
+                    }
+                    else {
+                          SystemServerError()
+                    }
+                })
+                .fail(function (xhr, status, error) {
+                     swalErrorServer()
+                })
+        }
+    </script>
+
+    @*Save NewRevision*@
+    <script type="text/javascript">
+        function NewRevisionDocument() {
+            //Validation of the files
+            var inputOriginal = document.getElementById("OriginalFileNewRevision");
+            var inputPdf = document.getElementById("PDFNewRevision");
+            var fileOriginal = inputOriginal.files;
+            var filePdf = inputPdf.files;
+            var formData = new FormData();
+
+            var files = /(.*?)\.(xls|xlsx|csv|docx|doc|ppt|pptx|pdf)$/;
+            var pdfValidate = /(.*?)\.(pdf)$/;
+
+            if (fileOriginal[0].name.match(files)) {
+                formData.append("Original", fileOriginal[0]);
+
+                if (filePdf[0].name.match(pdfValidate)) {
+                    formData.append("PDF", filePdf[0]);
+
+                    formData.append("DocumentoID", idDocGlobal);
+                    formData.append("IdObsoleto",  $('#IdObsoleto').val());
+                    formData.append("RevisionActual", $('#DocNewRevision').val());
+                    formData.append("Title", $('#TitleNewRevision').val());
+                    formData.append("Description", $('#DescriptionNewRevision').val());
+                    formData.append("Comentarios", $('#ProductNewRevision').val());
+                    formData.append("DateEstimated", $('#EndNewRevision').val());
+                    formData.append("ResponChange", $('#ResponsibleNewRevision').val());
+                    formData.append("OriginChange", $('#OriginNewRevision').val());
+                    formData.append("OriginComment", $('#CommentOriginNewRevision').val());
+                    formData.append("DescripChange", $('#DescChangeNewRevision').val());
+                    formData.append("Review", $('#ChangeNewRevision').val());
+                    formData.append("Validation", $('#ValidationNewRevision').val());
+                    formData.append("Workstations", $('#WorkstationsNewRevision').val());
+                    formData.append("Preapproval", $('#PreApprovalNewRevision').val());
+                    formData.append("FinalSign", $('#FinalSignatureNewRevision').val());
+                    formData.append("IdSeccion", IdSeccionGlobal);
+
+                    $.ajax({
+                        url: "@Url.Action("NewRevision","DC_DocumentList")",
+                        data: formData,
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                    }).done(function (result) {
+
+                        if(result != null)
+                        {
+                                if (result == 'Error') 
+                                {
+                                    SystemServerError()
+                                }
+                                if (result == 'noSession') {
+                                    swalExpired()
+                                }
+                                else if (result == 'Sorry') {
+                                    swalNoAuthorized()
+                                }
+                                else if (result == 'NoPage') {
+                                    swalNoAuthorized()
+                                }
+                                if (result == 'success') {
+                                    Swal.fire({
+                                        text: "The document has been successfully submitted!",
+                                        icon: "success",
+                                        buttonsStyling: false,
+                                        allowEscapeKey: false,
+                                        allowOutsideClick: false,
+                                        confirmButtonText: "Ok, got it!",
+                                        customClass: {
+                                            confirmButton: "btn btn-primary"
+                                        }
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.reload()
+                                        }
+                                    });
+                                }
+                        }
+                        else {
+                           SystemServerError()
+                        }
+
+                    }).fail(function (error) {
+                        swalErrorServer()
+                    });
+
+                } else {
+                    toastr.error("The PDF input needs to be .pdf extension, please try againg.!");
+                }
+            }
+            else {
+                toastr.error("The kind of the extension that Origin File is not accept, please try againg with diferent file.!");
+            }
+        }
+    </script>
+
+    @*Open the modal to Check the Revision*@
+    <script>
+        function showDocInfo(Rev, Clave, Id, Stat, bit) {
+            document.getElementById("RevBtnPdf").setAttribute("hidden", "hidden");
+            document.getElementById("RevBtnOrigin").setAttribute("hidden", "hidden");
+
+            var element = document.getElementById("Obsoletarse");
+             element.classList.add("d-none");
+
+            if (Stat == 'Active') {
+                document.getElementById("IdNewDocRevision").removeAttribute("hidden");
+            }
+            else {
+                document.getElementById("IdNewDocRevision").setAttribute("hidden", "hidden");
+            }
+
+            idDocGlobal = Id;
+            if (Stat != 'Active') {
+                $("#BtnNewRevision").css("pointer-events", "none");
+            }
+            else {
+                $("#BtnNewRevision").css("pointer-events", "block");
+            }
+
+            $.ajax({
+                url: "@Url.Action("CheckRevision","DC_DocumentList")",
+                type: "post",
+                data: {
+                    Clave: Clave,
+                    Id: Id,
+                    Revision: Rev,
+                    IdSeccion: IdSeccionGlobal
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if (result != null) {
+                    if (result == 'Error') 
+                    {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else {
+                        var obj = JSON.parse(result);
+
+                        if (bit != 1) {
+                            $('#modalDocRevison').modal('toggle');
+                        }
+
+                        if (obj[0].TipoArchivo != 'Digital' && obj[0].TipoArchivo != null) {
+                            $('#RevBtnPdf').attr('onclick', `ShowDocument(${null}, ${null}, '${obj[0].TipoArchivo}', '${obj[0].Clave}', ${obj[0].RevisionID}, ${null}, ${obj[0].PlantaID}, ${null})`);
+                            document.getElementById('RevBtnPdf').style.visibility = 'visible';
+
+                            $('#RevBtnOrigin').attr('href', `https://mxesc1vapp001/fp_data_center/planta${obj[0].PlantaID}/documents-center/${obj[0].Clave}/${obj[0].RevisionID}/${obj[0].Clave}.${obj[0].TipoArchivo}`);
+                            document.getElementById('RevBtnOrigin').style.visibility = 'visible';
+
+                            $('#idKeyNew').removeAttr('disabled');
+                        }
+                        else {
+                            $('#idKeyNew').attr("disabled", "disabled");
+                        }
+
+                        if (obj[0].TipoArchivo != 'Digital' && Stat == 'Active') {
+                            document.getElementById("IdNewDocRevision").removeAttribute("hidden");
+                        }
+                        else {
+                            document.getElementById("IdNewDocRevision").setAttribute("hidden", "hidden");
+                        }
+
+
+                        if(obj[0].Obsoleto && Stat != 'Obsolete')
+                        {
+                            var element = document.getElementById("Obsoletarse");
+                            element.classList.remove("d-none");
+                             $('#IdObsoleto').html('The revision is going to be OBSOLETE.');
+                        }
+                        else if(obj[0].Obsoleto || Stat == 'Obsolete')
+                        {
+                            var element = document.getElementById("Obsoletarse");
+                            element.classList.remove("d-none");
+                            $('#IdObsoleto').html('This document is OBSOLETE.');
+                        }
+
+                        $('#idKey').html(obj[0].Clave);
+                        $('#idRevision').html(obj[0].RevisionID);
+                        $('#idDocType').html(obj[0].DocType);
+                        $('#idProduct').html(obj[0].Product);
+                        $('#idDescrip').html(obj[0].Title);
+                        $('#idOwner').html(obj[0].Owner);
+                        $('#idApplicant').html(obj[0].Applicant);
+                        $('#idRecordDate').html(obj[0].RecordDate);
+                        $('#idStartDate').html(obj[0].StartDate);
+                        $('#idEstimatedDate').html(obj[0].EstimatedEnd);
+                        $('#idChangeManager').html(obj[0].ChangeManager);
+                        $('#idOriginChange').html(obj[0].OriginOfChange);
+                        $('#idDescripChange').html(obj[0].DescripcionOfChange);
+                        $('#idRewChange').html(obj[0].ReviewOfChange);
+
+                        Revisions = "";
+                        arrayRevisions = obj[0].Revisions.split('*');
+                        idRevisionesGlobal = obj[0].Revisions;
+                        TiposArchivoGlobal = obj[0].TipoArchivos;
+
+                        for (j = 0; j < arrayRevisions.length; j++) {
+                            if (obj[0].RevisionID == arrayRevisions[j]) {
+                                Revisions = Revisions + `<li class="page-item m-1 active"><a class="page-link" onclick="showDocInfo(${arrayRevisions[j]},'${Clave}',${Id},'${Stat}',${1})">${arrayRevisions[j]}</a></li>`;
+                            }
+                            else {
+                                Revisions = Revisions + `<li class="page-item m-1"><a class="page-link" onclick="showDocInfo(${arrayRevisions[j]},'${Clave}',${Id},'${Stat}',${1})">${arrayRevisions[j]}</a></li>`;
+                            }
+                        }
+
+                        $('#idRevisions').html(
+                            '<ul class="pagination pagination-outline">' +
+                            Revisions +
+                            '</ul>'
+                        );
+
+                        $('#idValChange').html(obj[0].ValidationOfChange);
+                        var WorkSta = obj[0].Workstations == null ? obj[0].Workstations : obj[0].Workstations.split("*").join('<br>');
+                        $('#idWorkstation').html(WorkSta);
+
+                        var PreApp = obj[0].PreApproval == null ? obj[0].PreApproval : obj[0].PreApproval.split("*").join('<br>');
+                        $('#idPreAppro').html(PreApp);
+
+                        var FinalSign = obj[0].FinalSignature == null ? obj[0].FinalSignature : obj[0].FinalSignature.split("*").join('<br>');
+                        $('#idFinalSig').html(FinalSign);
+
+                        $('#tdRevision').html(obj[0].RevisionID);
+                        $('#tdSignature').html(obj[0].Usuario);
+                        $('#tdDate').html(obj[0].FechaRegistro);
+                        $('#tdOperation').html(obj[0].OperacionTxt);
+                        var icono = obj[0].Icono.replace(/\\/g, "");
+                        $('#spanIcono').html(icono);
+                        $('#tdCategorie').html(obj[0].TipoTxt);
+                        $('#tdReason').html(obj[0].Comentarios);
+
+                        var fechaendrev = '"' + obj[0].EstimatedEnd + '"';
+                        $("#EndNewRevision").flatpickr(
+                            {
+                                dateFormat: "m-d-Y",
+                                defaultDate: fechaendrev,
+                                minDate: "today"
+                            }
+                        );
+                    }
+                }
+                else {
+                    SystemServerError()
+                }
+            })
+                .fail(function (xhr, status, error) {
+                    swalErrorServer()
+                })
+
+        }
+    </script>
+
+    @*Form validation FormNewDocumentRevision*@
+    <script type="text/javascript">
+        const formNewRev = document.getElementById('FormNewDocumentRevision');
+
+        var validatorNewRew = FormValidation.formValidation(
+            formNewRev,
+            {
+                fields: {
+                    'TitleNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Tittle is required'
+                            }
+                        }
+                    },
+                    'DescriptionNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Description is required'
+                            }
+                        }
+                    },
+
+                    'ProductNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Product is required'
+                            }
+                        }
+                    },
+
+                    'EndNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Estimated date is required'
+                            }
+                        }
+                    },
+
+                    'ResponsibleNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Responsible for the change is required'
+                            }
+                        }
+                    },
+                    'OriginNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Origin of change is required.'
+                            }
+                        }
+                    },
+                    'CommentOriginNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Comment Origin is required.'
+                            }
+                        }
+                    },
+                    'DescChangeNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Description of the change is required.'
+                            }
+                        }
+                    },
+
+                    'ChangeNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Change review is required.'
+                            }
+                        }
+                    },
+
+                    'ValidationNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Validation of the change is required.'
+                            }
+                        }
+                    },
+
+                    'WorkstationsNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Workstations is required.'
+                            }
+                        }
+                    },
+
+                    'PreApprovalNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The  Pre-approval is required.'
+                            }
+                        }
+                    },
+
+                    'FinalSignatureNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The  Final-signature is required.'
+                            }
+                        }
+                    },
+
+                    'OriginalFileNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Original File is required.'
+                            }
+                        }
+                    },
+                    'PDFNewRevision': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The PDF is required.'
+                            }
+                        }
+                    },
+                },
+
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        // Submit button handler
+        const submitButtonNewRew = document.getElementById('FormNewRevi_submit');
+
+        submitButtonNewRew.addEventListener('click', function (e) {
+            // Prevent default button action
+            e.preventDefault();
+
+            // Validate form before submit
+            if (validatorNewRew) {
+                validatorNewRew.validate().then(function (status) {
+                    if (status == 'Valid') {
+                        submitButtonNewRew.setAttribute('data-kt-indicator', 'on');
+                        submitButtonNewRew.disabled = true;
+                        setTimeout(function () {
+                            submitButtonNewRew.removeAttribute('data-kt-indicator');
+                            submitButtonNewRew.disabled = false;
+                            NewRevisionDocument()
+                        }, 1000);
+                    } else {
+                        submitButtonNewRew.setAttribute('data-kt-indicator', 'on');
+                        submitButtonNewRew.disabled = true;
+                        setTimeout(function () {
+                            submitButtonNewRew.removeAttribute('data-kt-indicator');
+                            submitButtonNewRew.disabled = false;
+                            swal.fire({
+                                text: "Sorry, looks like there are some empty inputs detected, please try again.",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-light-primary"
+                                }
+                            });
+
+                        }, 150);
+
+                    }
+                });
+            }
+        });
+    </script>
+
+    @*Form Validation FormUpdateKey*@
+    <script type="text/javascript">
+        const formUpKey = document.getElementById('FormUpdateKey');
+
+        var validator = FormValidation.formValidation(
+            formUpKey,
+            {
+                fields: {
+                    'updKeyDocs': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Type of document is required.'
+                            }
+                        }
+                    },
+                },
+
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        const submitUpKey = document.getElementById('ButtonUpdateKey');
+        submitUpKey.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (validator) {
+                validator.validate().then(function (status) {
+                    console.log('validated!');
+
+                    if (status == 'Valid') {
+                        submitUpKey.setAttribute('data-kt-indicator', 'on');
+
+                        submitUpKey.disabled = true;
+
+                        setTimeout(function () {
+                            submitUpKey.removeAttribute('data-kt-indicator');
+
+                            submitUpKey.disabled = false;
+
+                            UpdateKey()
+
+                        }, 2000);
+                    } else {
+                        submitUpKey.setAttribute('data-kt-indicator', 'on');
+                        submitUpKey.disabled = true;
+                        setTimeout(function () {
+                            submitUpKey.removeAttribute('data-kt-indicator');
+                            submitUpKey.disabled = false;
+                            swal.fire({
+                                text: "Sorry, looks like there are some empty inputs detected, please try again.",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-light-primary"
+                                }
+                            });
+
+                        }, 150);
+                    }
+                });
+            }
+        });
+    </script>
+
+    @*Form validation FormNewDocument*@
+    <script type="text/javascript">
+        const form = document.getElementById('FormNewDocument');
+
+        var validator = FormValidation.formValidation(
+            form,
+            {
+                fields: {
+                    'RevisionActual': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Actual revision is required'
+                            }
+                        }
+                    },
+                    'TipoDocumento': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Key is required'
+                            }
+                        }
+                    },
+                    'Title': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Title is required'
+                            }
+                        }
+                    },
+                    'Description': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Description is required'
+                            }
+                        }
+                    },
+                    'Product': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The Product is required'
+                            }
+                        }
+                    },
+                    'DateEstimated': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This Select is required'
+                            }
+                        }
+                    },
+                    'ResponChange': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This Select is required'
+                            }
+                        }
+                    },
+                    'OriginChange': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This Select is required'
+                            }
+                        }
+                    },
+                    'OriginComment': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This comment is required'
+                            }
+                        }
+                    },
+
+                    'DescripChange': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This Description is required'
+                            }
+                        }
+                    },
+                    'Review': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This review is required'
+                            }
+                        }
+                    },
+                    'Validation': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This validation is required'
+                            }
+                        }
+                    },
+                    'Workstations': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This Select is required'
+                            }
+                        }
+                    },
+
+
+                    'Preapproval': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This Select is required'
+                            }
+                        }
+                    },
+                    'FinalSign': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This Select is required'
+                            }
+                        }
+                    },
+                    'Original': {
+                        validators: {
+                            notEmpty: {
+                                message: 'This file  is required'
+                            }
+                        }
+                    },
+                    'PDF': {
+                        validators: {
+                            notEmpty: {
+                                message: 'The pdf is required'
+                            }
+                        }
+                    },
+                },
+
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        // Submit button handler
+        const submitButton = document.getElementById('FormNewDocument_submit');
+
+        submitButton.addEventListener('click', function (e) {
+            // Prevent default button action
+            e.preventDefault();
+
+            // Validate form before submit
+            if (validator) {
+                validator.validate().then(function (status) {
+                    if (status == 'Valid') {
+                        submitButton.setAttribute('data-kt-indicator', 'on');
+                        submitButton.disabled = true;
+                        setTimeout(function () {
+                            submitButton.removeAttribute('data-kt-indicator');
+                            submitButton.disabled = false;
+
+                            NewDocument()
+
+                        }, 1000);
+                    } else {
+                        submitButton.setAttribute('data-kt-indicator', 'on');
+                        submitButton.disabled = true;
+                        setTimeout(function () {
+                            submitButton.removeAttribute('data-kt-indicator');
+                            submitButton.disabled = false;
+                            swal.fire({
+                                text: "Sorry, looks like there are some empty inputs detected, please try again.",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-light-primary"
+                                }
+                            });
+
+                        }, 150);
+
+                    }
+                });
+            }
+        });
+    </script>
+    
+}
+

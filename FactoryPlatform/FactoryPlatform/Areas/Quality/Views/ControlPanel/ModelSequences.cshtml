@@ -1,0 +1,683 @@
+﻿@using FactoryPlatform.Areas.Quality.Models.ControlPanel.ModelSequences
+@model CP_ModelSequencesViewModel
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+}
+<div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <div id="kt_block">
+            <div class="card mb-5">
+                <div class="card-body p-5 mb-0" id="BlockPantalla">
+                    <input type="hidden" name="SeccionId" id="IdSeccion" value="5">
+                    <input type="hidden" name="Tipo" id="Tipo" value="2">
+					<div class="row">
+						<div class="col-lg-3">
+							<input type="text" id="Modelo" name="Modelo" class="form-control" placeholder="Modelo">
+						</div>
+						<div class="col-lg-3">
+							<button class="btn btn-primary p-3 fs-7 me-3" type="button" onclick="Search()" id="itbutton_submit">
+								<span class="indicator-label"><i class="fas fa-search"></i>Search</span>
+							</button>
+							<button class="btn btn-warning p-3 fs-8 me-3 d-none" type="button" id="copy"  data-bs-toggle="modal" data-bs-target="#copySequence">
+								<i class="far fa-copy fs-3"></i>
+							</button>
+						</div>
+					</div>
+                </div>
+            </div>
+			<div class="card mb-5 p-5">
+				<div class="col-lg-12 row">
+					<div class="col-lg-6">
+						<div class="row d-none" id="Resultado">
+							<div class="row mb-3">
+								<div class="col-lg-4 fv-row mb-4">
+									<label class="fs-6 form-label fw-bolder text-dark"></label>
+									<div class="form-control p-0" style="height: 300px;  overflow-y: scroll;width:100%">
+										<select id="Workstations" class="form-select form-select-solid" data-control="select2" data-close-on-select="false" data-placeholder="-- Select an option --" multiple="multiple" data-allow-clear="true" onfocus="true">
+										</select>
+									</div>
+								</div>
+								<div class="col-lg-2 fv-row mb-4">
+									<br />
+									<button class="btn btn-primary p-3 fs-7 me-3" id="FormAC" type="button" onclick="saveSequences()">
+										<span class="indicator-label"><i class="fas fa-save"></i> Save</span>
+										<span class="indicator-progress">
+											Please wait...
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+										</span>
+									</button>
+								</div>									
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6 mb-3">
+						<div class="row d-none" id="CreateDrags">
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" id="copySequence">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Copy sequence</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="svg-icon svg-icon-1"></span>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <form id="kt_docs_formvalidation_text" class="form"  autocomplete="off">
+					<div class="fv-row mb-10">
+						<label class="required fw-semibold fs-6 mb-2">Copy to Model</label>
+						<input type="text" name="NuevoModelo" id="NuevoModelo" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="" value="" />
+					</div>
+					<button id="kt_docs_formvalidation_text_submit" type="submit" class="btn btn-primary">
+						<span class="indicator-label"><i class="fas fa-save"></i> Save</span>
+						<span class="indicator-progress">
+							Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+						</span>
+					</button>
+				</form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+
+@*Search Model Sequences*@
+<script>
+	var ContadorGlobal = "";
+	function Search() {
+		var Modelo = $('#Modelo').val();
+		$.ajax({
+			url: "@Url.Action("SearchInfo","CP_ModelSequences")",
+			data: {
+				Modelo: Modelo
+			},
+			type: "POST",
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("XSRF-TOKEN",
+					$('input:hidden[name="__RequestVerificationToken"]').val());
+			},
+		}).done(function (result) {
+			if (result != null) {
+				if (result == 'Error') {
+					SystemServerError()
+				}
+				else if (result == 'noSession') {
+					swalExpired()
+				}
+				else if (result == 'Sorry') {
+					swalNoAuthorized()
+				}
+				else if (result == 'NoPage')
+				{
+					swalNoAuthorized()
+				}
+				else
+				{
+					var obj = JSON.parse(result);
+
+					if(obj[0].Workstation == 'NoExiste'){
+
+						document.getElementById("Resultado").classList.add("d-none");
+						document.getElementById("CreateDrags").classList.add("d-none");
+						document.getElementById("copy").classList.add("d-none");
+
+						Swal.fire({
+                            text: "Sorry, The Model not found",
+                            icon: "warning",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                            }
+                        });
+					}else{
+					var ArrayDatos =  [];
+					$('#Workstations').empty().trigger("change");
+
+					for (let i = 0; i < obj.length; i++) {
+					if(obj[i].Secuencia != null){
+						var selected = 'selected';
+						var dataPoint =  [obj[i].ID_Workstation, obj[i].Workstation, obj[i].Secuencia, obj[i].Registro];
+						ArrayDatos.push(dataPoint);
+
+					}else{
+						var selected = false;
+					}
+					var newOption = new Option(obj[i].Workstation, obj[i].ID_Workstation, false, selected);
+					$('#Workstations').append(newOption).trigger('change');
+					}
+
+					ArrayDatos = ArrayDatos.sort((a,b)=>{ return a[2]-b[2]}) ;
+
+					//console.log(ArrayDatos);
+					var dragphoto = `<div class="col-lg-10 row" > `+
+										`<div class="draggable-zone" tabindex="0" id="sequences"> `;
+					if(ArrayDatos.length == 0){
+							dragphoto +=`<div class="alert alert-warning d-flex align-items-center p-5" id="AlertWarning"> `+
+						`<span class="svg-icon svg-icon-2x svg-icon-light me-4"> `+
+						`<i class="fas fa-exclamation-triangle fs-2x text-warning"></i> `+
+						`</span> `+
+						`<div class="d-flex flex-column"> `+
+						`<h3 class="text-warning"> No strings at this time </h3> `+
+						`<h6 class="text-warning"> Now you can start recording sequences for this model! </h6> `+
+						`</div> `+
+						`</div>`
+					}
+					for (let i = 0; i < ArrayDatos.length; i++) {
+						dragphoto += `<div class="col draggable col-lg-12 py-1" tabindex="0" style="" id="${ArrayDatos[i][0]}"> `+
+										`<div class="card card-bordered"> `+
+											`<div class="row" style="padding-top: 0px;"> `+
+												`<div class="card-toolbar col-lg-1" style="padding: 5px 10px;"> `+
+													`<a class="btn btn-icon btn-sm btn-hover-light-primary draggable-handle"> `+
+														`<i class="fas fa-bars fs-1"></i> `+
+													`</a> `+
+												`</div> `+
+												`<div class="col-lg-11 fs-4 d-inline" style="vertical-align: middle;"> `+
+													`<div class="col-lg-12 row"> `+
+													`<div class="col-lg-11" style="padding: 10px 0;"> `+
+													`<span class="badge badge-square badge-secondary fs-3">${ArrayDatos[i][2]}</span> - ${ArrayDatos[i][1]} `+
+													`</div> `+
+													`<div class="col-lg-1"> `+
+													`<a class="btn btn-icon"  style="" onclick="deleteSequence(${ArrayDatos[i][3]},${ArrayDatos[i][2]})">` +
+															`<span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>` +
+														`</a>` +
+													`</div> `+
+													`</div> `+
+												`</div> `+
+											`</div> `+
+										`</div> `+
+									`</div> `
+						ContadorGlobal = ArrayDatos[i][1];
+									//console.log(dragphoto);
+					}
+					dragphoto += `</div>`+
+								`</div>`
+					
+								
+					$('#CreateDrags').html(dragphoto);
+					document.getElementById("Resultado").classList.remove("d-none");
+					document.getElementById("CreateDrags").classList.remove("d-none");
+					document.getElementById("copy").classList.remove("d-none");
+					KTDraggableCards.init();
+					}
+				}
+			}
+			else {
+				SystemServerError()
+			}
+		}).fail(function (error) {
+			swalErrorServer()
+		});
+	}
+</script>
+<script>
+	document.getElementById("CreateDrags").addEventListener("drag:stop", updOrden);
+	
+	function updOrden(event) {
+
+		var id = event.target.id;
+		console.log(id);
+		var datoFinal = [];
+		$(".draggable").each(function (index) {
+			//Obtener el id de cada elemento por clase
+			console.log('x');
+			var valida = datoFinal.includes($(this).attr('id'));
+			if (valida != true) {
+				datoFinal.push($(this).attr('id'));
+				var idCombos = $(this).attr('id');
+			}
+
+		});
+		//Setear variables 
+		var orderData = datoFinal.toString();
+		var orderDataModel = $('#Modelo').val();
+
+
+		$.ajax({
+			url: "@Url.Action("orderSequences","CP_ModelSequences")",
+			data: {
+				orderData: orderData,
+				orderDataModel: orderDataModel
+			},
+			type: "POST",
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("XSRF-TOKEN",
+					$('input:hidden[name="__RequestVerificationToken"]').val());
+			},
+		}).done(function (result) {
+			if (result != null) {
+				if (result == 'Error') {
+					SystemServerError()
+				}
+				else if (result == 'noSession') {
+					swalExpired()
+				}
+				else if (result == 'Sorry') {
+					swalNoAuthorized()
+				}
+				else if (result == 'NoPage') {
+					swalNoAuthorized()
+				}else{
+					Swal.fire({
+						text: "The operation completed successfully!",
+						icon: "success",
+						buttonsStyling: false,
+						allowEscapeKey: false,
+						allowOutsideClick: false,
+						confirmButtonText: "Ok, got it!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then((result) => {
+						if (result.isConfirmed) {
+
+							Search()
+							
+						}
+					})
+				}
+			}
+			else {
+				SystemServerError()
+			}
+		}).fail(function (error) {
+			swalErrorServer()
+		});
+	}
+</script>
+@*Init Dragg*@
+<script>
+"use strict";
+
+// Class definition
+var KTDraggableCards = function () {
+	// Private functions
+	var exampleCards = function () {
+		var containers = document.querySelectorAll('.draggable-zone');
+
+		if (containers.length === 0) {
+			return false;
+		}
+
+		var swappable = new Sortable.default(containers, {
+			draggable: '.draggable',
+			handle: '.draggable .draggable-handle',
+			mirror: {
+				//appendTo: selector,
+				appendTo: 'body',
+				constrainDimensions: true
+			}
+		});
+
+
+	}
+
+	return {
+		// Public Functions
+		init: function () {
+			exampleCards();
+
+		}
+	};
+}();
+
+// On document ready
+KTUtil.onDOMContentLoaded(function () {
+	KTDraggableCards.init();
+});
+
+</script>
+@*Save One Sequences*@
+<script>
+	function saveSequences(){
+		var options = document.getElementById('Workstations').selectedOptions;
+		var values = Array.from(options).map(({ value }) => value);
+		var Modelo = $('#Modelo').val();
+		var Pruebas = values.toString();
+		$.ajax({
+			url: "@Url.Action("SaveSequences","CP_ModelSequences")",
+			data: {
+				Sequences: Pruebas,
+				Modelo: Modelo
+			},
+			type: "POST",
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("XSRF-TOKEN",
+					$('input:hidden[name="__RequestVerificationToken"]').val());
+			},
+		}).done(function (result) {
+			if (result != null) {
+				if (result == 'Error') {
+					SystemServerError()
+				}
+				else if (result == 'noSession') {
+					swalExpired()
+				}
+				else if (result == 'Sorry') {
+					swalNoAuthorized()
+				}
+				else if (result == 'NoPage')
+				{
+					swalNoAuthorized()
+				}
+				else
+				{
+					Swal.fire({
+                        text: "The action has been successfully submitted!",
+                        icon: "success",
+                        buttonsStyling: false,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn btn-primary"
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) 
+                        {
+							Search()
+                        }
+                    });
+
+					
+				}
+			}
+			else {
+				SystemServerError()
+			}
+		}).fail(function (error) {
+			swalErrorServer()
+		});
+	}
+</script>
+@*Delete Sequences*@
+<script>
+	function deleteSequence(id,orden){
+
+		var SequenceID = id;
+		var Sequence = orden;
+		var Modelo = $('#Modelo').val();
+		Swal.fire({
+            text: "Are you sure to Delete the Sequence?",
+            icon: "question",
+            buttonsStyling: false,
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            showCancelButton: true,
+            closeOnCancel: true,
+            confirmButtonText: "Confirm",
+            cancelButtonText: 'Cancel',
+            customClass: {
+                confirmButton: "btn btn-primary",
+                cancelButton: 'btn btn-danger'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+				$.ajax({
+					url: "@Url.Action("DeleteSequence","CP_ModelSequences")",
+					data: {
+						SequenceID: SequenceID,Sequence:Sequence,Modelo:Modelo
+					},
+					type: "POST",
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader("XSRF-TOKEN",
+							$('input:hidden[name="__RequestVerificationToken"]').val());
+					},
+				}).done(function (result) {
+					if (result != null) {
+						if (result == 'Error') {
+							SystemServerError()
+						}
+						else if (result == 'noSession') {
+							swalExpired()
+						}
+						else if (result == 'Sorry') {
+							swalNoAuthorized()
+						}
+						else if (result == 'NoPage')
+						{
+							swalNoAuthorized()
+						}
+						else
+						{
+							Swal.fire({
+								text: "The action has been successfully submitted!",
+								icon: "success",
+								buttonsStyling: false,
+								allowEscapeKey: false,
+								allowOutsideClick: false,
+								confirmButtonText: "Ok, got it!",
+								customClass: {
+									confirmButton: "btn btn-primary"
+								}
+							}).then((result) => {
+								if (result.isConfirmed) 
+								{
+									Search()
+								}
+							});
+
+					
+						}
+					}
+					else {
+						SystemServerError()
+					}
+				}).fail(function (error) {
+					swalErrorServer()
+				});
+			}
+		});
+	}
+</script>
+<script>
+	// Define form element
+const form = document.getElementById('kt_docs_formvalidation_text');
+
+// Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
+var validator = FormValidation.formValidation(
+    form,
+    {
+        fields: {
+            'NuevoModelo': {
+                validators: {
+                    notEmpty: {
+                        message: 'This Model is required'
+                    }
+                }
+            },
+        },
+
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap: new FormValidation.plugins.Bootstrap5({
+                rowSelector: '.fv-row',
+                eleInvalidClass: '',
+                eleValidClass: ''
+            })
+        }
+    }
+);
+
+// Submit button handler
+const submitButton = document.getElementById('kt_docs_formvalidation_text_submit');
+submitButton.addEventListener('click', function (e) {
+    // Prevent default button action
+    e.preventDefault();
+
+    // Validate form before submit
+    if (validator) {
+        validator.validate().then(function (status) {
+            console.log('validated!');
+
+            if (status == 'Valid') {
+                // Show loading indication
+                submitButton.setAttribute('data-kt-indicator', 'on');
+
+                // Disable button to avoid multiple click
+                submitButton.disabled = true;
+
+                // Simulate form submission. For more info check the plugin's official documentation: https://sweetalert2.github.io/
+                setTimeout(function () {
+                    // Remove loading indication
+                    submitButton.removeAttribute('data-kt-indicator');
+
+                    // Enable button
+                    submitButton.disabled = false;
+
+                    // Show popup confirmation
+                    //Swal.fire({
+                    //    text: "Form has been successfully submitted!",
+                    //    icon: "success",
+                    //    buttonsStyling: false,
+                    //    confirmButtonText: "Ok, got it!",
+                    //    customClass: {
+                    //        confirmButton: "btn btn-primary"
+                    //    }
+                    //});
+					copySequence($('#NuevoModelo').val(),$('#Modelo').val())
+                    //form.submit(); // Submit form
+                }, 2000);
+            }
+        });
+    }
+});
+</script>
+<script>
+function copySequence(news,old){
+$.ajax({
+	url: "@Url.Action("validateModel","CP_ModelSequences")",
+	data: {
+		Modelo: news
+	},
+	type: "POST",
+	beforeSend: function (xhr) {
+		xhr.setRequestHeader("XSRF-TOKEN",
+			$('input:hidden[name="__RequestVerificationToken"]').val());
+	},
+}).done(function (result) {
+	if (result != null) {
+		if (result == 'Error') {
+			SystemServerError()
+		}
+		else if (result == 'noSession') {
+			swalExpired()
+		}
+		else if (result == 'Sorry') {
+			swalNoAuthorized()
+		}
+		else if (result == 'NoPage')
+		{
+			swalNoAuthorized()
+		}
+		else
+		{
+			var obj = JSON.parse(result);
+
+			if(obj[0].Resultado == 'NoExiste')
+			{
+				Swal.fire({
+                    text: "Sorry, The Model not found",
+                    icon: "warning",
+                    buttonsStyling: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    confirmButtonText: "Ok, got it!",
+                    customClass: {
+                        confirmButton: "btn font-weight-bold btn-light-primary"
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+						$('#NuevoModelo').val('');
+                    }
+                });
+			}
+			else
+			{
+				$.ajax({
+					url: "@Url.Action("CopyModel","CP_ModelSequences")",
+					data: {
+						ModeloAnterior: old,
+						ModeloNuevo: news
+					},
+					type: "POST",
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader("XSRF-TOKEN",
+							$('input:hidden[name="__RequestVerificationToken"]').val());
+					},
+				}).done(function (result) {
+					if (result != null) {
+						if (result == 'Error') {
+							SystemServerError()
+						}
+						else if (result == 'noSession') {
+							swalExpired()
+						}
+						else if (result == 'Sorry') {
+							swalNoAuthorized()
+						}
+						else if (result == 'NoPage')
+						{
+							swalNoAuthorized()
+						}
+						else
+						{
+							Swal.fire({
+								text: "The action has been successfully submitted!",
+								icon: "success",
+								buttonsStyling: false,
+								allowEscapeKey: false,
+								allowOutsideClick: false,
+								confirmButtonText: "Ok, got it!",
+								customClass: {
+									confirmButton: "btn btn-primary"
+								}
+							}).then((result) => {
+								if (result.isConfirmed) 
+								{
+									$('#Modelo').val(news);
+									$('#NuevoModelo').val('');
+									$('#copySequence').modal('hide');
+									Search()
+								}
+							});
+
+					
+						}
+					}
+					else {
+						SystemServerError()
+					}
+				}).fail(function (error) {
+					swalErrorServer()
+				});
+			}		
+		}
+	}
+	else {
+		SystemServerError()
+	}
+}).fail(function (error) {
+	swalErrorServer()
+});
+}
+</script>
+
+}

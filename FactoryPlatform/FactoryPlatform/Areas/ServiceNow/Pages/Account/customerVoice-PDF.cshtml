@@ -1,0 +1,285 @@
+﻿@page "/ServiceNow/customerVoice-PDF"
+@model FactoryPlatform.Areas.ServiceNow.Pages.Account.customerVoice_PDFModel
+@{
+    Layout = "";
+}
+<html lang="en">
+<!--begin::Head-->
+<head>
+    <base href="../../">
+    <title>FactoryPlatform - @ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="~/Images/SystemPictures/favicons.png" />
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <!--end::Fonts-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <!--end::Global Stylesheets Bundle-->
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body" class="bg-body" background="~/Images/SystemPictures/newLogo3.png" bgcolor=aqua>
+
+    @if (Model.CustomerVoice != null)
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid p-10 py-lg-15">
+                    <!-- begin::Wrapper-->
+                    @if (Model.CustomerVoice.CustomerVoice_Signatures.Count > 0)
+                    {
+                        var CustomersV = Model.CustomerVoice.CustomerVoice_Signatures.First();
+
+                        <div class="mw-lg-950px mx-auto w-100">
+                            <div class="d-flex justify-content-between flex-column flex-sm-row mb-5">
+                                <img alt="Logo" src="~/Images/SystemPictures/logo-lkq_3.png" class="w-250px" />
+                            </div>
+                            <div class="gy-7 gs-7 p-2">
+                                <h1 class="card-title fs-1qx text-center">Check List to obtain Voice of Customer ( @CustomersV.Componente )</h1>
+                            </div>
+
+                            <div class="d-flex flex-stack flex-wrap mt-lg-2 pt-2">
+                                <div class="my-1 me-5">
+                                    <div class="row">
+                                        <div class="col-lg-3 fv-row mb-1">
+                                            <label class="fs-5 form-label fw-bolder text-dark">Development/Project:</label>
+                                            <div class="border p-2 fs-5" style="width: 300px;">@CustomersV.Proyecto</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="my-1 text-right">
+                                    <div class="row">
+                                        <div class="col-lg-2 fv-row mb-1">
+                                            <label class="fs-5 form-label fw-bolder text-dark">Date:</label>
+                                            <div class="border p-2 fs-5" style="width: 300px;">@CustomersV.Fecha</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-stack flex-wrap mt-lg-2 pt-5">
+                                <div class="my-1 me-5">
+                                    <div class="row">
+                                        <div class="col-lg-3 fv-row mb-1">
+                                            <label class="fs-5 form-label fw-bolder text-dark">Part number:</label>
+                                            <div class="border p-2 fs-5" style="width: 300px;">@CustomersV.NumeroParte</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="my-1 text-right">
+                                    <div class="row">
+                                        <div class="col-lg-2 fv-row mb-1">
+                                            <label class="fs-5 form-label fw-bolder text-dark">Product engineer:</label>
+                                            <div class="border p-2 fs-5" style="width: 300px;">@CustomersV.Ing</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-stack flex-wrap mt-lg-2 pt-5 mb-10">
+                                <div class="my-1 me-5">
+                                    <div class="row">
+                                        <div class="col-lg-3 fv-row mb-1">
+                                            <label class="fs-5 form-label fw-bolder text-dark">Customer:</label>
+                                            <div class="border p-2 fs-5" style="width: 300px;">@CustomersV.CustomerName</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="my-1 text-right">
+                                    <div class="row">
+                                        <div class="col-lg-2 fv-row mb-1">
+                                            <label class="fs-5 form-label fw-bolder text-dark">Customer Organization:</label>
+                                            <div class="border p-2 fs-5" style="width: 300px;">@CustomersV.CustomerOrg</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border gy-7 gs-7 p-2 mb-10">
+                                <h2 class="card-title fs-1qx">I. Customer needs, expectations and requirements</h2>
+                            </div>
+
+                            @if (Model.CustomerVoice.CustomerVoice.Count > 0)
+                            {
+                                var counter = 0;
+
+                                foreach (var item in Model.CustomerVoice.CustomerVoice.GroupBy(T => T.Tipo).ToList())
+                                {
+                                    <table class="table table-row-bordered  border gy-7 gs-7 mb-10">
+
+                                        @if (counter == 0)
+                                        {
+                                            <tr class="fw-bolder fs-7 text-uppercase gs-0  border-end border-top  border-gray-300 align-middle p-2">
+                                                <th class="p-2 text-center" style="border-top: hidden!important; border-right: 0px;border-left: hidden!important;border-bottom: 1px;"></th>
+                                                <th class="p-2 text-center border-end  border-gray-300" style="border-top: hidden!important; border-right: 0px;border-left: hidden!important;border-bottom: 1px;"></th>
+                                                <th class="p-2 text-center"> Product </th>
+                                                <th class="p-2 text-center"> Process </th>
+                                                <th class="p-2 " style="border-top: hidden!important; border-right: hidden!important;border-left: 0px;border-bottom: 1px;">  </th>
+                                            </tr>
+                                        }
+
+                                        <tr class="fw-bolder fs-6 gs-0 border-end border-top border-bottom  border-gray-300 align-middle p-2">
+                                            <td class="p-2 text-center border-end  border-gray-300" style="border-top: hidden!important; border-right: 0px;border-left: hidden!important;border-bottom: 1px;"></td>
+                                            <td class="p-2 " style="background-color: #4682B4 "><strong>@Model.CustomerVoice.CustomerVoice.Where(T => T.Tipo == item.Key).ToList().First().Tquestion</strong></td>
+                                            @if (item.Key != 8)
+                                            {
+                                                <td class="p-2 text-center" style="background-color: #4682B4 "><strong>Yes / No </strong></td>
+                                                <td class="p-2 text-center" style="background-color: #4682B4 "><strong>Yes / No </strong></td>
+                                            }
+                                            <td class="p-2 " style="background-color: #4682B4"><strong>Describe specific details or reference to another document</strong></td>
+                                        </tr>
+                                        @foreach (var voice in Model.CustomerVoice.CustomerVoice.Where(T => T.Tipo == item.Key).ToList())
+                                        {
+                                            <tr class="fs-7 gs-0 border-end border-top  border-gray-300 align-middle">
+                                                <td class="p-2 aling-middle text-center">@voice.ID_Registro</td>
+                                                <td class="p-2 aling-middle">@voice.Question</td>
+                                                @if (item.Key != 8)
+                                                {
+                                                    if (voice.Producto == true)
+                                                    {
+                                                        <td class="p-2 aling-middle text-center"><span class="p-2" style="background-color: #32C5D2 !important;color: #FFF !important;">Yes</span> </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="p-2 aling-middle text-center">No</td>
+                                                    }
+
+                                                    if (@voice.Proceso == true)
+                                                    {
+                                                        <td class="p-2 aling-middle text-center"><span class="p-2" style="background-color: #32C5D2 !important;color: #FFF !important;">Yes</span> </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="p-2 aling-middle text-center">No</td>
+                                                    }
+                                                }
+
+                                                <td class="p-2">@voice.Detalle</td>
+                                            </tr>
+                                        }
+                                    </table>
+                                    counter++;
+                                }
+                            }
+                            <br>
+                            <br>
+                            @if (CustomersV.TipoDoc == 3)
+                            {
+                                var contImg = 1;
+                                if (Model.CustomerVoice.ftpFiles.Count > 0)
+                                {
+                                    @foreach (var foto in Model.CustomerVoice.ftpFiles)
+                                    {
+                                        var ruta = $"https://mxesc1vapp001/photocenter/Planta{CustomersV.PlantaID}/customerVoice/{CustomersV.ID_Registro}/large/{foto}";
+
+                                        <table class="table table-row-bordered  border gy-7 gs-7 mb-10">
+                                            <tr>
+                                                <th class="p-2 aling-middle text-center"> <H3><strong>Images # @contImg </strong></H3> </th>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-2 aling-middle text-center">
+                                                    <img src="@ruta" style="width: 230px;"><br>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        contImg++;
+                                    }
+
+                                }
+                                else
+                                {
+                                    <span class="label label-sm label-primary "> No Drawings or Images </span>
+                                }
+                            }
+
+                            <div class="mb-10">
+                                <h5 class="mb-3">Comentarios Adjuntos:</h5>
+                                <p class="fs-6">@CustomersV.Comments </p>
+                            </div>
+
+                            @{
+                                var firmas = CustomersV.Firmas.Split("*");
+                                var countSigna = firmas.Count();
+                                var contFirm = 0;
+                            }
+
+                            <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                <tr class=" gs-0 border-bottom border-end border-gray-300 fs-6">
+                                    <th class="border-bottom border-end align-middle text-center p-1 fw-bold">Pre Approval:</th>
+                                    <td class="border-bottom border-end align-middle  p-1">
+                                        @while (contFirm < (countSigna - 1))
+                                        {
+                                            <p class="p-0 mb-0">@firmas[contFirm]</p>
+                                            contFirm++;
+                                        }
+                                    </td>
+                                </tr>
+                                <tr class="fs-6">
+                                    <th class="border-bottom border-end p-1 align-middle text-center fw-bold">Final Approval:</th>
+                                    <td class="border-bottom border-end p-1 align-middle">
+                                        <p class="p-0 mb-0">@firmas.Last()</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!--end::Text-->
+                            <!-- begin::Footer-->
+                            <div class="d-flex flex-stack flex-wrap mt-lg-2 pt-10">
+                                <div class="my-1 me-5">
+                                </div>
+                                <div class="my-1 text-end">
+                                    <spam>
+                                        R-77-73-015<br>
+                                        Ed. 1<br>
+                                        Responsable:<br>
+                                        Fecha:9/Julio/2020
+                                    </spam>
+                                </div>
+                            </div>
+                            <!-- end::Footer-->
+                        </div>
+
+                    }
+                    <!-- end::Wrapper-->
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid text-center p-10 py-lg-15">
+                    <a class="mb-10 pt-lg-10">
+                        <img alt="Logo" src="~/Images/SystemPictures/LKQ.png" class="w-300px mb-5" />
+                    </a>
+                    <div class="pt-lg-10 mb-10">
+                        <h1 class="fw-bolder fs-4qx text-danger mb-10">System Error</h1>
+                        <div class="fw-bold fs-3 text-muted mb-15">
+                            @ViewData["Message"]
+                            <br />Please try again later.
+                        </div>
+                        <div class="text-center">
+                            <a href="/FactoryPlatform" class="btn btn-lg btn-primary fw-bolder">Go to homepage</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script>var hostUrl = "assets/";</script>
+    <!--begin::Javascript-->
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script src="~/assets/plugins/global/plugins.bundle.js"></script>
+    <script src="~/assets/js/scripts.bundle.js"></script>
+    <!--end::Global Javascript Bundle-->
+    <!--end::Javascript-->
+</body>
+<!--end::Body-->
+</html>
+

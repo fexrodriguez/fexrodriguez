@@ -1,0 +1,171 @@
+﻿@using FactoryPlatform.Data
+@using FactoryPlatform.Data.AppDbContext
+@using FactoryPlatform.Library
+@inject StoresProceduresDbContext _SpContext;
+@inject ApplicationDbContext _AppContext;
+
+@if (User.Identity.IsAuthenticated)
+{
+    var _lMenu = new LMenu(_SpContext, _AppContext);
+    var _lUsers = new LUsers(_AppContext);
+    var Model = _lMenu.GetMenu(User);
+    var IdUsuario = _lUsers.getIdUser(User);
+    <div id="kt_aside" class="aside" data-kt-drawer="true" data-kt-drawer-name="aside" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'200px', '300px': '250px'}" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle">
+        <div class="aside-menu flex-column-fluid">
+            <div class="hover-scroll-overlay-y px-2 my-5 my-lg-5" id="kt_aside_menu_wrapper" data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="{default: '#kt_aside_toolbar, #kt_aside_footer', lg:'#kt_header, #kt_aside_toolbar, #kt_aside_footer'}" data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="5px">
+                <div class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500" id="#kt_aside_menu" data-kt-menu="true">
+
+                    @*  <div class="aside-search py-5">
+                <div class="input-group flex-nowrap">
+                <span class="input-group-text"><i class="fas fa-search fs-3"></i></span>
+                <div class="overflow-hidden flex-grow-1">
+                <select class="rounded-start-0 form-select-solid form-control" data-control="select2" data-placeholder="Quick Search" data-allow-clear="true" multiple="multiple" onchange="">
+                @foreach (var item in Model.spFPAPP_Sys_menus)
+                {
+                @if (Model.spFPAPP_Sys_apps.Count > 0)
+                {
+                @foreach (var Program in Model.spFPAPP_Sys_apps)
+                {
+                if (item.Id_Departamento == Program.DepartamentoID)
+                {
+                <option value="@Program.ID_Aplicacion-@Program.Aplicacion-@item.Departamento">@item.Departamento > @Program.Aplicacion</option>
+                }
+                }
+                }
+                }
+                </select>
+                </div>
+                </div>
+                </div>*@
+                    @if (IdUsuario.First().Usuario == "6908" || IdUsuario.First().Usuario == "6887")
+                    {
+                    <div class="menu-item">
+                        <div class="menu-content pb-2">
+                            <span class="menu-section text-muted text-uppercase fs-7 ls-1">Administration</span>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <a href="/FactoryPlatform/Administrator/Users" class="menu-link" onmouseover="this.style.backgroundColor='#009EF7';" onmouseout="this.style.backgroundColor='#1e1e2d';">
+                            <span class="menu-icon ">
+                                <i class="fas fa-users-cog fs-6 text-white"></i>
+                            </span>
+                            <span class="menu-title text-white fs-6 fw-bold">Users</span>
+                        </a>
+                    </div>
+                    }
+                    @if (IdUsuario.First().Usuario == "6908" || IdUsuario.First().Usuario == "6887")
+                    {
+                         <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                        <span class="menu-link text-white" text-white" onmouseover="this.style.backgroundColor='#009EF7';" onmouseout="this.style.backgroundColor='#1e1e2d';">
+                            <span class="menu-icon">
+                                <i class="fas fa-code text-white"></i>
+                            </span>
+                            <span class="menu-title text-white fs-7 fw-bold">Standarization</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion menu-active-bg">
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                                <a href="/FactoryPlatform/StandarizationJS">
+                                    <span class="menu-link text-white" text-white" onmouseover="this.style.backgroundColor='#009EF7';" onmouseout="this.style.backgroundColor='#1e1e2d';">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot bg-white"></span>
+                                        </span>
+                                        <span class="menu-title text-white fs-7 fw-bold">StandarizationJS</span>
+                                    </span>
+                                </a>
+                            </div>
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                                <a href="/FactoryPlatform/StandarizationSQL">
+                                    <span class="menu-link text-white" text-white" onmouseover="this.style.backgroundColor='#009EF7';" onmouseout="this.style.backgroundColor='#1e1e2d';">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot bg-white"></span>
+                                        </span>
+                                        <span class="menu-title text-white fs-7 fw-bold">StandarizationSQL</span>
+                                    </span>
+                                </a>
+                            </div>
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                                <a href="/FactoryPlatform/StandarizationHTML">
+                                    <span class="menu-link text-white" text-white" onmouseover="this.style.backgroundColor='#009EF7';" onmouseout="this.style.backgroundColor='#1e1e2d';">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot bg-white"></span>
+                                        </span>
+                                        <span class="menu-title text-white fs-7 fw-bold">StandarizationHTML</span>
+                                    </span>
+                                </a>
+                            </div>
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                                    <a href="/FactoryPlatform/StandarizationSecurity">
+                                    <span class="menu-link text-white" text-white" onmouseover="this.style.backgroundColor='#009EF7';" onmouseout="this.style.backgroundColor='#1e1e2d';">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot bg-white"></span>
+                                        </span>
+                                        <span class="menu-title text-white fs-7 fw-bold">Standarization Security</span>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    
+
+                    <div class="menu-item">
+                        <div class="menu-content pt-8 pb-2">
+                            <span class="menu-section text-muted text-uppercase fs-7 ls-1">Departments</span>
+                        </div>
+                    </div>
+
+                    <form asp-controller="Sections" asp-action="Pages" method="post" id="showPages">
+                        <input type="hidden" value="" name="idPage" id="idPage" />
+                        <input type="hidden" value="" name="appName" id="appName" />
+                        <input type="hidden" value="" name="depName" id="depName" />
+                        @foreach (var item in Model.spFPAPP_Sys_menus)
+                        {
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                                <span class="menu-link text-white" text-white" onmouseover="this.style.backgroundColor='#009EF7';" onmouseout="this.style.backgroundColor='#1e1e2d';">
+                                    <span class="menu-icon">
+                                        <i class="@item.Iconos text-white"></i>
+                                    </span>
+                                    <span class="menu-title text-white fs-7 fw-bold">@item.Departamento</span>
+                                    <span class="menu-arrow"></span>
+                                </span>
+                                @if (Model.spFPAPP_Sys_apps.Count > 0)
+                                {
+                                    <div class="menu-sub menu-sub-accordion menu-active-bg">
+                                        @foreach (var Program in Model.spFPAPP_Sys_apps)
+                                        {
+                                            if (item.Id_Departamento == Program.DepartamentoID)
+                                            {
+                                                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                                                    <a onclick="showSecciones(@Program.ID_Aplicacion,'@Program.Aplicacion','@item.Departamento')">
+                                                        <span class="menu-link text-white" text-white" onmouseover="this.style.backgroundColor='#009EF7';" onmouseout="this.style.backgroundColor='#1e1e2d';">
+                                                            <span class="menu-bullet">
+                                                                <span class="bullet bullet-dot bg-white"></span>
+                                                            </span>
+                                                            <span class="menu-title text-white fs-7 fw-bold">@Program.Aplicacion</span>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function showSecciones(idApp, appName, depName) {
+            $('#idPage').val('');
+            $('#idPage').val(idApp);
+            $('#appName').val('');
+            $('#appName').val(appName);
+            $('#depName').val('');
+            $('#depName').val(depName);
+            document.getElementById('showPages').submit();
+        }
+    </script>
+}

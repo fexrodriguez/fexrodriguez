@@ -1,0 +1,445 @@
+﻿@model CorrectiveActionViewModel
+<div class="card-body">
+    <form id="FormCorrectiveAction">
+        <div class="card-body p-9">
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label fw-bold fs-6">Key: </label>
+                <div class="col-lg-3 fv-row">
+                    <div class="input-group mb-5 fv-row">
+                        <span class="input-group-text" id="basic-addon1">
+                            <div class="form-check form-check-custom form-check-success ">
+                                <input class="form-check-input p-1" type="checkbox" onclick="enableInput(this)" value="" />
+                            </div>
+                       </span>
+                        <input id="InputKey" type="text" class="form-control p-3 fs-7 ps-2" aria-label="Text input with checkbox" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Tool</label>
+                <div class="col-lg-3 fv-row">
+                    <select id="ToolAC" name="ToolAC" onchange="readDataIT()" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                        <option></option>
+                       @foreach (var item in Model.Quality_CA_Tools)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label  required  fw-bold fs-6">Sources</label>
+                <div class="col-lg-3 fv-row">
+                    <select id="SourcesAC" name="SourcesAC" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                        <option></option>
+                        @foreach (var item in Model.Quality_CA_Sources)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Department</label>
+                <div class="col-lg-3 fv-row">
+                    <select id="DepartmentAC" name="DepartmentAC" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                        <option></option>
+                        @foreach (var item in Model.Production_Departments)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Responsible for monitoring:</label>
+                <div class="col-lg-3 fv-row">
+                    <select id="MonitoringAC" name="MonitoringAC" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                        <option></option>
+                        @foreach (var item in Model.Quality_CA_Responsible)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Activity resposible: </label>
+                <div class="col-lg-3 fv-row">
+                    <select id="ActivityAC" name="ActivityAC" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                        <option></option>
+                        @foreach (var item in Model.Quality_CA_Activity)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Action category: </label>
+                <div class="col-lg-3 fv-row">
+                    <select id="ActionCategoryAC" name="ActionCategoryAC" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                        <option></option>
+                        @foreach (var item in Model.Quality_CA_CategoryAccion)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Process: </label>
+                <div class="col-lg-3 fv-row">
+                    <select id="ProcessAC" name="ProcessAC" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                        <option></option>
+                        @foreach (var item in Model.Quality_Processes)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Aperture date: </label>
+                <div class="col-lg-3 fv-row">
+                    <div class="position-relative d-flex align-items-center fv-row">
+                        <span class="svg-icon svg-icon-2 position-absolute mx-4"><i class="fas fa-calendar-alt fs-3"></i></span>
+                        <input id="ApertureDate" name="ApertureDate" class="form-control p-3 fs-7 ps-15"  placeholder="Pick a date" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Promise date: </label>
+                <div class="col-lg-3 fv-row">
+                    <div class="position-relative d-flex align-items-center fv-row">
+                        <span class="svg-icon svg-icon-2 position-absolute mx-4"><i class="fas fa-calendar-alt fs-3"></i></span>
+                        <input id="PromiseDate" name="PromiseDate" class="form-control p-3 fs-7 ps-15" placeholder="Pick a date" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Causes: </label>
+                <div class="col-lg-9 fv-row">
+                    <textarea id="CausesAC" name="CausesAC" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Actions: </label>
+                <div class="col-lg-9 fv-row">
+                    <textarea id="ActionsAC" name="ActionsAC" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-3 col-form-label required fw-bold fs-6">Analysis file: </label>
+                <div class="col-lg-3 fv-row">
+                    <input id="FileAC" name="FileAC" accept=".pdf" class="form-control ps-3 p-3 fs-8" type="file" />
+                </div>
+            </div>
+            <div class="row mt-12">
+                <div class="col-md-9 offset-md-3">
+                    <button type="button" id="FormAC" class="btn btn-primary p-3 fs-7 me-3">
+                        <span class="indicator-label"><i class="fas fa-save"></i> Save</span>
+                            <span class="indicator-progress">
+                            Please wait...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@*enable disable inputkey*@
+<script>
+    function enableInput(obj) 
+    {
+        if (obj.checked) {
+            document.getElementById('InputKey').disabled = false;
+        }
+        else {
+            document.getElementById('InputKey').disabled = true;
+        }
+    }
+</script>
+
+@*Datepickers*@
+<script>
+    //$("#ApertureDate").flatpickr();
+    $("#PromiseDate").flatpickr({
+         dateFormat: "m-d-Y"
+    });
+    $("#ApertureDate").flatpickr({
+        dateFormat: "m-d-Y",
+		defaultDate: "today"
+    });
+</script>
+
+@*Validacion de textbox*@
+<script>
+    $('#CausesAC').maxlength({
+        threshold: 500,
+        warningClass: "badge badge-danger",
+        limitReachedClass: "badge badge-success",
+        separator: ' of ',
+        preText: 'You have ',
+        postText: ' chars remaining.',
+        validate: true
+    });
+
+    $('#ActionsAC').maxlength({
+        threshold: 500,
+        warningClass: "badge badge-danger",
+        limitReachedClass: "badge badge-success",
+        separator: ' of ',
+        preText: 'You have ',
+        postText: ' chars remaining.',
+        validate: true
+    });
+</script>
+
+@*Form validation for corrective action*@
+<script>
+    var formCorrectiveA = document.getElementById('FormCorrectiveAction');
+
+    var validatorNewRew = FormValidation.formValidation(
+        formCorrectiveA,
+        {
+            fields: {
+                'ToolAC': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Tool is required'
+                        }
+                    }
+                },
+                'SourcesAC': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Sources are required.'
+                        }
+                    }
+                }, 
+                
+                'DepartmentAC': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Department is required.'
+                        }
+                    }
+                },
+                
+                'MonitoringAC': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Responsible for monitoring File is required.'
+                        }
+                    }
+                }, 
+                'ActivityAC': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Activity resposible is required.'
+                        }
+                    }
+                }, 
+
+                'ActionCategoryAC': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Action category is required.'
+                        }
+                    }
+                },
+                
+                'ProcessAC': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Process are required.'
+                        }
+                    }
+                }, 
+
+                'ApertureDate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Aperture date is required.'
+                        }
+                    }
+                }, 
+                
+                'PromiseDate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Promise date is required.'
+                        }
+                    }
+                }, 
+                
+                'CausesAC': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Causes are required.'
+                        }
+                    }
+                }, 
+
+                'ActionsAC': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Actions are required.'
+                        }
+                    }
+                }, 
+
+                'FileAC': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Analysis file is required.'
+                        }
+                    }
+                }, 
+
+            },
+
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        }
+    );
+
+    // Submit button handler
+    var FormAC = document.getElementById('FormAC');
+
+    FormAC.addEventListener('click', function (e) {
+        // Prevent default button action
+        e.preventDefault();
+
+        // Validate form before submit
+        if (validatorNewRew) {
+            validatorNewRew.validate().then(function (status) {
+                if (status == 'Valid')
+                {
+                    FormAC.setAttribute('data-kt-indicator', 'on');
+                    FormAC.disabled = true;
+                    setTimeout(function () {
+                        FormAC.removeAttribute('data-kt-indicator');
+                        FormAC.disabled = false;
+                        saveAction()   
+                    }, 1000);
+                }
+                else 
+                {
+                    FormAC.setAttribute('data-kt-indicator', 'on');
+                    FormAC.disabled = true;
+                    setTimeout(function () {
+                        FormAC.removeAttribute('data-kt-indicator');
+                        FormAC.disabled = false;
+                        swal.fire({
+                            text: "Sorry, looks like there are some empty inputs detected, please try again.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        });
+
+                    }, 150);
+                }
+            });
+        }
+    });
+</script>
+
+@*Guardar accion*@
+<script>
+    function saveAction(){
+    var IdMenuService = '@ViewData["MenuId"]';
+    var analysis =  document.getElementById("FileAC").files;
+
+    var files = /(.*?)\.(xls|xlsx|csv|docx|doc|ppt|pptx|pdf)$/;
+    var formData = new FormData();
+
+    if (analysis[0].name.match(files)) {
+
+        formData.append("FileAC", analysis[0]);
+        if($('#InputKey').val() != '' && $('#InputKey').val() != null){
+            formData.append("Key", $('#InputKey').val());
+        }
+        formData.append("SourcesAC", $('#SourcesAC').val());   
+        formData.append("ToolAC", $('#ToolAC').val());
+        formData.append("DepartmentAC", $('#DepartmentAC').val());
+        formData.append("MonitoringAC", $('#MonitoringAC').val());
+        formData.append("ActivityAC", $('#ActivityAC').val());
+        formData.append("ActionCategoryAC", $('#ActionCategoryAC').val());
+        formData.append("ProcessAC", $('#ProcessAC').val());
+        formData.append("ApertureDate", $('#ApertureDate').val());
+        formData.append("PromiseDate", $('#PromiseDate').val());
+        formData.append("CausesAC", $('#CausesAC').val());
+        formData.append("ActionsAC", $('#ActionsAC').val());
+        formData.append("FileAC", $('#FileAC').val());
+        formData.append("IdMenuService", IdMenuService);
+
+        $.ajax({
+            url: "@Url.Action("CorrectiveAction","SMCorrectiveActions")",
+            data: formData,
+            type: "POST",
+            processData: false,
+            contentType: false,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+        }).done(function (result) {
+
+            if(result != null)
+            {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'success') {
+                        Swal.fire({
+                            text: "The action has been successfully submitted!",
+                            icon: "success",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                showCapture(IdMenuService)
+                            }
+                        });
+                    }
+            }
+            else {
+                    SystemServerError()
+            }
+
+        }).fail(function (error) {
+                swalErrorServer()
+        });
+    }
+    else {
+        toastr.error("Analysis File allow only types files xls|xlsx|csv|docx|doc|ppt|pptx|pdf !");
+    }
+}
+</script>

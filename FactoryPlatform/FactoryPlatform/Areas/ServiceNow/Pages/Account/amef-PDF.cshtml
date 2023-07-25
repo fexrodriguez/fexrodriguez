@@ -1,0 +1,171 @@
+﻿@page "/ServiceNow/amef-PDF"
+@model FactoryPlatform.Areas.ServiceNow.Pages.Account.amef_PDFModel
+@{
+    Layout = "";
+}
+
+<html lang="en">
+<head>
+    <base href="../../">
+    <title>FactoryPlatform - @ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="~/Images/SystemPictures/favicons.png" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+</head>
+<body id="kt_body" class="bg-body" background="~/Images/SystemPictures/newLogo3.png" >
+
+    @if (Model.AMEF != null)
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid p-10 py-lg-15">
+
+                    <div class="mw-lg-950px mx-auto w-100">
+                        <div class="d-flex justify-content-between flex-column flex-sm-row mb-5">
+                            <img alt="Logo" src="~/Images/SystemPictures/logo-lkq_3.png" class="w-250px" />
+                        </div>
+                        <div class="border gy-7 gs-7 p-5">
+                            <h1 class="card-title fs-1qx p-2">CHECK LIST AMEF Y CARTA DE CALIDAD #@Model.AMEF.ID_Registro</h1>
+                            <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-5 mb-5">
+                                <tr>
+                                    <td class="border-bottom border-end p-3"><span class="fw-bolder">Desarrollo:</span> @Model.AMEF.Desarrollo </td>
+                                    <td class="border-bottom border-end p-3"><span class="fw-bolder">Fecha:</span> @Model.AMEF.FechaRegistro</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-bottom p-3"> <span class="fw-bolder">Responsable:</span>  @Model.AMEF.Registro</td>
+                                </tr>
+                            </table>
+
+                            <h3 class="card-title fs-1qx my-10 mb-4">1. Cuando se debe actualizar un AMEF</h3>
+                            <div class="separator my-1   mb-5"></div>
+
+
+                            <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+
+                                @{
+                                    var quest = Model.AMEF.QuestionsAMEF.Split('*');
+                                    var results = Model.AMEF.Results.Split('*');
+                                    var comments = Model.AMEF.Coments.Split('*');
+
+                                    int contador = 0;
+                                    var result = "";
+                                    foreach (var item in quest)
+                                    {
+                                            <tr>
+                                                <td class="border-bottom border-end p-3">@item</td>
+                                                <td class="border-bottom border-end p-3">
+                                                    @switch (results[contador])
+                                                {
+                                                    case "1":
+                                                        result = "SI";
+                                                        break;
+                                                    case "2":
+                                                        result = "NO";
+                                                        break;
+                                                    case "3":
+                                                        result = "N/A";
+                                                        break;
+                                                    case "4":
+                                                        result = "N/P";
+                                                        break;
+                                                }
+                                                    @result
+                                                </td>
+                                                <td class="border-bottom border-end p-3">@comments[contador]</td>
+                                            </tr>
+
+                                        contador++;
+                                    }
+                                }
+                            </table>
+
+                            <h3 class="card-title fs-1qx my-10 mb-4">Determinación por parte de Calidad</h3>
+                            <div class="separator my-1 mb-5"></div>
+                            <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                @{
+                                    var determinate = Model.AMEF.QualityDetermination.Split('*');
+                                    var quaComment = Model.AMEF.QualityComments.Split('*');
+                                }
+                                <tr>
+                                    <td class="border-bottom border-end p-3">¿Se requiere cambios en el Plan de Control? </td>
+                                    <td class="border-bottom border-end p-3"> 
+                                        @{
+                                            var deter = determinate[0] == "1" ? "SI" : "NO"; 
+                                        } 
+                                        @deter
+                                     </td>
+                                    <td class="border-bottom border-end p-3">@quaComment[0]</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-bottom border-end p-3">¿Se requiere cambios en el AMEF? </td>
+                                    <td class="border-bottom border-end p-3"> 
+                                        @{
+                                            var deter1 = determinate[1] == "1" ? "SI" : "NO"; 
+                                        } 
+                                        @deter1
+                                     </td>
+                                    <td class="border-bottom border-end p-3">@quaComment[1]</td>
+                                </tr>
+                            </table>
+
+                            <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                <tr>
+                                    <td class="border-bottom border-end p-3">Plan de Control</td>
+                                    <td class="border-bottom border-end p-3">@Model.AMEF.ReviewsUsers.Split('*')[0]</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-bottom border-end p-3">AMEF</td>
+                                    <td class="border-bottom border-end p-3">@Model.AMEF.ReviewsUsers.Split('*')[1]</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-bottom border-end p-3">VoBo</td>
+                                    <td class="border-bottom border-end p-3">@Model.AMEF.ReviewsUsers.Split('*')[2]</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- begin::Footer-->
+                        <div class="d-flex flex-stack flex-wrap mt-lg-2 pt-13">
+                            <div class="my-1 me-5">
+                                <p>NOTA: N/A = No aplicable. N/P = No presenciado.</p>
+                            </div>
+                            <div class="my-1 text-end">
+                                <spam class="fw-bolder" >R-02-71-034</spam> <br>
+                                ED.1
+                            </div>
+                        </div>
+                        <!-- end::Footer-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid text-center p-10 py-lg-15">
+                    <a class="mb-10 pt-lg-10">
+                        <img alt="Logo" src="~/Images/SystemPictures/LKQ.png" class="w-300px mb-5" />
+                    </a>
+                    <div class="pt-lg-10 mb-10">
+                        <h1 class="fw-bolder fs-4qx text-danger mb-10">System Error</h1>
+                        <div class="fw-bold fs-3 text-muted mb-15">
+                            @ViewData["Message"]
+                            <br />Please try again later.
+                        </div>
+                        <div class="text-center">
+                            <a href="/FactoryPlatform" class="btn btn-lg btn-primary fw-bolder">Go to homepage</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <script>var hostUrl = "assets/";</script>
+    <script src="~/assets/plugins/global/plugins.bundle.js"></script>
+    <script src="~/assets/js/scripts.bundle.js"></script>
+</body>
+</html>

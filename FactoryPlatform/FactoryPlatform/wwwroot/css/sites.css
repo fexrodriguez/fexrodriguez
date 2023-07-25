@@ -1,0 +1,25 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+
+/*begin datatable style*/
+
+.btn.btn-secondary {
+    margin: 4px;
+}
+
+/*input search*/
+/*div.dataTables_wrapper div.dataTables_filter input {
+    background-color: #fdfdfd;
+    border-color: #000000;
+    color: #222020;
+}   
+*/
+/*buttons*/
+
+/*.btn.btn-active-light-primary.btn-outline:not(.btn-outline-default) {
+    color: #ffc700;
+    background: white;
+}*/
+
+/*end datatable style*/

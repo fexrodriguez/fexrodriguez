@@ -1,0 +1,1441 @@
+﻿ @using System.IO
+@using FactoryPlatform.Library
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Configuration
+
+@model BeforeProofViewModel
+@*Es para generar el token seguro para toda la pagina y no utilizar los forms*@
+@Html.AntiForgeryToken()
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+    var hideButtons = "";
+    var noneCaracteristics = "";
+}
+<div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <div id="kt_block_ModelFeacture">
+            <div class="card mb-7">
+
+                <div class="card-body p-5" id="kt_block_BeforeProof">
+                    <form id="frmBusqueda" asp-area="Quality" asp-controller="QualityControl" asp-action="BeforeProof" method="post">
+                        <div class="row">
+                            <input type="hidden" name="Station" id="Station" value="@Model.Station" />
+                            <input type="hidden" name="SeccionId" id="IdSeccion" value="@Model.IdSeccion" />
+                            <input type="hidden" name="serieFinal" id="serieFinal" value="@Model.Serie" />
+                            <input type="hidden" name="modeloFinal" id="modeloFinal" value="@Model.Modelo" />
+                            <input type="hidden" name="Tipo" id="Tipo" value="@Model.Tipo" />
+                            <div class="col-lg-2 fv-row mb-4">
+                                <label class="fs-6 form-label fw-bolder text-dark">Serie</label>
+                                <input name="Serie" id="Serie" value="@Model.Serie" type="text" class="form-control   ps-3 p-3 fs-8" placeholder="Serie" autofocus />
+                            </div>
+                            <div class="col-lg-2 fv-row">
+                                <label class="fs-6 form-label fw-bolder text-dark">Model</label>
+                                <input name="Modelo" id="Modelo" value="@Model.Modelo" type="text" class="form-control ps-3 p-3 fs-8" placeholder="Model" autocomplete="off" autofocus />
+                            </div>
+                            <div class="col-lg-3 fv-row mb-4 pt-8 me-0">
+                                <button type="button" id="Search" class="btn btn-primary p-3 fs-8 me-3" onclick="ValidarModelo()"><i class="fas fa-search"></i>Search</button>
+                                @if (Model.Serie != null && Model.Modelo != null && Model.QualityModelFeatures != null)
+                                {
+                                    if (Model.QualityModelFeatures.Count > 0)
+                                    {
+                                        hideButtons = Model.DesviationTags.Count > 0 ? "visibility: hidden;" : "";
+                                        noneCaracteristics = Model.DesviationTags.Count > 0 ? "display: none;" : "";
+                                        <button type="button" id="btnAccept" class="btn btn-success p-3 fs-8 me-3" onclick="Execute(1)" style="@hideButtons">&nbsp;<i class="fas fa-check"></i>Accept</button>
+                                        <button type="button" id="btnReject" class="btn btn-danger p-3 fs-8" onclick="Execute(0)" style="@hideButtons">&nbsp;<i class="fa fa-times"></i>Reject</button>
+                                    }
+                                }
+                            </div>
+                            @if (Model.QualityModelFeatures.Count > 0)
+                            {
+                                <div class="col-lg-3 mb-4 pt-8">
+                                    <input id="divTitulo" type="button" class="btn p-3 fw-bold fs-4 text-dark" disabled style="@noneCaracteristics" />
+                                </div>
+                            }
+                        </div>
+                    </form>
+
+                    <div class="border border-gray-100 p-0 mb-0"></div>
+
+                    <div class="card-body ">
+                        @if (Model.DesviationTags.Count > 0)
+                        {
+                            <div class="d-flex flex-wrap flex-stack pb-7" id="TagsRows1">
+                                <div class="d-flex flex-wrap align-items-center my-1 alert alert-dismissible bg-light-primary">
+                                    <span class="svg-icon svg-icon-2x svg-icon-light me-3"><i class="fas fa-tags fs-2x text-primary"></i></span>
+                                    <h3 class="fw-bolder my-1 fs-5 m-0">Este Modelo tiene alguna de las siguientes Etiquetas?</h3>
+                                </div>
+                                <div class="d-flex flex-wrap my-1">
+                                    <ul class="nav nav-pills me-6 mb-2 mb-sm-0">
+                                        <li class="nav-item m-0">
+                                            <a class="btn btn-sm btn-icon btn-light btn-color-muted btn-active-primary me-3 active" data-bs-toggle="tab" href="#kt_project_users_card_pane">
+                                                <span class="svg-icon svg-icon-2">
+                                                    <i class="fas fa-th-large"></i>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item m-0">
+                                            <a class="btn btn-sm btn-icon btn-light btn-color-muted btn-active-primary" data-bs-toggle="tab" href="#kt_project_users_table_pane">
+                                                <span class="svg-icon svg-icon-2">
+                                                    <i class="fas fa-bars"></i>
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="tab-content">
+                                <div id="kt_project_users_card_pane" class="tab-pane fade show active">
+                                    <div class="row g-6 g-xl-9" id="contenido_tags">
+                                        @{
+                                            int contadorTags = 1;
+                                                                    @foreach (var item in Model.DesviationTags)
+                                            {
+                                                                        <div class="col-md-6 col-xxl-4" id="Etiquetas-@contadorTags">
+                                                                            <div class="card card-bordered">
+                                                                                <div class="card-header ribbon ribbon-end ribbon-clip">
+                                                                                    <div class="ribbon-label">
+                                                                                        REQ-@item.RequestID <span class="ribbon-inner" style="background-color:#36c6d3;"></span>
+                                                                                    </div>
+                                                                                    <div class="card-title" style="color:#36c6d3;"><i class="fas fa-layer-group me-3" style="color:#36c6d3;"></i>Codigo</div>
+                                                                                </div>
+                                                                                <div class="card-body d-flex flex-center flex-column pt-12 p-9">
+                                                                                    <table class="table border">
+                                                                                        <tr>
+                                                                                            <td class="text-gray-900  min-w-60px w-150px align-middle border-bottom border-end">&nbsp;&nbsp;Desviación:</td>
+                                                                                            <td class="text-gray-700 min-w-200px align-middle border-bottom border-end text-center">@item.Desviacion</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td class="text-gray-900 align-middle border-bottom border-end">&nbsp;&nbsp;REQ:</td>
+                                                                                            <td class="text-gray-700 align-middle border-bottom border-end text-center">@item.RequestID</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td class="text-gray-900 align-middle border-bottom border-end">&nbsp;&nbsp;Codigo:</td>
+                                                                                            <td class="text-gray-700 align-middle border-bottom border-end text-center">@item.Codigo</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td class="text-gray-900 align-middle border-bottom border-end">&nbsp;&nbsp;Proveedor:</td>
+                                                                                            <td class="text-gray-700 align-middle border-bottom border-end text-center">@item.NombreProveedor</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td class="text-gray-900 align-middle border-bottom border-end">&nbsp;&nbsp;Fecha Impresion:</td>
+                                                                                            <td class="text-gray-700 align-middle border-bottom border-end text-center">@DateTime.Now.ToString("dd/MMM/yyy")</td>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                    <div class="fw-bold text-gray-400 mb-6">
+                                                                                        <a class="btn btn-sm btn-success" onclick="Desviacion(@contadorTags, @item.RegistroDesviacionID, 1)"><i class="fa fa-check"></i><span>Si</span></a>
+                                                                                        <a class="btn btn-sm btn-dark" onclick="Desviacion(@contadorTags, @item.RegistroDesviacionID, 0)"><i class="fas fa-times"></i><span>No</span></a>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                contadorTags++;
+                                            }
+                                        }
+
+                                    </div>
+                                </div>
+
+                                <div id="kt_project_users_table_pane" class="tab-pane fade">
+                                    <div class="card card-flush">
+                                        <div class="card-body pt-0">
+                                            <div class="table-responsive">
+                                                <table id="kt_project_users_table" class="table table-row-bordered table-row-dashed gy-4 align-middle fw-bolder">
+                                                    <thead class="fs-7 text-gray-400 text-uppercase">
+                                                        <tr>
+                                                            <th class="min-w-200px">Codigo</th>
+                                                            <th class="min-w-100px">Req</th>
+                                                            <th class="min-w-80px">Desviación</th>
+                                                            <th class="min-w-250px">Proveedor</th>
+                                                            <th class="min-w-90px">Fecha Impresion</th>
+                                                            <th class="min-w-40px text-center">Si</th>
+                                                            <th class="min-w-40px text-center">No</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="fs-6">
+                                                        @{
+                                                            int contadorTags2 = 1;
+                                                        }
+                                                        @foreach (var item in Model.DesviationTags)
+                                                        {
+                                                            <tr id="Etiquetas2-@contadorTags2">
+                                                                <td class="card-title" style="color:#36c6d3;"><i class="fas fa-layer-group me-3" style="color:#36c6d3;"></i>@item.Codigo</td>
+                                                                <td><span class="badge badge-light-primary fw-bolder px-4 py-3 text-white" style="background-color:#36c6d3;">REQ-@item.RequestID</span></td>
+                                                                <td>@item.Desviacion</td>
+                                                                <td>@item.NombreProveedor</td>
+                                                                <td>@DateTime.Now.ToString("dd/MMM/yyy")</td>
+                                                                <td class="text-center">
+                                                                    <a class="btn btn-sm btn-success p-2" onclick="Desviacion(@contadorTags2, @item.RegistroDesviacionID, 1)"><i class="fa fa-check"></i><span>Si</span></a>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <a class="btn btn-sm btn-dark p-2" onclick="Desviacion(@contadorTags2, @item.RegistroDesviacionID, 0)"><i class="fas fa-times"></i><span>No</span></a>
+                                                                </td>
+                                                            </tr>
+                                                            contadorTags2++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.QualityModelFeatures.Count > 0)
+                        {
+                            <div id="carruseles" style="@noneCaracteristics">
+                                <div class="tab-content d-flex flex-column-fluid flex-center" id="tabs">
+                                    @{
+                                        int intContadorCaracteristicas = 1;
+
+                                        foreach (var item in Model.QualityModelFeatures)
+                                        {
+                                            string CaruselActivo = intContadorCaracteristicas != 1 ? "" : "active  ";
+                                            var divIdCarrucel = $"IdCarrucel{intContadorCaracteristicas}";
+                                            var divIdCarac = $"divID{intContadorCaracteristicas}";
+                                            var divTituCarac = $"divTitulo{intContadorCaracteristicas}";
+
+                                            <div class="tab-pane fade show @CaruselActivo  " id="tab_@intContadorCaracteristicas" role="tabpanel">
+                                                <div id="@divIdCarrucel" class="carousel slide w-lg-1000px " data-bs-touch="false" data-bs-interval="false">
+                                                    <div class="carousel-inner">
+                                                        @{
+                                                        var intContadorImg = 1;
+                                                        if (Model.FilesModelFeactures.Count > 0)
+                                                        {
+                                                            var fileNames = Model.FilesModelFeactures.Where(f => f.RegistroId == item.IdRegistro).ToList();
+                                                            @foreach (var file in fileNames)
+                                                            {
+                                                                var src = $"https://mxesc1vapp001/photocenter/Planta{item.PlantaId}/model-features/{item.Modelo}/{item.IdRegistro}/large/{file.FileName}";
+                                                                string stractive = intContadorImg != 1 ? "" : "active";
+                                                                <div class="carousel-item @stractive">
+                                                                    <div class="d-flex flex-column-fluid flex-center">
+                                                                        <img src="@src" class="d-block w-100 w-lg-1000px h-lg-700px" alt="...">
+                                                                    </div>
+                                                                    <div class="d-flex flex-column-auto h-50px bg-dark flex-center text-center">
+                                                                        <span class="text-white">@item.Descripcion.ToUpper()</span>
+                                                                    </div>
+                                                                </div>
+                                                                intContadorImg++;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                                <p class="text-danger">There's a issue with the Images, please contact the Administration System.</p>
+                                                        }
+                                                        }
+                                                    </div>
+                                                    <button class="carousel-control-prev" type="button" data-bs-target="#@divIdCarrucel" data-bs-slide="prev">
+                                                        <i class="fas fa-caret-square-left fs-5x"></i>
+                                                    </button>
+                                                    <button class="carousel-control-next" type="button" data-bs-target="#@divIdCarrucel" data-bs-slide="next">
+                                                        <i class="fas fa-caret-square-right fs-5x"></i>
+                                                    </button>
+                                                    <div id="@divTituCarac" data-value="@item.Titulo" style="visibility:hidden">
+                                                    </div>
+                                                    <div id="@divIdCarac" data-value="@item.IdRegistro" style="visibility:hidden"></div>
+                                                </div>
+                                            </div>
+
+                                            intContadorCaracteristicas++;
+                                        }
+
+                                        <div class="tab-pane fade" id="tab_final" role="tabpanel">
+                                            <div class="rounded w-lg-1000px p-10" style="text-align:center;">
+                                                <span class="svg-icon svg-icon-10x svg-icon-light text-center"><i class="far fa-thumbs-up fs-5x text-primary"></i></span><br>
+                                                <h5 class="text-primary text-center fs-3">Finished</h5> <br>
+                                                <textarea id="Comentario" name="Comentario" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                                                <br />
+                                                <button id="saveComment" class="btn text-white fs-7 p-3" style="background-color:#44b6ae;" onmouseover="this.style.backgroundColor='#009999';" onmouseout="this.style.backgroundColor='#44b6ae';" data-bs-toggle="modal" data-bs-target="#kt_modal_Employee"
+                                                    onMouseUp="GuardarComentario('@Model.Modelo','@Model.Serie',document.getElementById('Comentario').value);">
+                                                    <i class="far fa-save text-white"></i>Guardar comentario
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div id="javTotal" data-value="@intContadorCaracteristicas" style="visibility:hidden"> </div>
+                                    }
+                                </div>
+
+                                @{
+                                    int Intcontador = 1;
+                                }
+
+                                <ul id="tabs_Features" class="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-5 fs-6" style="visibility:hidden">
+                                    @foreach (var item in Model.QualityModelFeatures)
+                                    {
+                                        var strActive = Intcontador != 1 ? "" : "active";
+
+                                        <li class="nav-item">
+                                            <a class="nav-link @strActive" href="#tab_@Intcontador" data-bs-toggle="tab"></a>
+                                        </li>
+                                        Intcontador++;
+                                    }
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-bs-toggle="tab" href="#tab_final"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            @if (Model.Serie != null && Model.Modelo != null)
+                            {
+                                <div class="alert alert-warning d-flex align-items-center p-5 mb-10">
+                                    <span class="svg-icon svg-icon-2x svg-icon-light"> <i class="fas fa-exclamation-triangle fs-2x text-warning"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <div class="d-flex flex-column">
+                                        <h6 class="text-warning">There are no properties for this search</h6>
+                                        <span>Please communicate this to the staff in charge.</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Componentes recuperados*@
+<div class="modal fade" id="modal_RecoverComponents" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog  mw-500px">
+        <div class="modal-content ">
+            <div class="modal-header" id="modal_RecoverComponents_header">
+                <h4 class="fw-bolder"><i class="fas fa-layer-group me-3" style="color:#36c6d3;"></i>COMPONENTES RECUPERADOS</h4>
+            </div>
+            <div class="modal-body" id="modal_RecoverComponents_body">
+                <div class="scroll-y me-n6 pe-5" id="modal_RecoverComponents_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}"
+                     data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#modal_RecoverComponents_header" data-kt-scroll-wrappers="#modal_RecoverComponents_scroll"
+                     data-kt-scroll-offset="100px">
+                    <div class="card card-bordered">
+                        <div class="card-header ribbon ribbon-end ribbon-clip" id="headEtiquetas">
+                        </div>
+                        <div class="card-body" id="datos_RecoverComponents">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary p-2 fs-8" data-bs-dismiss="modal" onclick="ValidaEnsamble()">
+                    <i class="far fa-save text-white"></i>Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*modal Pruebas Especiales*@
+<div class="modal fade bs-modal-lg" id="modal_PruebasEspeciales" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center text-center">
+                <h2 class="fw-bolder ">PRUEBAS ESPECIALES</h2>
+            </div>
+            <div class="modal-body" style="text-align:center;">
+                <p>
+                    <div id="buttonsEspecial" style="display:block;">
+                        <p class="mb-5 fs-4"> ¿Cuenta con etiqueta de prueba especial?</p>
+                        <a class="btn btn-success p-2" onclick="$('#buttonsEspecial').hide();$('#capturaEspecial').show();"><i class="fa fa-check"></i> Yes</a>
+                        <a class="btn btn-dark p-2" onclick="$('#modal_PruebasEspeciales').modal('hide');"><i class="fas fa-times"></i> No </a>
+                    </div>
+                    <div id="capturaEspecial" style="display:none;">
+                        <p class="fs-3"> Ingrese el numero de la prueba</p>
+                        <br>
+                        <div class="col-md-4" style="position: absolute;left: 35%;">
+                            <input class="form-control" name="numeroPrueba" min="1" max="2147483647" id="numeroPrueba" type="number" onkeyup="if (getKeyCode(event) == 13) {saveInputEspecial(this.value);}" />
+                            <input class="form-control" name="numeroPruebaFake" id="numeroPruebaFake" type="hidden" />
+                            <br>
+                        </div>
+                        <br><br><br>
+                        <div id="infoEspecialsave">
+                        </div>
+                    </div>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    
+    @*loading*@
+    <script>
+        var button = document.querySelector("#kt_block_BeforeProof");
+        var target = document.querySelector("#kt_block_BeforeProof");
+
+        var BlockPantalla = new KTBlockUI(target, {
+            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+        });
+    </script>
+
+    @*Comentario validation*@
+    <script>
+        $('#Comentario').maxlength({
+            threshold: 500,
+            warningClass: "badge badge-danger",
+            limitReachedClass: "badge badge-success",
+            separator: ' of ',
+            preText: 'You have ',
+            postText: ' chars remaining.',
+            validate: true
+        });
+    </script>
+
+    @if (Model.QualityModelFeatures.Count > 0)
+    {
+        <script>
+            $(document).ready(function() 
+            {
+                if ($('#modeloFinal').val() != '' && $('#serieFinal').val() != '') 
+                {
+                    $('#modal_PruebasEspeciales').modal('show');
+                    $('#botonCerrar').prop('disabled', true);
+                }
+            })
+        </script>
+    }
+
+    @if (Model.Serie != null && Model.Modelo != null)
+    {
+        <script type="text/javascript">
+            window.onload = function() 
+            {
+                document.getElementById('divTitulo').value = $('#divTitulo1').attr('data-value');
+                javaTotal = $('#javTotal').attr('data-value');
+                javaTotal = javaTotal - 1;
+            }
+        </script>
+    }
+
+@*  Funcion: ValidarModelo
+    Method: GetModeloInf, Controller: QualityControl*@
+    <script>
+        function ValidarModelo() 
+        {
+            var modelo = $('#Modelo').val();
+            var serie = $('#Serie').val();
+            var idSeccion = $('#IdSeccion').val();
+
+            if (modelo != "" && Serie != "") 
+            {
+                $.ajax({
+                    url: "@Url.Action("GetModeloInf","QualityControl")",
+                    type: "post",
+                    data: { modelo: modelo, serie: serie, idSeccion: idSeccion },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function(result) 
+                {
+                    if(result != null)
+                    {
+                        if (result == 'Error') 
+                        {
+                           SystemServerError()
+                        }else if (result == 'noSession') 
+                        {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else 
+                        {
+                            var obj = JSON.parse(result);
+                            let status = obj.Respuesta
+                            let qty = obj.QTY
+                            let comment = obj.Comentario
+
+                            var message = "";
+
+                            if (status == "Aprobado") 
+                            {
+                                validateChecklist()
+                            }
+                            else if (status == "Temporal") 
+                            {
+                                message = "<h1>Model Temporary</h1><br><h3>Comment: " + comment + "</h3><br><h3>Quantity to Process: " + qty + "</h3>";
+                                Swal.fire({
+                                    title: message,
+                                    width: '550px',
+                                    showCancelButton: false,
+                                    buttonsStyling: false,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    confirmButtonText: "Confirm",
+                                    customClass: { confirmButton: "btn btn-primary" }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        validateChecklist()
+                                    }
+                                })
+
+                                document.getElementById('btnAccept').style.visibility = 'hidden';
+                                document.getElementById('btnReject').style.visibility = 'hidden';
+                                document.getElementById('divTitulo').style.visibility = 'hidden';
+                                document.getElementById('tabs').style.visibility = 'hidden';
+                            }
+                            else if (status == "Desaprobado") 
+                            {
+                                message = "<h1>Model Disapproved</h1><br><h3>Comment: " + comment + "</h3>";
+
+                                Swal.fire({
+                                    title: message,
+                                    width: '550px',
+                                    showCancelButton: false,
+                                    buttonsStyling: false,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    confirmButtonText: "Confirm",
+                                    customClass: { confirmButton: "btn btn-primary" }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        document.getElementById('Modelo').value = '';
+                                        document.getElementById('Serie').value = '';
+                                        return false;
+                                    }
+                                })
+
+                                document.getElementById('btnAccept').style.visibility = 'hidden';
+                                document.getElementById('btnReject').style.visibility = 'hidden';
+                                document.getElementById('divTitulo').style.visibility = 'hidden';
+                                document.getElementById('tabs').style.visibility = 'hidden';
+                            }
+                            else 
+                            {
+                                toastr.error("The model is not registered!");
+                                document.getElementById('Modelo').value = '';
+                                document.getElementById('Serie').value = '';
+
+                                document.getElementById('btnAccept').style.visibility = 'hidden';
+                                document.getElementById('btnReject').style.visibility = 'hidden';
+                                document.getElementById('divTitulo').style.visibility = 'hidden';
+                                document.getElementById('tabs').style.visibility = 'hidden';
+
+                                return false;
+                            }
+                        }
+                    }
+                }).fail(function(xhr, status, error) {
+                    swalErrorServer()
+                })
+            }
+            else 
+            {
+                if (modelo == "" && Serie == "") 
+                {
+                    toastr.error("Inputs are Empty!");
+                }
+                else 
+                {
+                    toastr.error("The Model is required!");
+                }
+            }
+        }
+    </script>
+
+@*  Funcion: validateChecklist
+    Method: ValidateMissingAssamble, Controller: QualityControl*@
+    <script type="text/javascript">
+        function validateChecklist() 
+        {
+            var modelo = $('#Modelo').val();
+            var serie = $("#Serie").val();
+            var estacion = $("#Station").val();
+            var idSeccion = $('#IdSeccion').val();
+            var SerieCheck = serie.replace(/[^a-zA-Z 0-9.]+/g, '');
+            serie = SerieCheck.replace(/(\r\n|\n|\r)/gm, "");
+            
+            if (estacion != '') 
+            {
+                BlockPantalla.block()
+
+                $.ajax({
+                    url: "@Url.Action("ValidateMissingAssamble","QualityControl")",
+                    data: {
+                        serie: serie,
+                        modelo: modelo,
+                        estacion: estacion,
+                        idSeccion: idSeccion
+                    },
+                    type: "POST",
+                    beforeSend: function(xhr) 
+                    {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function(result) 
+                {
+                    if (result != null) 
+                    {
+                        if (result == 'Error') 
+                        {
+                            BlockPantalla.release();
+                            $('#Modelo').val("");
+                            $('#Serie').val("");
+                            SystemServerError()
+                        } 
+                        else if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else {
+                            var obj = JSON.parse(result);
+
+                            let resultado = obj.Respuesta;
+                            let ensamble1 = obj.Ensamble1;
+                            let ensamble2 = obj.Ensamble2;
+                            let ensamble3 = obj.Ensamble3;
+                            let ensamble4 = obj.Ensamble4;
+                            let ensamble5 = obj.Ensamble5;
+                            let ensamble6 = obj.Ensamble6;
+                            let lavado = obj.Lavado;
+                            let caracteristica = obj.Caracteristica;
+                            if (caracteristica > 0) {
+                                if (resultado == 'Correcto') 
+                                {
+                                    RecoveryComponent()
+                                }
+                                else if (resultado == 'Valida') 
+                                {
+                                    var joined = '';
+
+                                    if (ensamble1 == 1) 
+                                    {
+                                        ensamble1 = '<h3><i class="far fa-edit text-danger fs-2x" ></i> Check List Ensamble 1 Pending</h3><br>';
+                                        var joined = joined.concat(ensamble1);
+                                    } else {
+                                        ensamble1 = '';
+                                    }
+                                    if (ensamble2 == 1) {
+                                        ensamble2 = '<h3><i class="far fa-edit text-danger fs-2x"></i> Check List Ensamble 2 Pending</h3><br>';
+                                        var joined = joined.concat(ensamble2);
+                                    } else {
+                                        ensamble2 = '';
+                                    }
+                                    if (ensamble3 == 1) {
+                                        ensamble3 = '<h3><i class="far fa-edit text-danger fs-2x"></i> Check List Ensamble 3 Pending</h3><br>';
+                                        var joined = joined.concat(ensamble3);
+                                    } else {
+                                        ensamble3 = '';
+                                    }
+                                    if (ensamble4 == 1) {
+                                        ensamble4 = '<h3><i class="far fa-edit text-danger fs-2x"></i> Check List Ensamble 4 Pending</h3><br>';
+                                        var joined = joined.concat(ensamble4);
+                                    } else {
+                                        ensamble4 = '';
+                                    }
+                                    if (ensamble5 == 1) {
+                                        ensamble5 = '<h3><i class="far fa-edit text-danger fs-2x"></i> Check List Ensamble 5 Pending</h3><br>';
+                                        var joined = joined.concat(ensamble5);
+                                    } else {
+                                        ensamble5 = '';
+                                    }
+                                    if (ensamble6 == 1) {
+                                        ensamble6 = '<h3><i class="far fa-edit text-danger fs-2x"></i> Check List Ensamble 6 Pending</h3><br>';
+                                        var joined = joined.concat(ensamble6);
+                                    } else {
+                                        ensamble6 = '';
+                                    }
+                                    if (lavado == 1) {
+                                        lavado = '<h3><i class="far fa-edit  text-danger fs-2x"></i> Check List Lavado Block y Cig. Pending</h3><br>'
+                                        var joined = joined.concat(lavado);
+                                    } else {
+                                        lavado = '';
+                                    }
+                                        
+                                    BlockPantalla.release();
+
+                                    Swal.fire({
+                                        title: "<h1>Check List Pending</h1><br>" + joined,
+                                        width: '550px',
+                                        showCancelButton: false,
+                                        buttonsStyling: false,
+                                        allowOutsideClick: false,
+                                        allowEscapeKey: false,
+                                        confirmButtonText: "Closed",
+                                        customClass: {
+                                            confirmButton: "btn btn-primary"
+                                        }
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            $('#Modelo').val("");
+                                            $('#Serie').val("");
+                                        }
+                                    })
+                                }
+                            } else {
+                                //Se realiza submit al  formulario para que la busqueda muestre un mensaje el cual indica que no tiene informacion.
+                                document.getElementById('frmBusqueda').submit();
+                                BlockPantalla.release();
+                            }
+                        }
+                    }else {
+                        BlockPantalla.release();
+                        $('#Modelo').val("");
+                        $('#Serie').val("");
+                        BlockPantalla.release();
+                    }
+
+
+                }).fail(function(error) 
+                {
+                    swalErrorServer()
+                });
+            }
+            else 
+            {
+                SystemServerError()
+            }
+        }
+    </script>
+
+@*  Funcion: RecoveryComponent
+    Method: ComponentsRecovery, Controller: QualityControl*@
+    <script type="text/javascript">
+        function RecoveryComponent() 
+        {
+            var modelo = $('#Modelo').val();
+            var serie = $("#Serie").val();
+            var idSeccion = $('#IdSeccion').val();
+
+            if (modelo != '') 
+            {
+                BlockPantalla.block()
+
+                $.ajax({
+                    url: "@Url.Action("ComponentsRecovery","QualityControl")",
+                    data: {
+                        serie: serie,
+                        modelo: modelo,
+                        idSeccion: idSeccion
+                    },
+                    type: "POST",
+                    beforeSend: function(xhr) 
+                    {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function(result) 
+                {
+                    if(result != null)
+                    {
+                        if (result == 'Error') {
+                            SystemServerError()
+                        }
+                        else if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoExiste') {
+                            ValidaEnsamble();
+                        }
+                        else {
+                            var obj = JSON.parse(result);
+                            if (obj[0].Respuesta == 'Existe') {
+                                var etiquetas = '';
+                                var etiquetaHead = '';
+                                var intBotonID = 1;
+
+                                for (i = 0; i < obj.length; i++) {
+                                    etiquetaHead = '<div class="ribbon-label" >' + obj[i].Modelo + '<span class="ribbon-inner" style="background-color:#36c6d3;"></span></div>' +
+                                        '<div class="card-title text-gray-600 fs-5">' + obj[i].Descripcion + '</div>';
+
+                                    etiqueta = '<div class="p-3 text-center mb-1" style="background-color:#F7B269;"><h3>' + obj[i].Componente + ':</h3> <button type="button" class="btn btn-dark p-2 fs-8" id="Aplica_' + intBotonID + '" onclick="GuardaComponente(' + obj[i].ID_Registro + ',' + intBotonID + ')"> Aplica <i class="fas fa-check"></i></button>' +
+                                        '<div class="text-center" id="Check_' + intBotonID + '" style="display: none;"><button type="button" class="btn btn-success"  ><i class="fas fa-check"></i></button> </div> </div>';
+
+                                    etiquetas = etiquetas.concat(etiqueta);
+                                    intBotonID = intBotonID + 1;
+                                }
+
+                                $('#modal_RecoverComponents').modal('toggle')
+
+                                $("#headEtiquetas").html(etiquetaHead);
+                                $("#datos_RecoverComponents").html(etiquetas);
+                            }
+                            else {
+                                ValidaEnsamble();
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                         SystemServerError()
+                    }
+                })
+                .fail(function(error) 
+                {
+                    swalErrorServer()
+                });
+            }
+            else 
+            {
+                toastr.info("Los campos no se han introducido correctamente!", 'Alert');
+            }
+        }
+    </script>
+
+@*  Funcion: GuardaComponente
+    Method: ComponentModelsInsert, Controller: QualityControl*@
+    <script type="text/javascript">
+        function GuardaComponente(registro, contador) 
+        {
+            const serie = $("#Serie").val();
+            var idSeccion = $('#IdSeccion').val();
+
+            if (serie != '' && registro > 0) {
+                BlockPantalla.block()
+
+                $.ajax({
+                    url: "@Url.Action("ComponentModelsInsert","QualityControl")",
+                    data: {
+                        serie: serie,
+                        registro: registro,
+                        idSeccion: idSeccion
+                    },
+                    type: "POST",
+                    beforeSend: function(xhr) 
+                    {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function(result) 
+                {
+                    if(result != null)
+                    {
+                        if (result == 'Error') {
+                            SystemServerError()
+                        }
+                        else if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else 
+                        {
+                            BlockPantalla.release();
+
+                            $('#Aplica_' + contador).remove();
+                            document.getElementById('Check_' + contador).style.display = 'block';
+                        }
+                    }
+                    else
+                    {
+                        SystemServerError()
+                    }        
+                })
+                .fail(function(error) 
+                {
+                    swalErrorServer()
+
+                });
+            }
+            else {
+                BlockPantalla.release();
+                toastr.info("Los campos no se han introducido correctamente!", 'Alert');
+            }
+        }
+    </script>
+
+@*  Funcion: ValidaEnsamble
+    Method: Assembled, Controller: QualityControl*@
+    <script type="text/javascript">
+        function ValidaEnsamble() 
+        {
+            var Serie = $("#Serie").val();
+            var Modelo = $("#Modelo").val();
+            var Station = $("#Station").val();
+            var idSeccion = $('#IdSeccion').val();
+
+            $.ajax({
+                url: "@Url.Action("Assembled","QualityControl")",
+                type: "post",
+                data: {
+                    Opcion: 1,
+                    Serie: Serie,
+                    Modelo: Modelo,
+                    Station: Station,
+                    idSeccion: idSeccion
+                },
+                beforeSend: function(xhr) 
+                {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function(result) 
+            {
+                if(result != null)
+                {
+                    if (result == 'Error')
+                    {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') 
+                    {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') 
+                    {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') 
+                    {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'Continua') 
+                    {
+                        document.getElementById('frmBusqueda').submit();
+                    } 
+                    else 
+                    {
+                        var obj = JSON.parse(result);
+
+                        let ID_Registro = obj.ID_Registro;
+                        let ID_Request = obj.ID_Request;
+                        let Codigo = obj.Codigo;
+                        let DCodigo = obj.DCodigo;
+
+                        var comentarios_garantias = `<span style="font-size:35px;" class="text-danger"> Este Motor debe contar con el componente:</span></br></br> <span style="font-size:60px;" class="text-danger">Code: ${Codigo} </br> ${DCodigo} </span></br> <span style="font-size:60px;" class="text-danger">ANP: REQ-${ID_Request} </span></br>`
+
+                        Swal.fire({
+                            title: comentarios_garantias,
+                            width: '1300px',
+                            buttonsStyling: false,
+                            showDenyButton: true,
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            confirmButtonText: "Aceptar",
+                            denyButtonText: 'Rechazar',
+                            customClass: { confirmButton: "btn btn-primary", denyButton: 'btn btn-danger' }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                InsertaEnsamble(1, ID_Registro)
+                                BlockPantalla.block();
+                            }
+                            else if (result.isDenied) {
+                                InsertaEnsamble(2, ID_Registro)
+                                BlockPantalla.block();
+                            }
+                        })
+                    }
+                }
+                else
+                {
+                    SystemServerError()
+                }
+                
+            })
+            .fail(function(xhr, status, error) {
+                   swalErrorServer()
+            })
+        }
+    </script>
+
+@*  Funcion: InsertaEnsamble
+    Method: Assembled, Controller: QualityControl*@
+    <script type="text/javascript">
+        function InsertaEnsamble(tipo, req) 
+        {
+            var Serie = $("#Serie").val();
+            var Modelo = $("#Modelo").val();
+            var Station = $("#Station").val();
+            var idSeccion = $('#IdSeccion').val();
+
+            var Registro = req;
+            if (tipo == 1) {
+                $.ajax({
+                    url: "@Url.Action("Assembled","QualityControl")",
+                    type: "post",
+                    data: {
+                        Opcion: 3,
+                        Serie: Serie,
+                        Modelo: Modelo,
+                        Registro: Registro,
+                        Station: Station,
+                        idSeccion: idSeccion
+                    },
+                    beforeSend: function(xhr) 
+                    {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function(result) 
+                {
+                    if(result != null)
+                    {
+                        if (result == 'Error') {
+                            SystemServerError()
+                            $("#Serie").val('');
+                            $("#Modelo").val('')
+                            BlockPantalla.release();
+                        }
+                        else if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'Continua') 
+                        {
+                            toastr.success("The operation completed successfully, Excellent!");
+                            document.getElementById('frmBusqueda').submit();
+                        }
+                    }
+                    else 
+                    {
+                        SystemServerError()
+                        $("#Serie").val('');
+                        $("#Modelo").val('')
+                        BlockPantalla.release();
+                    }
+                })
+                .fail(function(xhr, status, error) 
+                {
+                        swalErrorServer()
+                })
+            }
+            else if (tipo == 2) 
+            {
+                $("#frmBusqueda").empty();
+                location.reload();
+            }
+            else 
+            {
+                tSystemServerError()
+                $("#frmBusqueda").empty();
+                location.reload();
+            }
+        }
+    </script>
+
+@*  Funcion: saveInputEspecial
+    Method: SaveInputEspecial, Controller: QualityControl*@
+    <script type="text/javascript">
+        arrayEspecial = [];
+        var PruebaGlobal = "";
+        
+        function saveInputEspecial(val) 
+        {
+            var maximo = $("#numeroPrueba").attr("max");
+            var Serie = $("#Serie").val();
+            var Modelo = $("#Modelo").val();
+            var idSeccion = $('#IdSeccion').val();
+            var NumeroPrueba = val;
+            var infoespecial = "";
+            var joinedespecial = "";
+            var found = arrayEspecial.find(element => element == val);
+            if (val != '') 
+            {
+                if (PruebaGlobal != val) 
+                {
+                    if (parseInt(val) <= parseInt(maximo)) 
+                    {
+                        if (found == '' || found == undefined) 
+                        {
+
+                            $.ajax({
+                                url: "@Url.Action("SaveInputEspecial","QualityControl")",
+                                data: {
+                                    Serie: Serie,
+                                    Modelo: Modelo,
+                                    NumeroPrueba: NumeroPrueba,
+                                    idSeccion: idSeccion
+                                },
+                                type: 'POST',
+                                beforeSend: function(xhr) 
+                                {
+                                    xhr.setRequestHeader("XSRF-TOKEN",
+                                    $('input:hidden[name="__RequestVerificationToken"]').val());
+                                },
+                            }).done(function(result) 
+                            {
+                                if(result != null)
+                                {
+                                    if(result == 'Error')
+                                    {
+                                        BlockPantalla.release();
+                                        SystemServerError()
+                                    }
+                                    else if (result == 'noSession') 
+                                    {
+                                        swalExpired()
+                                    }
+                                    else if (result == 'Sorry') 
+                                    {
+                                        swalNoAuthorized()
+                                    }
+                                    else if (result == 'NoPage') 
+                                    {
+                                        swalNoAuthorized()
+                                    }
+                                    else if (result == 'Correcto') 
+                                    {
+                                        toastr.success("The operation completed successfully, Excellent!");
+                                        PruebaGlobal = val;
+                                        Swal.fire({
+                                            title: "Prueba Especial",
+                                            text: "Existe otra Etiqueta de Prueba Especial?",
+                                            type: "info",
+                                            width: '500',
+                                            buttonsStyling: false,
+                                            showDenyButton: true,
+                                            allowOutsideClick: false,
+                                            allowEscapeKey: false,
+                                            confirmButtonText: "Yes",
+                                            cancelButtonText: "No",
+                                            closeOnConfirm: false,
+                                            closeOnCancel: false,
+                                            customClass: { confirmButton: "btn btn-primary", denyButton: 'btn btn-danger' }
+                                        }).then((result) => 
+                                        {
+                                            if (result.isConfirmed) 
+                                            {
+                                                arrayEspecial.push(val);
+                                                for (var i = 0; i < arrayEspecial.length; i++) 
+                                                {
+                                                    infoespecial = '<h4 style="margin-top:1px;margin-bottom:1px;"><i class="fa fa-check me-3"  style="color:#36c6d3;"></i><b>Prueba Especial #' + arrayEspecial[i] + ' </b></h4><br>';
+                                                    joinedespecial = joinedespecial.concat(infoespecial);
+                                                }
+
+                                                $('#infoEspecialsave').html(joinedespecial);
+                                                $('#numeroPrueba').val('');
+
+                                                swal.close();
+                                                BlockPantalla.release();
+                                            }
+                                            else 
+                                            {
+                                                $('#modal_PruebasEspeciales').modal('hide');
+                                                swal.close();
+                                                BlockPantalla.release();
+                                            }
+                                        })
+                                    }
+                                    else if (result == 'Novalida') 
+                                    {
+                                        BlockPantalla.release();
+                                        toastr.warning("Prueba No Existe en el sistema validar etiqueta!");
+                                    }
+                                }
+                                else
+                                {
+                                    BlockPantalla.release();
+                                    SystemServerError()
+                                }
+                            })
+                            .fail(function(xhr, status, error) 
+                            {
+                               swalErrorServer()
+                            })
+                        }
+                        else {
+                            toastr.info("La prueba especial " + found + " que intenta guardar ya existe!");
+                            $("#numeroPrueba").val("").focus();
+                            BlockPantalla.release();
+                        }
+                    }
+                    else {
+                        toastr.info("El valor maximo para pruebas especiales es: " + maximo);
+                        $("#numeroPrueba").val("").focus();
+                        BlockPantalla.release();
+                    }
+                }
+                else {
+                    toastr.info("La Prueba ya se guardo: " + val);
+                    $("#numeroPrueba").val("").focus();
+                    BlockPantalla.release();
+                }
+            }
+            else {
+                toastr.info("Favor de Ingresar el numero de la prueba");
+                $("#numeroPrueba").val("").focus();
+                BlockPantalla.release();
+            }
+        }
+    </script>
+
+@*  Funcion: Desviacion
+    Method: ValidateModelTags, Controller: QualityControl*@
+    <script type="text/javascript">
+        function Desviacion(id, desviacion, opcion) 
+        {
+            modelo = $("#Modelo").val();
+            serie = $("#Serie").val();
+            var idSeccion = $('#IdSeccion').val();
+
+            $.ajax({
+                url: "@Url.Action("ValidateModelTags","QualityControl")",
+                data: {
+                    desviacionID: desviacion,
+                    serie: serie,
+                    modelo: modelo,
+                    opcion: opcion,
+                    idSeccion: idSeccion
+                },
+                type: 'POST',
+                beforeSend: function(xhr) 
+                {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function(result) 
+            {
+                if(result != null)
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'Correcto') {
+                        $("#Etiquetas-" + id).remove();
+                        $("#Etiquetas2-" + id).remove();
+
+                        var contenido = document.querySelector('#contenido_tags').childElementCount;
+
+                        if (contenido == 0) {
+                            document.getElementById('btnAccept').style.visibility = 'visible';
+                            document.getElementById('btnReject').style.visibility = 'visible';
+                            document.getElementById('carruseles').style.display = 'block';
+                            document.getElementById('divTitulo').style.display = 'block';
+                            $("#TagsRows1").remove();
+                            $("#kt_project_users_table_pane").remove();
+                        }
+                        else {
+                            toastr.info("Solo te falta selecionar " + contenido + " tags!");
+                            BlockPantalla.release();
+                        }
+                    }
+                }
+                else
+                {
+                    SystemServerError()
+                    BlockPantalla.release();
+                }
+            }).fail(function(xhr, status, error) 
+            {
+                 swalErrorServer()
+            })
+        }
+    </script>
+
+ @*Validacion para el carrucel*@
+    <script type="text/javascript">
+        var javaContador = 1;
+        var javaTotal = 1;
+
+        function Execute(opcion) {
+            try {
+                if (javaContador != javaTotal) {
+                    var featureId = $('#divID' + javaContador).attr('data-value');
+                    Guardar(opcion, featureId);
+
+                    document.getElementById('divTitulo').value = $('#divTitulo' + (javaContador + 1)).attr('data-value');
+                    $('[href="#tab_' + (javaContador + 1) + '"]').tab('show');
+                }
+                else {
+                    nonExistentFunction();
+                }
+            }
+            catch (err) {
+                document.getElementById('btnAccept').style.visibility = 'hidden';
+                document.getElementById('btnReject').style.visibility = 'hidden';
+                document.getElementById('divTitulo').style.display = 'none';
+                $('[href="#tab_final"]').tab('show');
+            };
+
+            javaContador++;
+        }
+    </script>
+
+@*  Funcion: Guardar
+    Method: SaveFeature, Controller: QualityControl*@
+    <script>
+        function Guardar(opcion, featureId) {
+            modelo = $("#modeloFinal").val();
+            serie = $("#serieFinal").val();
+            estacion = $("#Station").val();
+            var idSeccion = $('#IdSeccion').val();
+
+            document.getElementById('Search').disabled = true;
+            document.getElementById('btnAccept').disabled = true;
+            document.getElementById('btnReject').disabled = true;
+
+            BlockPantalla.block();
+
+            $.ajax({
+                url: "@Url.Action("SaveFeature","QualityControl")",
+                data: {
+                    featureId: featureId,
+                    serie: serie,
+                    modelo: modelo,
+                    opcion: opcion,
+                    estacion: estacion,
+                    idSeccion: idSeccion
+                },
+                type: 'POST',
+                beforeSend: function(xhr) 
+                {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function(result) 
+            {
+                if(result != null)
+                {
+                    if (result == 'Error') 
+                    {
+                       SystemServerError()
+                    }
+                    else if (result == 'noSession') 
+                    {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') 
+                    {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'correcto') 
+                    {
+                        BlockPantalla.release();
+                        setTimeout(function() 
+                        {
+                            document.getElementById('Search').disabled = false;
+                            document.getElementById('btnAccept').disabled = false;
+                            document.getElementById('btnReject').disabled = false;
+                        }, 1000);
+                    }
+                }
+                else 
+                {
+                    SystemServerError()
+                }
+
+            }).fail(function(xhr, status, error) 
+            {
+                swalErrorServer()
+            })
+        }
+    </script>
+
+@*  Funcion: GuardarComentario
+    Method: SaveComment, Controller: QualityControl*@
+    <script type="text/javascript">
+        function GuardarComentario(modelo, motor, comentario) 
+        {
+            if (comentario != '') 
+            {
+                BlockPantalla.block();
+                var Station = $("#Station").val();
+                var idSeccion = $('#IdSeccion').val();
+                $.ajax({
+                    url: "@Url.Action("SaveComment","QualityControl")",
+                    data: {
+                        motor: motor,
+                        modelo: modelo,
+                        comentario: comentario,
+                        Station: Station,
+                        idSeccion: idSeccion
+                    },
+                    type: 'POST',
+                    beforeSend: function(xhr) 
+                    {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                })
+                .done(function(result) 
+                {
+                    if(result != null)
+                    {
+                        if (result == 'Error') 
+                        {
+                           SystemServerError()
+                        }
+                        else if (result == 'noSession') 
+                        {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') 
+                        {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') 
+                        {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'correcto') 
+                        {
+                            BlockPantalla.release();
+
+                            document.getElementById('Comentario').value = "";
+                            document.getElementById('Comentario').disabled = true;
+                            document.getElementById('saveComment').disabled = true;
+
+                            Swal.fire({
+                                text: "Comment has been successfully saved!",
+                                icon: "success",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
+
+                            $("#Modelo").val("");
+                            $("#Serie").val("");
+                            $("#tab_final").css("display", "none");
+                        }
+                    }
+                    else 
+                    {
+                        BlockPantalla.release();
+                         SystemServerError()
+                    }
+                }).fail(function(xhr, status, error) 
+                {
+                    swalErrorServer()
+                })
+            }
+            else 
+            {
+                BlockPantalla.release();
+                toastr.warning("The comment is required!");
+                ("#Comentario").focus();
+            }
+        }
+    </script>
+}

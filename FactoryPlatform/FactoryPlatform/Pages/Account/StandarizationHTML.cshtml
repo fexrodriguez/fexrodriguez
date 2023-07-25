@@ -1,0 +1,388 @@
+﻿@page "/StandarizationHTML"
+@{
+    ViewData["Title"] = " Standarization HTML";
+
+}
+
+<div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <!--begin::Accordion-->
+        <div class="accordion" id="kt_accordion_1">
+            @*Card*@
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_1">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_1" aria-expanded="false" aria-controls="kt_accordion_1_body_1">
+                        Card Used
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_1" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_1" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">This is the ajax structure that used in the new FactoryPlatform for use you need to put JQuery like MND at the end of the Layout.</div>
+                        <!--begin::Code-->
+                        <div class="py-5">
+                            
+                            <div class="post d-flex flex-column-fluid border" id="kt_post">
+                                <div id="kt_content_container" class="container-fluid">
+                                    <div id="kt_block">
+                                        <div class="card mb-5">
+                                            <div class="card-body p-5 mb-0" id="BlockPantalla">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--end::Code-->
+                    </div>
+                </div>
+            </div>
+            @*Buttons*@
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_2">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_2" aria-expanded="false" aria-controls="kt_accordion_1_body_2">
+                        Buttons
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_2" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_2" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">With this we can choce wath king of file upload.</div>
+                        <!--begin::Code-->
+                        <div class="py-2">
+                            <button class="btn btn-primary p-3 fs-7 me-3" id="FormAC" type="button">
+                                <span class="indicator-label"><i class="fas fa-save"></i> Save</span>
+                                <span class="indicator-progress">
+                                    Please wait...
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+
+                            <button class="btn btn-primary p-3 fs-7 me-3"  type="button" onclick="" id="itbutton_submit">
+                                <span class="indicator-label"><i class="fas fa-search"></i>Search</span>
+                            </button>
+
+                            <button class="btn btn-success p-3 fs-8 me-3" type="button"  data-bs-toggle="modal" data-bs-target="#modal-newDoc">
+                                <i class="fas fa-plus"></i> New Document
+                            </button>
+
+                            <a class="btn btn-light p-3 fs-8 me-3" data-bs-dismiss="modal" aria-label="Close">Close</a>
+
+                            <button class="btn btn-dark p-2 fs-8 me-3" type="button"  id="Aplica_1" onclick="">
+                                <i class="fas fa-check"></i>Aplica
+                            </button>
+
+                            <a class="btn btn-success p-2 me-3" onclick=""><i class="fa fa-check"></i> Yes</a>
+
+                            <button class="btn btn-danger p-3 fs-8 me-3" id="btnReject" onclick=""  type="button" style="visibility: visible;">&nbsp;
+                                <i class="fa fa-times"></i>Reject
+                            </button>
+
+                            <button class="p-2 fs-8 btn btn-success me-2 me-3" onclick="" type="button"  disabled="">
+                                <i class="fas fa-ban me-1"></i>Review
+                            </button>
+
+                            <button class="btn fs-8 btn-success ps-3 p-2 me-3" type="button" onclick="" style="background-color: #32c5d2;">
+                                <i class="fas fa-sync-alt text-white fs-8 text-center"></i>
+                            </button>
+
+                            <button class="btn fs-8 btn-opacity-75 btn-primary ps-3 p-2 me-3" type="button"  onclick="">
+                                <i class="fas fa-info text-white fs-8 text-center"></i>
+                            </button>
+
+                            <a class="btn btn-icon ms-2 me-3" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+                            </a>
+
+                            <button type="button" onclick="" data-bs-toggle="tooltip" data-bs-custom-class="tooltip" data-bs-placement="top" title="Refresh"
+                                    class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto">
+                                <span class="svg-icon svg-icon-2x svg-icon-light text-hover-primary"><i class="fas fa-redo-alt fs-2"></i></span>
+                            </button>
+
+                            <button type="button" onclick="" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" title="Close"
+                                    class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto">
+                                <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="far fa-times-circle fs-1"></i></span>
+                            </button>
+
+                            <button type="button" class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" onclick="">
+                                <i class="text-gray-400 fas fa-eye fs-2 text-hover-primary"></i>
+                            </button>
+
+                        </div>
+                        <!--end::Code-->
+                    </div>
+                </div>
+            </div>
+            @* forms *@
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_3">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_3" aria-expanded="false" aria-controls="kt_accordion_1_body_3">
+                       Forms
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_3" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_3" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">Alert used in diferents Ajax for return results.</div>
+                        <!--begin::Code-->
+                        <div class="py-2">
+                            
+                            <form id="FormCorrectiveAction">
+                                <div class="card-body p-9">
+                                    <div class="row mb-6">
+                                        <label class="col-lg-3 col-form-label fw-bold fs-6">Disable with Check: </label>
+                                        <div class="col-lg-3 fv-row">
+                                            <div class="input-group mb-5 fv-row">
+                                                <span class="input-group-text" id="basic-addon1">
+                                                    <div class="form-check form-check-custom form-check-success ">
+                                                        <input class="form-check-input p-1" type="checkbox" onclick="enableInput(this)" value="" />
+                                                    </div>
+                                                </span>
+                                                <input id="InputKey" type="text" class="form-control p-3 fs-7 ps-2" aria-label="Text input with checkbox" disabled>
+                                                <script>
+                                                    function enableInput(obj) {
+                                                        if (obj.checked) {
+                                                            document.getElementById('InputKey').disabled = false;
+                                                        }
+                                                        else {
+                                                            document.getElementById('InputKey').disabled = true;
+                                                        }
+                                                    }
+                                                </script>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-6">
+                                        <label class="col-lg-3 col-form-label required fw-bold fs-6">Select 2</label>
+                                        <div class="col-lg-3 fv-row">
+                                            <select id="ToolAC" name="ToolAC" onchange="readDataIT()" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-6">
+                                        <label class="col-lg-3 col-form-label required fw-bold fs-6">Date: </label>
+                                        <div class="col-lg-3 fv-row">
+                                            <div class="position-relative d-flex align-items-center fv-row">
+                                                <span class="svg-icon svg-icon-2 position-absolute mx-4"><i class="fas fa-calendar-alt fs-3"></i></span>
+                                                <input id="ApertureDate" name="ApertureDate" class="form-control p-3 fs-7 ps-15" placeholder="Pick a date" value="" />
+                                                
+                                            </div>
+                                            <script>
+                                                $("#ApertureDate").flatpickr({
+                                                    dateFormat: "m-d-Y",
+                                                    defaultDate: "today"
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-6">
+                                        <label class="col-lg-3 col-form-label required fw-bold fs-6">Actions: </label>
+                                        <div class="col-lg-9 fv-row">
+                                            <textarea id="ActionsAC" name="ActionsAC" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-6">
+                                        <label class="col-lg-3 col-form-label required fw-bold fs-6">Actions: </label>
+                                        <div class="col-lg-3 fv-row mb-4">
+                                            <div class="form-control p-0" style="height: 300px;  overflow-y: scroll;">
+                                                <select id="IdResponsible" class="form-select form-select-solid" data-control="select2" data-close-on-select="false" data-placeholder="-- Select an option --" multiple="multiple" data-allow-clear="true" onfocus="true">
+                                                    
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-6">
+                                        <label class="col-lg-3 col-form-label required fw-bold fs-6">Analysis file: </label>
+                                        <div class="col-lg-3 fv-row">
+                                            <input id="FileAC" name="FileAC" accept=".pdf" class="form-control ps-3 p-3 fs-8" type="file" />
+                                        </div>
+                                    </div>
+                                    <div class="row mt-12">
+                                        <div class="col-md-9 offset-md-3">
+                                            <button type="button" id="FormAC" class="btn btn-primary p-3 fs-7 me-3">
+                                                <span class="indicator-label"><i class="fas fa-save"></i> Save</span>
+                                                <span class="indicator-progress">
+                                                    Please wait...
+                                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <!--end::Code-->
+
+                    </div>
+                </div>
+            </div>
+            @*Datatable*@
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_4">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_4" aria-expanded="false" aria-controls="kt_accordion_1_body_4">
+                        DataTable
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_4" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_4" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">Copy the data table and script</div>
+                        <!--begin::Code-->
+                        <div class="py-2">
+
+                            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                <div class="card-title">
+                                    <div class="d-flex align-items-center position-relative my-1">
+                                        <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                                        <input type="text" data-kt-filter="search" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+                                    </div>
+                                    <div id="TablaSourcesCA_export" class="d-none"></div>
+                                </div>
+                                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                    <button type="button" onclick="AddNewSources()" class="btn btn-success me-3">
+                                        <i class="fas fa-plus"></i>New Sources
+                                    </button>
+                                    <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                        <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                                        Export Report
+                                    </button>
+                                    <div id="TablaSourcesCA_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-export="excel">
+                                                Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                                            </a>
+                                        </div>
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-export="csv">
+                                                Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                                            </a>
+                                        </div>
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                                                Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div id="TablaSourcesCA_buttons" class="d-none"></div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table id="TablaSourcesCA" class="table border table-rounded border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+                                    <thead>
+                                        <tr class="p-2 fw-bold fs-6 text-gray-800 text-uppercase border-bottom border-gray-400 bg-gray-300">
+                                            <th class="text-center border-end min-w-10px">DELETE</th>
+                                            <th class="ps-3 min-w-1000px">SOURCES</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="IdTbody" class="fw-semibold text-gray-600">
+                                            <tr class="">
+                                                <td><a class="p-0 btn btn-sm  me-2" onclick=""><i class="fas fa-times fs-3 text-danger"></i></a></td>
+                                                <td>xddxdxdxdxd</td>
+                                            </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <script type="text/javascript">
+                                var KTDatatablesExample = function () {
+                                    var table;
+                                    var datatable;
+
+                                    var initDatatable = function () {
+                                        const tableRows = table.querySelectorAll('tbody tr');
+
+                                        tableRows.forEach(row => {
+                                            const dateRow = row.querySelectorAll('td');
+                                        });
+
+                                        datatable = $(table).DataTable({
+                                            "info": true,
+                                            "order": [],
+                                            "pageLength": 10,
+                                            "columns": [
+                                                {
+                                                    className: "border-end border-gray-400 text-center min-w-10px",
+                                                },
+                                                {
+                                                    className: "ps-3 border-gray-400 min-w-1000px",
+                                                }
+                                            ]
+                                        });
+                                    }
+
+                                    // Hook export buttons
+                                    var exportButtons = () => {
+                                        const documentTitle = 'Sources_CorrectiveAction';
+                                        var buttons = new $.fn.dataTable.Buttons(table, {
+                                            buttons: [
+                                                {
+                                                    extend: 'copyHtml5',
+                                                    title: documentTitle
+                                                },
+                                                {
+                                                    extend: 'excelHtml5',
+                                                    title: documentTitle
+                                                },
+                                                {
+                                                    extend: 'csvHtml5',
+                                                    title: documentTitle
+                                                },
+                                                {
+                                                    extend: 'pdfHtml5',
+                                                    title: documentTitle
+                                                }
+                                            ]
+                                        }).container().appendTo($('#TablaSourcesCA_buttons'));
+
+                                        const exportButtons = document.querySelectorAll('#TablaSourcesCA_export_menu [data-kt-export]');
+                                        exportButtons.forEach(exportButton => {
+                                            exportButton.addEventListener('click', e => {
+                                                e.preventDefault();
+
+                                                const exportValue = e.target.getAttribute('data-kt-export');
+                                                const target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+
+                                                target.click();
+                                            });
+                                        });
+                                    }
+
+                                    var handleSearchDatatable = () => {
+                                        const filterSearch = document.querySelector('[data-kt-filter="search"]');
+                                        filterSearch.addEventListener('keyup', function (e) {
+                                            datatable.search(e.target.value).draw();
+                                        });
+                                    }
+
+                                    return {
+                                        init: function () {
+                                            table = document.querySelector('#TablaSourcesCA');
+
+                                            if (!table) {
+                                                return;
+                                            }
+
+                                            initDatatable();
+                                            exportButtons();
+                                            handleSearchDatatable();
+                                        }
+                                    };
+                                }();
+
+                                KTUtil.onDOMContentLoaded(function () {
+                                    KTDatatablesExample.init();
+                                });
+                            </script>
+
+
+                        </div>
+                        <!--end::Code-->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--end::Accordion-->
+    </div>
+</div>
+
+
+

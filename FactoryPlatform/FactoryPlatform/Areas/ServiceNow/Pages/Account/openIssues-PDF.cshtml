@@ -1,0 +1,213 @@
+﻿@page "/ServiceNow/openIssues-PDF"
+@model FactoryPlatform.Areas.ServiceNow.Pages.Account.openIssues_PDFModel
+@{
+
+
+}
+
+<html lang="en">
+<!--begin::Head-->
+<head>
+    <base href="../../">
+    <title>FactoryPlatform - @ViewData["Title"]</title>
+    <meta name="description" content="The most advanced Bootstrap Admin Theme on Themeforest trusted by 94,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue &amp; Laravel versions. Grab your copy now and get life-time updates for free." />
+    <meta name="keywords" content="Metronic, bootstrap, bootstrap 5, Angular, VueJs, React, Laravel, admin themes, web design, figma, web development, free templates, free admin themes, bootstrap theme, bootstrap template, bootstrap dashboard, bootstrap dak mode, bootstrap button, bootstrap datepicker, bootstrap timepicker, fullcalendar, datatables, flaticon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://keenthemes.com/metronic" />
+    <meta property="og:site_name" content="Keenthemes | Metronic" />
+    <link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
+    <link rel="shortcut icon" href="~/Images/SystemPictures/favicons.png" />
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <!--end::Fonts-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <!--end::Global Stylesheets Bundle-->
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body" class="bg-body">
+    @if (Model.OpenIssues != null)
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid p-10 py-lg-15">
+
+                    <!-- begin::Wrapper-->
+                    <div class="mw-lg-950px mx-auto w-100">
+                        <div class="d-flex justify-content-between flex-column flex-sm-row mb-6">
+                            <img alt="Logo" src="~/Images/SystemPictures/logo-lkq_3.png" class="w-250px" />
+                        </div>
+                        <div class="d-flex flex-column flex-column-fluid text-center p-2 py-lg-15">
+                            <div class="pt-lg-1 mb-5">
+                                <h3 class="card-title fs-2qx">Open Issues List</h3>
+                            </div>
+                            @if (Model.OpenIssues.DigitalDocumentsOpenIssues.Count > 0)
+                            {
+                                var OpenIssuesModel = Model.OpenIssues.DigitalDocumentsOpenIssues.First();
+                                <table class="table table-row-bordered table-rounded border gy-6 gs-7 fs-7 mb-10" style="width:100%; table-layout: fixed;">
+                                    <thead>
+                                        <tr>
+                                            <td class="border-end p-2 align-middle" width="17%"><strong> Nombre y numero de proyecto:</strong> </td>
+                                            <td class="border-end p-2 align-middle" width="20%">@OpenIssuesModel.Proyecto</td>
+                                            <td class="border-end p-2 align-middle text-center" rowspan="4" width="4%"><p class="fw-bold" style="transform: rotate(-90deg);">Status(%)</p></td>
+                                            <td class="border-end p-0 align-middle text-center" width="5%">25% </td>
+                                            <td class="border-end p-2 align-middle text-center"><strong>Problema identificado</strong>  </td>
+                                            <td class="border-end p-2 align-middle text-center" width="23%"><strong>Severidad</strong>  </td>
+                                            <td class="border-end p-2 align-middle text-center" colspan=2><strong>Tipo de acción requerida:</strong>  </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-end p-2 align-middle"> <strong>Numero de parte:</strong> </td>
+                                            <td class="border-end p-2 align-middle">@OpenIssuesModel.NumeroParte</td>
+                                            <td class="border-end p-0 align-middle text-center">50% </td>
+                                            <td class="border-end p-2 align-middle text-center">Contención implementada </td>
+                                            <td class="border-end p-2 align-middle">1.- Requiere soporte de la dirección  </td>
+                                            <td class="border-end p-2 align-middle">D = Ingeniería de producto  </td>
+                                            <td class="border-end p-2 align-middle">C = Calidad   </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-end p-2 align-middle"> <strong>Líder del proyecto:</strong> </td>
+                                            <td class="border-end p-2 align-middle"> @OpenIssuesModel.Lider</td>
+                                            <td class="border-end p-0 align-middle text-center">75% </td>
+                                            <td class="border-end p-2 align-middle text-center">Solución en proceso </td>
+                                            <td class="border-end p-2 align-middle">2.- Requiere soporte de coordinador/supervisor  </td>
+                                            <td class="border-end p-2 align-middle">H = Herramienta   </td>
+                                            <td class="border-end p-2 align-middle">M = Manufactura o proceso  </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-end p-2 align-middle"> <strong>Programa (Job order):</strong> </td>
+                                            <td class="border-end p-2 align-middle"> @OpenIssuesModel.JobOrder</td>
+                                            <td class="border-end p-0 align-middle text-center">80% </td>
+                                            <td class="border-end p-2 align-middle text-center">Problema resuelto </td>
+                                            <td class="border-end p-2 align-middle">3.- Requiere soporte del equipo de desarrollo </td>
+                                            <td class="border-end p-2 align-middle">L = Compras / Logística   </td>
+                                            <td class="border-end p-2 align-middle">P = Produccion   </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            }
+
+
+
+                            <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-10">
+                                <tr class="fw-bolder text-uppercase gs-0 bg-gray-800 border-bottom border-end border-top  border-gray-300 fs-7 text-white">
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">Hallazgo</th>
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">Fecha de detección</th>
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">Severidad</th>
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">Descripción del hallazgo</th>
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">Responsable</th>
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">Tipo</th>
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">Dep.</th>
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">Acción de contenció</th>
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">Fecha de cierre</th>
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">cierre Status (%)</th>
+                                    <th class="border-bottom border-end border-gray-300 text-center p-2 align-middle min-w-15px">Acción correctiva (Comentario final)</th>
+                                </tr>
+                                @if (Model.OpenIssues.DigitalDocumentsOpenIssues_Hallazgo.Count > 0)
+                                {
+                                    @foreach (var item in Model.OpenIssues.DigitalDocumentsOpenIssues_Hallazgo)
+                                    {
+                                        var color = item.Status == 100 ? "bg-success" : "bg-danger";
+                                        <tr class="fs-8">
+                                            <td class="border-bottom border-end p-2 align-middle text-center">@item.Hallazgo</td>
+                                            <td class="border-bottom border-end p-2 align-middle text-center">@item.FechaDeteccion</td>
+                                            <td class="border-bottom border-end p-2 align-middle text-center">@item.SeveridadID</td>
+                                            <td class="border-bottom border-end p-2 align-middle">@item.Descripcion</td>
+                                            <td class="border-bottom border-end p-2 align-middle">@item.Responsable</td>
+                                            <td class="border-bottom border-end p-2 align-middle text-center">@item.Tipo</td>
+                                            <td class="border-bottom border-end p-1 align-middle">@item.Dpto</td>
+                                            <td class="border-bottom border-end p-2 align-middle">@item.Accion</td>
+                                            <td class="border-bottom border-end p-2 align-middle text-center">@item.FechaCierre</td>
+                                            <td class="border-bottom border-top border-end p-2 align-middle text-center text-white @color">@item.Status %</td>
+                                            <td class="border-bottom border-end p-2 align-middle">@item.AccionCorrectiva</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td style="font-size:20px; text-align: center;" colspan="13"> There are no issues for this project </td>
+                                    </tr>
+                                }
+
+
+                            </table>
+                            @if (Model.OpenIssues.DigitalDocumentsOpenIssues.Count > 0)
+                            {
+                                var modeloOpen = @Model.OpenIssues.DigitalDocumentsOpenIssues.First();
+                                var singatures = modeloOpen.Name.Split("*");
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-7">
+                                    <tr>
+                                        <td class="border-bottom border-end w-200px p-2 fw-bold">Logistics Manager</td>
+                                        <td class="border-bottom border-end w-200px p-2">@singatures[2]</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-bottom border-end w-200px p-2 fw-bold">Engineering Manager</td>
+                                        <td class="border-bottom border-end w-200px p-2">@singatures[0]</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-bottom border-end w-200px p-2 fw-bold">Quality Manager</td>
+                                        <td class="border-bottom border-end w-200px p-2">@singatures[1]</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-bottom border-end w-200px p-2 fw-bold">General Manager</td>
+                                        <td class="border-bottom border-end w-200px p-2">@singatures[3]</td>
+                                    </tr>
+                                </table>
+                            }
+                        </div>
+                        <!--end::Text-->
+                        <!-- begin::Footer-->
+                        <div class="d-flex flex-stack flex-wrap mt-lg-2 pt-5">
+                            <div class="my-1 me-5">
+                            </div>
+                            <div class="my-1 text-end fw-bold">
+                                R0402003<br>
+                                Ed. 3<br>
+                            </div>
+                        </div>
+                        <!-- end::Footer-->
+                    </div>
+                    <!-- end::Wrapper-->
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid text-center p-10 py-lg-15">
+                    <a class="mb-10 pt-lg-10">
+                        <img alt="Logo" src="~/Images/SystemPictures/LKQ.png" class="w-300px mb-5" />
+                    </a>
+                    <div class="pt-lg-10 mb-10">
+                        <h1 class="fw-bolder fs-4qx text-danger mb-10">System Error</h1>
+                        <div class="fw-bold fs-3 text-muted mb-15">
+                            @ViewData["Message"]
+                            <br />Please try again later.
+                        </div>
+                        <div class="text-center">
+                            <a href="/FactoryPlatform" class="btn btn-lg btn-primary fw-bolder">Go to homepage</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script>var hostUrl = "assets/";</script>
+    <!--begin::Javascript-->
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script src="~/assets/plugins/global/plugins.bundle.js"></script>
+    <script src="~/assets/js/scripts.bundle.js"></script>
+    <!--end::Global Javascript Bundle-->
+    <!--end::Javascript-->
+</body>
+<!--end::Body-->
+</html>

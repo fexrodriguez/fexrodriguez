@@ -1,0 +1,503 @@
+﻿@model DocumentTrainingTaskModel
+
+<div class="card-body p-5" id="blockDocTry">
+    @if (Model.DocumentTrainingModel.Any())
+    {
+        <div class="card-header align-items-center py-5 gap-2 gap-md-5" >
+            <div class="card-title">
+                <div class="d-flex align-items-center position-relative my-1">
+                    <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                    <input type="text" data-kt-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Report" />
+                </div>
+                <div id="table_Docs_export" class="d-none"></div>
+            </div>
+            <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                    <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                    export report
+                </button>
+                <div id="table_Docs_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3" data-kt-export="excel">
+                            Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                        </a>
+                    </div>
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3" data-kt-export="csv">
+                            Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                        </a>
+                    </div>
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                            Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+             <table id="table_Docs" class="table table-striped  border-gray-300 gy-7 gs-7">
+                <thead class="p-2">
+                    <tr class="p-2 fw-bolder text-uppercase bg-gray-300 border-top border-bottom border-end border-gray-400 fs-6 text-gray-800">
+                        <th class="min-w-20px  align-middle text-center">#</th>
+                        <th class="min-w-200px align-middle ">Start</th>
+                        <th class="min-w-200px align-middle ">Date Update</th>
+                        <th class="min-w-100px align-middle ">Days passed</th>
+                        <th class="min-w-250px align-middle ">Key</th>
+                        <th class="min-w-350px align-middle ">Document Type</th>
+                        <th class="min-w-400px align-middle ">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int id = 1;
+                            @foreach (var item in Model.DocumentTrainingModel)
+                        {
+                                <tr class="mb-1 border-top border-end border-gray-400 ">
+                                    <td class="p-2 min-w-20px align-middle  text-center">@id</td>
+                                    <td class="p-2 min-w-200px align-middle ">
+                                        <a href="#" onclick="showDocument(@item.ID_Documento, @ViewData["MenuTaskId"], '@item.TipoArchivo', '@item.DigitalID',  '@item.TipoDigital', '@item.Ruta')" data-bs-toggle="modal" class="btn btn-primary p-2">Start Training  &nbsp; <i class="fas fa-arrow-right fs-4"></i></a>
+                                    </td>
+                                    <td class="p-2 min-w-200px align-middle ">@item.FechaActualizacion.ToString("dd/MMM/yyy").ToUpper()</td>
+                                    <td class="p-2 min-w-100px align-middle ">@item.DiasTranscurridos</td>
+                                    <td class="p-2 min-w-250px align-middle ">@item.Clave</td>
+                                    <td class="p-2 min-w-350px align-middle ">@item.DescDT</td>
+                                    <td class="p-2 min-w-400px align-middle ">@item.DescDoc</td>
+                                </tr>
+                            id++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info d-flex align-items-center p-5 mb-10">
+            <span class="svg-icon svg-icon-2x svg-icon-light"> <i class="fas fa-exclamation-triangle fs-2x text-info"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <div class="d-flex flex-column">
+                <h6 class="text-info">There are no documents for the moment.</h6>
+            </div>
+        </div>
+    }
+</div>
+
+
+<div class="modal fade" id="ModalPdf" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  modal-xl p-9">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">@ViewData["TituloMenuTask"]</h2>
+                <a onclick="showReport(@ViewData["MenuTaskId"])" class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body">
+                <div class="stepper stepper-pills" id="kt_stepper_example_basic">
+                    <div class="stepper-nav flex-center flex-wrap mb-10">
+                        <div class="stepper-item mx-2 my-4 current" data-kt-stepper-element="nav">
+                            <div class="stepper-line w-40px"></div>
+                            <div class="stepper-icon w-40px h-40px">
+                                <i class="stepper-check fas fa-check"></i>
+                                <span class="stepper-number">1</span>
+                            </div>
+                            <div class="stepper-label">
+                                <h3 class="stepper-title">
+                                    Step 1
+                                </h3>
+                                <div class="stepper-desc">
+                                    Description
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stepper-item mx-2 my-4" data-kt-stepper-element="nav">
+                            <div class="stepper-line w-40px"></div>
+                            <div class="stepper-icon w-40px h-40px">
+                                <i class="stepper-check fas fa-check"></i>
+                                <span class="stepper-number">2</span>
+                            </div>
+                            <div class="stepper-label">
+                                <h3 class="stepper-title">
+                                    Step 2
+                                </h3>
+                                <div class="stepper-desc">
+                                    Doc.Viewer
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stepper-item mx-2 my-4" data-kt-stepper-element="nav">
+                            <div class="stepper-line w-40px"></div>
+                            <div class="stepper-icon w-40px h-40px">
+                                <i class="stepper-check fas fa-check"></i>
+                                <span class="stepper-number">3</span>
+                            </div>
+                            <div class="stepper-label">
+                                <h3 class="stepper-title">
+                                    Step 3
+                                </h3>
+                                <div class="stepper-desc">
+                                    Athorization
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="form w-lg-1000px mx-auto" novalidate="novalidate" id="kt_stepper_example_basic_form">
+                        <div class="mb-5">
+                            <div class="flex-column current" data-kt-stepper-element="content">
+                                <div class="fv-row mb-10">
+                                    <label class="form-label fw-bold "><h1> Origin of Change:</h1></label>
+                                    <textarea id="Origen" name="Origen" class="form-control form-control-solid" data-kt-autosize="true" disabled style="resize: none;font-size:20px; "></textarea>
+                                </div>
+                                <div class="fv-row mb-10">
+                                    <label class="form-label fw-bold"><h1>Description of Change:</h1></label>
+                                    <textarea id="Descripcion" name="Descripcion" class="form-control form-control-solid" data-kt-autosize="true" disabled style="resize: none;font-size:20px; "></textarea>
+                                </div>
+                                <div class="fv-row mb-10">
+                                    <label class="form-label fw-bold"><h1>Change Review:</h1></label>
+                                    <textarea id="Revision" name="Revision" class="form-control form-control-solid" data-kt-autosize="true" disabled style="resize: none;font-size:20px; "></textarea>
+                                </div>
+                            </div>
+                            <div class="flex-column" data-kt-stepper-element="content">
+                                <embed id="idRutaDoc" width="100%" height="1100" type='application/pdf'>
+                            </div>
+                            <div class="flex-column" data-kt-stepper-element="content">
+                            </div>
+                        </div>
+                        <div class="d-flex flex-stack">
+                            <div class="me-2">
+                                <label class="form-label" style="display:none;" id="backInf">
+                                    <h2>Do you want go back?</h2>
+                                </label>
+                                <a class="btn btn-light btn-active-light-primary" data-kt-stepper-action="previous" id="idBack">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </a>
+                            </div>
+                            <div>
+                                <form asp-area="ServiceNow" asp-action="Home" asp-action="UpdateDocsEmployeesTraining" method="post">
+                                    <input type="hidden" id="DocumentoID" />
+                                </form>
+                                <label class="form-label" style="display:none;" id="InfSteps">
+                                    <h2>Confirm that your training has ended!</h2>
+                                </label>
+                                <button onclick="updateDoc()" type="button" style="display:none;float: right;" class="btn btn-primary me-10" id="CloseSteps">
+                                    <span class="indicator-label">
+                                        Finish <i class="fas fa-arrow-right"></i>
+                                    </span>
+                                    <span class="indicator-progress">
+                                        Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </button>
+                                <a class="btn btn-primary" data-kt-stepper-action="next">
+                                    Continue <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Loading*@
+<script>
+    var button = document.querySelector("#blockDocTry");
+    var target = document.querySelector("#blockDocTry");
+
+    var BlockDocTrain = new KTBlockUI(target, {
+        message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+    });
+</script>
+
+@*Datatable *@
+<script>
+    "use strict";
+
+    var KTDatatablesButtons = function () {
+        var table;
+        var datatable;
+
+        var initDatatable = function () {
+            const tableRows = table.querySelectorAll('tbody tr');
+            tableRows.forEach(row => {
+                const dateRow = row.querySelectorAll('td');
+                const realDate = moment(dateRow[3].innerHTML, "DD MMM YYYY, LT").format(); // select date from 4th column in table
+                dateRow[3].setAttribute('data-order', realDate);
+            });
+
+            datatable = $(table).DataTable({
+
+                "info": false,
+                'order': [],
+                'pageLength': 10,
+                "scrollY": "500px",
+                "scrollCollapse": true,
+                "sScrollX": "100%",
+                     //'select': true,
+    @*                  'responsive' : true
+                *@            });
+    }
+
+    var exportButtons = () => {
+        const documentTitle = 'Training_Docs_Report';
+        var buttons = new $.fn.dataTable.Buttons(table, {
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    title: documentTitle
+                },
+                {
+                    extend: 'csvHtml5',
+                    title: documentTitle
+
+                },
+                {
+                    extend: 'pdfHtml5',
+                    title: documentTitle
+                }
+            ]
+        }).container().appendTo($('#table_Docs_export'));
+
+        const exportButtons = document.querySelectorAll('#table_Docs_export_menu [data-kt-export]');
+        exportButtons.forEach(exportButton => {
+            exportButton.addEventListener('click', e => {
+                e.preventDefault();
+                const exportValue = e.target.getAttribute('data-kt-export');
+                const target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+                target.click();
+            });
+        });
+    }
+
+    var handleSearchDatatable = () => {
+        const filterSearch = document.querySelector('[data-kt-filter="search"]');
+        filterSearch.addEventListener('keyup', function (e) {
+            datatable.search(e.target.value).draw();
+        });
+    }
+    return {
+        init: function () {
+            table = document.querySelector('#table_Docs');
+
+            if (!table) {
+                return;
+            }
+
+            initDatatable();
+            exportButtons();
+            handleSearchDatatable();
+        }
+    };
+   }();
+
+    // On document ready
+    KTUtil.onDOMContentLoaded(function () {
+        KTDatatablesButtons.init();
+    });
+</script>
+
+@*
+Funcion: ShowDocument()
+Methodo: ExportToPDF - Ctroller: DocViewer*@
+<script>
+    function showDocument(idDocument, IdMenuTask, TipoArchivo, DigitalID, TipoDigital, Ruta)
+    {
+        if (idDocument != "" && IdMenuTask != "") 
+        {
+            BlockDocTrain.block()
+            $.ajax({
+                url: "@Url.Action("GetDocumentInf","TrainingDocs")",
+                type: "post",
+                data: { 
+                    idDocument: idDocument, 
+                    IdMenuTask: IdMenuTask 
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            })
+            .done(function (result) 
+            {
+                if (result != null) 
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else 
+                    {
+                        var obj = JSON.parse(result);
+                        var Origen = obj[0].Origen;
+                        var Descripcion = obj[0].Descripcion;
+                        var Revision = obj[0].Revision;
+                        var PlantaID = obj[0].PlantaID;
+                        var ClaveDoc = obj[0].ClaveDoc;
+                        var RevisionID = obj[0].RevisionID;
+                        var DocumentoID = obj[0].DocumentoID;
+
+                        $("#Origen").val(Origen)
+                        $("#Descripcion").val(Descripcion)
+                        $("#Revision").val(Revision)
+                        $("#DocumentoID").val(DocumentoID)
+
+                        if (TipoArchivo != "Digital") 
+                        {
+                            var ruta = 'https:/' + `/mxesc1vapp001/fp_data_center/planta${PlantaID}/documents-center/${ClaveDoc}/${RevisionID}/${ClaveDoc}.pdf`;
+                            $("#idRutaDoc").attr("src", ruta);
+
+                            BlockDocTrain.release()
+                            $('#ModalPdf').modal('toggle');
+                        }
+                        else 
+                        {
+                            $.ajax({
+                                url: "@Url.Action("ExportToPDF","DocViewer")",
+                                type: "post",
+                                data: {
+                                    DigitalID: DigitalID,
+                                    TipoDigital: TipoDigital,
+                                    Ruta: Ruta
+                                },
+                                beforeSend: function (xhr) {
+                                    xhr.setRequestHeader("XSRF-TOKEN",
+                                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                                },
+                            })
+                            .done(function (result) 
+                            {
+                                if (result != null) 
+                                {
+                                    if (result == 'Error') {
+                                        SystemServerError()
+                                    }
+                                    else if (result == 'noSession') {
+                                        swalExpired()
+                                    }
+                                    else if (result == 'Sorry') {
+                                        swalNoAuthorized()
+                                    }
+                                    else if (result == 'NoPage') {
+                                        swalNoAuthorized()
+                                    }
+                                    else {
+                                        var ruta = 'data:application/pdf;base64,' + result;
+                                        $("#idRutaDoc").attr("src", ruta);
+
+                                        BlockDocTrain.release()
+                                        $('#ModalPdf').modal('toggle');
+                                    }
+                                }
+                                else 
+                                {
+                                        SystemServerError()
+                                    BlockDocTrain.release()
+                                }
+                            })
+                            .fail(function (xhr, status, error) {
+                                        swalErrorServer()
+                            })
+                        }
+
+                        KTApp.init();
+                    }
+                }
+                else {
+                        SystemServerError()
+                    BlockDocTrain.release()
+                }
+            })
+            .fail(function (xhr, status, error) {
+                    swalErrorServer()
+            })
+        }
+    }
+</script>
+
+@*Update the document view*@
+<script type="text/javascript">
+    function updateDoc(IdMenuTask) {
+        var idDoc = $("#DocumentoID").val();
+        var IdMenuTask = '@ViewData["MenuTaskId"]'
+
+        if (idDoc != "") {
+            $.ajax({
+                url: "@Url.Action("UpdateDocsEmployeesTraining","TrainingDocs")",
+                type: "post",
+                data: { idDoc: idDoc, IdMenuTask: IdMenuTask },
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            })
+            .done(function(result) {
+                if (result != null) 
+                {
+                    if (result == 'Error') 
+                    {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') 
+                    {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == "Correct") 
+                    {
+                        Swal.fire({
+                            text: "The document has been successfully submitted!",
+                            icon: "success",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) 
+                            {
+                                $('#ModalPdf').modal('hide');
+                                showReport(@ViewData["MenuTaskId"])
+                            }
+                        });
+
+                    }
+                    else {
+                        SystemServerError()
+                    }
+                }
+                else {
+                    SystemServerError()
+                }
+            })
+            .fail(function(xhr, status, error) {
+                    swalErrorServer()
+            })
+        }
+    }
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    var button = document.querySelector("#CloseSteps");
+    button.addEventListener("click", function() {
+        button.setAttribute("data-kt-indicator", "on");
+        setTimeout(function() {
+            button.removeAttribute("data-kt-indicator");
+        }, 3000);
+    });
+
+</script>
+

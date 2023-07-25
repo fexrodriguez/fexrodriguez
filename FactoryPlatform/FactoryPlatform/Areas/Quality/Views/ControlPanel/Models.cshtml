@@ -1,0 +1,3204 @@
+﻿@using FactoryPlatform.Areas.Quality.Models.ControlPanel.Modelos
+@model CP_ModelsModelView
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+}
+
+<div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <div id="kt_block">
+            <div class="card mb-5">
+                <div class="card-body p-5 mb-0" id="BlockPantalla">
+                    <input type="hidden" name="SeccionId" id="IdSeccion" value="@Model.IdSeccion" />
+                    <input type="hidden" name="Tipo" id="Tipo" value="@Model.Tipo" />
+                    <div class="mb-5 hover-scroll-x">
+                        <div class="d-grid">
+                            <ul class="nav nav-tabs flex-nowrap text-nowrap">
+                                <li class="nav-item">
+                                    <a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0 active" data-bs-toggle="tab" href="#kt_tab_pane_1">Families</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0" data-bs-toggle="tab" href="#kt_tab_pane_2">Models</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary rounded-bottom-0" data-bs-toggle="tab" href="#kt_tab_pane_3">Cells</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="myTabContent" >
+                        <div class="tab-pane fade show active" id="kt_tab_pane_1" role="tabpanel">
+                            <div class="card card-p-0 card-flush">
+
+                                <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                    <div class="card-title">
+                                        <div class="d-flex align-items-center position-relative my-1">
+                                            <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                                            <input type="text" data-kt-filter="search" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+                                        </div>
+                                        <div id="TablaFamily_export" class="d-none"></div>
+                                    </div>
+                                    <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                        <button type="button" class="btn btn-success me-3" data-bs-toggle="modal" data-bs-target="#NewFamily">
+                                            <i class="fas fa-plus"></i>New Family
+                                        </button>
+                                        <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                            <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                                            Export Report
+                                        </button>
+                                        <div id="TablaFamily_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-export="excel">
+                                                    Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                                                </a>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-export="csv">
+                                                    Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                                                </a>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                                                    Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="TablaFamily_buttons" class="d-none"></div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <table id="TablaFamily" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+                                        <thead>
+                                            <tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+                                                <th class="min-w-20px  align-middle border-end border-start">Delete</th>
+                                                <th class="min-w-150px align-middle border-end">Family</th>
+                                                <th class="min-w-1000px align-middle border-end">Cell</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="IdTbody" class="fw-semibold text-gray-600">
+                                            @foreach (var item in Model.CP_Family)
+                                            {
+                                                <tr class="">
+                                                    <td>
+                                                        <a class="p-0 btn btn-sm  me-2" onclick="DeleteFamily(this,@item.ID)"><i class="fas fa-times fs-3 text-danger"></i></a>
+                                                    </td>
+                                                    <td><a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="OpenUpdateFamily(this, @item.ID, '@item.Descripcion', @item.CeldaID)">@item.Descripcion</a></td>
+                                                    <td>
+                                                        <select id="Select-@item.ID" onchange="ChangeCell(this, this.value, @item.ID, '@item.Descripcion')" data-selected="@item.CeldaID" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                                                            <option></option>
+                                                            @foreach (var cells in Model.Production_Cells)
+                                                            {
+                                                                <option value="@cells.Value">@cells.Text</option>
+                                                            }
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="kt_tab_pane_2" role="tabpanel">
+                            <div class="row">
+                                <div class="col-lg-3 fv-row mb-4">
+                                    <select name="IdFamilyModel" id="IdFamilyModel" onchange="SearchWithCombo(this.value,1)" class="form-select form-select-sm" aria-hidden="true" data-control="select2" data-close-on-select="true" data-placeholder="-- Select a Family to Search Model Report --">
+                                        <option></option>
+                                        @foreach (var item in Model.CP_Family)
+                                        {
+                                            <option value="@item.ID">@item.Descripcion</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-lg-3 fv-row mb-4">
+                                    <button type="button" class="btn btn-success p-2 fs-7 me-3 " data-bs-toggle="modal" data-bs-target="#NewModel">
+                                            <i class="fas fa-plus"></i>New Cell
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="input-group input-group-sm mb-5">
+                                        <input type="text" class="form-control" placeholder="Search by Model" aria-label="Busqueda" name="Busqueda" id="Busqueda" aria-describedby="basic-addon1">
+								    </div>
+                                </div>
+                                <div class="col-lg-3 fv-row mb-4">
+                                    <button class="btn btn-primary p-2 fs-6 me-3" type="button"  id="itbutton_submit" onclick="SearchWithCombo($('#Busqueda').val(),2)">
+                                        <span class="indicator-label"><i class="fas fa-search"></i>Search</span>
+                                    </button>
+                                </div>  
+                            </div>
+                            <div class="card card-p-0 card-flush d-none" id="hideDataTable">
+                                <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                    <div class="card-title">
+                                        <div class="d-flex align-items-center position-relative my-1">
+                                            <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                                            <input type="text" data-kt-filter="searchModels" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+                                        </div>
+                                        <div id="TablaModels_export" class="d-none"></div>
+                                    </div>
+                                    <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                        <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                            <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                                            Export Report
+                                        </button>
+                                        <div id="TablaModels_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-exportModels="excel">
+                                                    Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                                                </a>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-exportModels="csv">
+                                                    Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                                                </a>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-exportModels="pdf">
+                                                    Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="TablaModels_buttons" class="d-none"></div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <table id="TablaModels" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+                                        <thead>
+                                            <tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+                                                <th class="min-w-50px  align-middle border-end">Delete</th>
+                                                <th class="min-w-200px align-middle border-end">Model</th>
+                                                <th class="min-w-200px align-middle border-end">Description</th>
+                                                <th class="min-w-200px align-middle border-end">Vegecode</th>
+                                                <th class="min-w-200px align-middle border-end">Record date</th>
+                                                <th class="min-w-200px align-middle border-end">Record user</th>
+                                                <th class="min-w-200px align-middle border-end">Record Last Update</th>
+                                                <th class="min-w-200px align-middle border-end">Record Last Update User</th>
+                                                <th class="min-w-200px align-middle border-end">Family</th>
+                                                <th class="min-w-200px align-middle border-end">Component</th>
+                                                <th class="min-w-200px align-middle border-end">Proof</th>
+                                                <th class="min-w-200px align-middle border-end">Status</th>
+                                                <th class="min-w-200px align-middle border-end">Line</th>
+                                                <th class="min-w-200px align-middle border-end">Cell</th>
+                                                <th class="min-w-200px align-middle border-end">PackagingType</th>
+                                                <th class="min-w-200px align-middle border-end">Huacal</th>
+                                                <th class="min-w-200px align-middle border-end">TubInserto</th>
+                                                <th class="min-w-200px align-middle border-end">TubInsertoMadera</th>
+                                                <th class="min-w-200px align-middle border-end">TubBase</th>
+                                                <th class="min-w-200px align-middle border-end">TubTapa</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card card-bordered d-none" id="hideMessege">
+                                <div class="card-body">
+                                    <div class="alert alert-warning d-flex align-items-center p-5 mb-4">
+                                        <span class="svg-icon svg-icon-2x svg-icon-light me-3"> <i class="fas fa-exclamation-triangle fs-2x text-warning"></i></span>
+                                        <div class="d-flex flex-column">
+                                            <span class="text-alert-warning fs-4 fw-bold pt-2">There no data for this search.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="kt_tab_pane_3" role="tabpanel">
+                            <div class="card card-p-0 card-flush" >
+                                <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                    <div class="card-title">
+                                        <div class="d-flex align-items-center position-relative my-1">
+                                            <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                                            <input type="text" data-kt-filter="searchCells" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+                                        </div>
+                                        <div id="TablaCells_export" class="d-none"></div>
+                                    </div>
+                                    <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                        <button type="button" class="btn btn-success me-3" data-bs-toggle="modal" data-bs-target="#NewCell">
+                                            <i class="fas fa-plus"></i>New Cell
+                                        </button>
+                                        <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                            <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                                            Export Report
+                                        </button>
+                                        <div id="TablaCells_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-exportCells="excel">
+                                                    Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                                                </a>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-exportCells="csv">
+                                                    Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                                                </a>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-exportCells="pdf">
+                                                    Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="TablaCells_buttons" class="d-none"></div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <table id="TablaCells" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+                                        <thead>
+                                            <tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+                                                <th class="min-w-50px  align-middle border-end">Delete</th>
+                                                <th class="min-w-1000px align-middle border-end">Family</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="IdTbody" class="fw-semibold text-gray-600">
+                                            @foreach (var item in Model.Production_Cells)
+                                            {
+                                                <tr class="fw-semibold text-gray-600">
+                                                    <td>
+                                                        <a class="p-0 btn btn-sm  me-2" onclick="DeleteCell(this, @item.Value)"><i class="fas fa-times fs-3 text-danger"></i></a>
+                                                    </td>
+                                                    <td><a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="OpenUpdateCell(this, @item.Value, '@item.Text')">@item.Text</a></td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*===============================================Modals Family============================================================*@
+@*Modal New Family*@
+<div class="modal fade" tabindex="-1" id="NewFamily" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h1 class="text-center">New Family</h1>
+                <form id="IdFormSendFamily">
+                    <div class="fv-row">
+                        <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Family:</label>
+                        <input type="text" id="Family" name="Family" class="form-control p-3 fs-7 mb-0" />
+                    </div>
+                    <div class="fv-row">
+                        <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Cells:</label>
+
+                        <select id="CellId" name="CellId" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var cells in Model.Production_Cells)
+                            {
+                                <option value="@cells.Value">@cells.Text</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button id="SendNewFamily" type="button" class="btn btn-primary">
+                    <span class="indicator-label">Save</span>
+                    <span class="indicator-progress">
+                        Please wait...<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Update Family*@
+<div class="modal fade" tabindex="-1" id="UpdateFamily" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h1 class="text-center">Update Family</h1>
+                <form id="IdFormUpdateFamily">
+                    <input type="hidden" id="IdUpFamily" name="IdUpFamily"/>
+                    <div class="fv-row">
+                        <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Family:</label>
+                        <input type="text" id="UpFamily" name="UpFamily" class="form-control p-3 fs-7 mb-0" />
+                    </div>
+                    <div class="fv-row">
+                        <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Cells:</label>
+
+                        <select id="CellUpdate" name="CellUpdate" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var cells in Model.Production_Cells)
+                            {
+                                <option value="@cells.Value">@cells.Text</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button id="SendUpdateFamily" type="button" class="btn btn-primary">
+                    <span class="indicator-label">Update</span>
+                    <span class="indicator-progress">
+                        Please wait...<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@*==================================================================================================================*@
+
+@*==============================================Modals Cells================================================================*@
+@*Modal New Cell*@
+<div class="modal fade" tabindex="-1" id="NewCell" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h1 class="text-center">New Cell</h1>
+                <form id="IdFormNewCell">
+                    <div class="fv-row">
+                        <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Cell:</label>
+                        <input type="text" id="IdNewCell" name="IdNewCell" class="form-control p-3 fs-7 mb-0" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button id="SendNewCell" type="button" class="btn btn-primary">
+                    <span class="indicator-label">Save</span>
+                    <span class="indicator-progress">
+                        Please wait...<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Update Cell*@
+<div class="modal fade" tabindex="-1" id="UpdateCell" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h1 class="text-center">Update Cell</h1>
+                <form id="IdFormUpCell">
+                    <input type="hidden" id="IdCellUpdate" name="IdCellUpdate" />
+                    <div class="fv-row">
+                        <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Cell:</label>
+                        <input type="text" id="IdUpCell" name="IdUpCell" class="form-control p-3 fs-7 mb-0" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button id="SendUpdateCell" type="button" class="btn btn-primary">
+                    <span class="indicator-label">Save</span>
+                    <span class="indicator-progress">
+                        Please wait...<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@*==================================================================================================================*@
+@*Modal New Model*@
+<div class="modal fade" tabindex="-1" id="NewModel" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+				<h1 class="modal-title text-center">New Model</h1>
+				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<span class="svg-icon svg-icon-1">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor"></rect>
+							<rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor"></rect>
+						</svg>
+					</span>
+				</div>
+			</div>
+            <div class="modal-body" >
+                <form id="IdFormNewModel" style="min-height: 500px !important; max-height: 1000px !important;">
+                    <div class="row">
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Model:</label>
+                            <input type="text" id="ModalModel" name="ModalModel" class="form-control p-3 fs-7 mb-0" />
+                        </div>
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Vege Code:</label>
+                            <input type="text" id="ModalVegecode" name="ModalVegecode" maxlength="50" class="form-control p-3 fs-7 mb-0" />
+                        </div>
+                    </div>
+                    <div class="fv-row">
+                        <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Description:</label>
+                        <input type="text" maxlength="150" id="ModalDescription" name="ModalDescription" class="form-control p-3 fs-7 mb-0" />
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Family:</label>
+                            <select class="form-select" data-control="select2" name="ModalFamily" id="ModalFamily" data-placeholder="Select an option" onchange="$('#ModalCell').val($(this).find(':selected').data('id'))" data-dropdown-parent="#NewModel">
+                                <option></option>
+                                @foreach (var item in Model.CP_Family)
+                                {
+                                <option value="@item.ID" data-id="@item.Valor">@item.Descripcion</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Cell:</label>
+                            <input type="text" id="ModalCell" name="ModalCell" class="form-control p-3 fs-7 mb-0" disabled maxlength="50" />
+                        </div>
+                    </div>
+                    <div class="fv-row">
+                        <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Status:</label>
+                        <select class="form-select" data-control="select2" name="ModalStatus" id="ModalStatus" data-placeholder="Select an option" onchange="comboStatus(this.value)" data-dropdown-parent="#NewModel">
+                            <option></option>
+                            @foreach (var item in Model.Status)
+                            {
+                            <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-4" id="insertCantidadTemporalDiv" style="display:none">
+                            <label class="col-lg-6 col-form-label required fw-bold fs-6 mb-0">Qty from Temporary:</label>
+                            <input type="number" id="NewQTYTemporal" name="NewQTYTemporal" class="form-control p-3 fs-7 mb-0" min="0" style="background-color:#fff6e5;" />
+                        </div>
+                        <div class="fv-row col-lg-8" id="insertDescripcionTemporalDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Description Temporary:</label>
+                            <input type="text" id="NewDescripcionTemporal" name="NewDescripcionTemporal" class="form-control p-3 fs-7 mb-0" maxlength="150" style="background-color:#fff6e5;" />
+                        </div>
+                    </div>
+                    <div class="fv-row" id="insertDescripcionCanceladoDiv" style="display:none">
+                        <label class="col-lg-6 col-form-label required fw-bold fs-6 mb-0">Description action when status it is canceled:</label>
+                        <input type="text" id="NewDescripcionCancelado" name="NewDescripcionCancelado" class="form-control p-3 fs-7 mb-0" maxlength="150" style="background-color:#ffe5e5;" />
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Component:</label>
+                            <select class="form-select" data-control="select2" name="Component" id="Component" data-placeholder="Select an option" data-dropdown-parent="#NewModel">
+                                <option></option>
+                                @foreach (var item in Model.Component)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Proof:</label>
+                            <select class="form-select" data-control="select2" name="Proof" id="Proof" data-placeholder="Select an option" data-dropdown-parent="#NewModel">
+                                <option></option>
+                                @foreach (var item in Model.Proof)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Packaging:</label>
+                            <select class="form-select" data-control="select2" name="Packaging" id="Packaging" data-placeholder="Select an option" onchange="packing(this.value)" data-dropdown-parent="#NewModel">
+                                <option></option>
+                                @foreach (var item in Model.Packaging)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="fv-row col-lg-6" id="huacalDiv">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Huacal:</label>
+                            <select class="form-select" data-control="select2" name="Huacal" id="Huacal" data-placeholder="Select an option" data-dropdown-parent="#NewModel">
+                                <option></option>
+                                @foreach (var item in Model.Huacal)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                     </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6" id="insertDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">TUB Plastic insert:</label>
+                            <select class="form-select" data-control="select2" name="Inserto" id="Inserto" data-placeholder="Select an option" data-dropdown-parent="#NewModel">
+                                <option></option>
+                                @foreach (var item in Model.TUBPlastic)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="fv-row col-lg-6" id="insertMaderaDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">TUB Wood insert:</label>
+                            <select class="form-select" data-control="select2" name="InsertoMadera" id="InsertoMadera" data-placeholder="Select an option" data-dropdown-parent="#NewModel">
+                                <option></option>
+                                @foreach (var item in Model.TUBWood)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6" id="tapaDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">TUB Lid:</label>
+                            <select class="form-select" data-control="select2" name="Tapa" id="Tapa" data-placeholder="Select an option" data-dropdown-parent="#NewModel">
+                                <option></option>
+                                @foreach (var item in Model.TUBLid)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="fv-row col-lg-6" id="baseDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">TUB Base:</label>
+                            <select class="form-select" data-control="select2" name="Base" id="Base" data-placeholder="Select an option" data-dropdown-parent="#NewModel">
+                                <option></option>
+                                @foreach (var item in Model.TUBBase)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button id="SendNewModel" type="button" class="btn btn-primary">
+                    <span class="indicator-label">Save</span>
+                    <span class="indicator-progress">
+                        Please wait...<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Update Modelo*@
+<div class="modal fade" tabindex="-1" id="UpdateModel" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body" style="min-height: 500px !important; max-height: 1200px !important;">
+                <h1 class="text-center">Update Model</h1>
+                <form id="IdFormUpModel">
+                    <input type="hidden" id="IdUpdateModel" name="IdUpdateModel" />
+                    
+                    <div class="row">
+                         <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Model:</label>
+                            <input type="text" id="UpModelModelo" name="UpModelModelo" class="form-control p-3 fs-7 mb-0" />
+                        </div>
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Vege code:</label>
+                            <input type="text" id="UpModelVegeCode" name="UpModelVegeCode" class="form-control p-3 fs-7 mb-0" />
+                        </div>
+                    </div>
+                    <div class="fv-row">
+                        <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Description:</label>
+                        <input type="text" id="UpModelDescription" name="UpModelDescription" class="form-control p-3 fs-7 mb-0" />
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Family:</label>
+                            <select class="form-select" data-control="select2" name="UpModelFamily" id="UpModelFamily" data-placeholder="Select an option" onchange="$('#ModalCell').val($(this).find(':selected').data('id'))" data-dropdown-parent="#UpdateModel">
+                                <option></option>
+                                @foreach (var item in Model.CP_Family)
+                                {
+                                <option value="@item.ID" data-id="@item.Valor">@item.Descripcion</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Component:</label>
+                            <select class="form-select" data-control="select2" name="UpModelComponent" id="UpModelComponent" data-placeholder="Select an option" data-dropdown-parent="#UpdateModel">
+                                <option></option>
+                                @foreach (var item in Model.Component)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Proof:</label>
+                            <select class="form-select" data-control="select2" name="UpModelProof" id="UpModelProof" data-placeholder="Select an option" data-dropdown-parent="#UpdateModel">
+                                <option></option>
+                                @foreach (var item in Model.Proof)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Cell:</label>
+                            <input type="text" id="UpModelCell" name="UpModelCell" class="form-control p-3 fs-7 mb-0" disabled/>
+                        </div>
+                    </div>
+                    <div class="fv-row">
+                        <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Status:</label>
+                        <select class="form-select" data-control="select2" name="UpModelStatus" id="UpModelStatus" data-placeholder="Select an option" data-dropdown-parent="#UpdateModel" onchange="updStatusModel(this.value,1)">
+                            <option></option>
+                            @foreach (var item in Model.Status)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-4" id="updCantidadTemporalDiv" style="display:none">
+                            <label class="col-lg-6 col-form-label required fw-bold fs-6 mb-0">Qty from Temporary:</label>
+                            <input type="number" id="updQTYTemporal" name="updQTYTemporal" class="form-control p-3 fs-7 mb-0" min="0" style="background-color:#fff6e5;" />
+                        </div>
+                        <div class="fv-row col-lg-8" id="updDescripcionTemporalDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Description Temporary:</label>
+                            <input type="text" id="updDescripcionTemporal" name="updDescripcionTemporal" class="form-control p-3 fs-7 mb-0" maxlength="150" style="background-color:#fff6e5;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6" id="updDescripcionCanceladoDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Description action when status it is canceled:</label>
+                            <input type="text" id="updDescripcionCancelado" name="updDescripcionCancelado" class="form-control p-3 fs-7 mb-0" maxlength="150" style="background-color:#ffe5e5;" />
+                        </div>
+                        <div class="fv-row col-lg-6" id="updDescripcionCambioDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Description from change status:</label>
+                            <input type="text" id="updDescripcionDesaprobado" name="updDescripcionDesaprobado" class="form-control p-3 fs-7 mb-0" maxlength="150" style="background-color:#ffe5e5;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Packaging:</label>
+                            <select class="form-select" data-control="select2" name="UpModelPackaging" id="UpModelPackaging" data-placeholder="Select an option" data-dropdown-parent="#UpdateModel" onchange="updPackaging(this.value)">
+                                <option></option>
+                                @foreach (var item in Model.Packaging)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="fv-row col-lg-6" id="updhuacalDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Huacal:</label>
+                            <select class="form-select" data-control="select2" name="UpModelHuacal" id="UpModelHuacal" data-placeholder="Select an option" data-dropdown-parent="#UpdateModel">
+                                <option></option>
+                                @foreach (var item in Model.Huacal)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6" id="updinsertDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">TUB Plastic insert:</label>
+                            <select class="form-select" data-control="select2" name="updInserto" id="updInserto"  data-dropdown-parent="#UpdateModel">
+                                <option value="0">-- Not apply, only use Plastic insert --</option>
+                                @foreach (var item in Model.TUBPlastic)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="fv-row col-lg-6" id="updinsertMaderaDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">TUB Wood insert:</label>
+                            <select class="form-select" data-control="select2" name="updInsertoMadera" id="updInsertoMadera"  data-dropdown-parent="#UpdateModel">
+                                <option value="0">-- Not apply, only use TUB Wood insert --</option>
+                                @foreach (var item in Model.TUBWood)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="fv-row col-lg-6" id="updtapaDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">TUB Lid:</label>
+                            <select class="form-select" data-control="select2" name="updTapa" id="updTapa" data-placeholder="Select an option" data-dropdown-parent="#UpdateModel">
+                                <option></option>
+                                @foreach (var item in Model.TUBLid)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="fv-row col-lg-6" id="updbaseDiv" style="display:none">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">TUB Base:</label>
+                            <select class="form-select" data-control="select2" name="updBase" id="updBase" data-placeholder="Select an option" data-dropdown-parent="#UpdateModel">
+                                <option></option>
+                                @foreach (var item in Model.TUBBase)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button id="UpModelBtn" type="button" class="btn btn-primary">
+                    <span class="indicator-label">Save</span>
+                    <span class="indicator-progress">
+                        Please wait...<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+    {
+     @*Block pantalla*@
+    <script>
+        var button = document.querySelector("#BlockPantalla");
+        var target = document.querySelector("#BlockPantalla");
+
+        var BlockPantalla = new KTBlockUI(target, {
+            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+        });
+    </script>
+
+
+
+    @*Globales*@
+    <script>
+        var IdSeccion = $("#IdSeccion").val();
+
+        var UpdateRowFamily = "";
+        var UpdateRowCell = "";
+
+        document.querySelectorAll('[data-selected]').forEach(e => { e.value = e.dataset.selected });
+
+        var idGlobal;
+        $(document).ready(function () {
+            $('select').on('select2:open', function (e) {
+                var id = $(this).attr("id");
+                //Obtener el name or id del elemento para realizar el proceso seleccionar o deseleccionar opciones.
+                idGlobal = $('#' + id).val();
+            });
+        });
+    </script>
+
+    @*Libreria datatable Family*@
+    <script type="text/javascript">
+        var KTDatatablesExample = function () {
+            var table;
+            var datatable;
+
+            var initDatatable = function () {
+                
+                datatable = $(table).DataTable({
+                    "info": true,
+                    "order": [],
+                    "pageLength": 100,
+                    "scrollY": "500px",
+                    "scrollCollapse": true,
+                    "scrollX": true,
+                    "columns": [
+                        { className: "border-end align-middle border-gray-400 border-start min-w-20px text-center", },
+                        { className: "border-end align-middle border-gray-400 min-w-150px", },
+                        { className: "border-end align-middle border-gray-400 min-w-1000px", },
+                    ],
+
+                });
+            }
+
+            // Hook export buttons
+            var exportButtons = () => {
+                const documentTitle = 'TablaFamily_Report';
+                var buttons = new $.fn.dataTable.Buttons(table, {
+                    buttons: [
+                        {
+                            extend: 'copyHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'csvHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            title: documentTitle
+                        }
+                    ]
+                }).container().appendTo($('#TablaFamily_buttons'));
+
+                const exportButtons = document.querySelectorAll('#TablaFamily_export_menu [data-kt-export]');
+                exportButtons.forEach(exportButton => {
+                    exportButton.addEventListener('click', e => {
+                        e.preventDefault();
+
+                        var exportValue = e.target.getAttribute('data-kt-export');
+                        var target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+
+                        target.click();
+                    });
+                });
+            }
+
+            var handleSearchDatatable = () => {
+                const filterSearch = document.querySelector('[data-kt-filter="search"]');
+                filterSearch.addEventListener('keyup', function (e) {
+                    datatable.search(e.target.value).draw();
+                });
+            }
+
+            return {
+                init: function () {
+                    table = document.querySelector('#TablaFamily');
+
+                    if (!table) {
+                        return;
+                    }
+
+                    initDatatable();
+                    exportButtons();
+                    handleSearchDatatable();
+                }
+            };
+        }();
+
+        KTUtil.onDOMContentLoaded(function () {
+            KTDatatablesExample.init();
+        });
+    </script>
+
+    @*Libreria datatable Models*@
+    <script type="text/javascript">
+        var KTDatatablesTablaModels = function () {
+            var table;
+            var datatable;
+
+            var initDatatableModels = function () {
+                const tableRows = table.querySelectorAll('tbody tr');
+
+                tableRows.forEach(row => {
+                    const dateRow = row.querySelectorAll('td');
+                });
+
+                datatable = $(table).DataTable({
+                    "info": true,
+                    "order": [],
+                    "pageLength": 100,
+                    "scrollY": "500px",
+                    "scrollCollapse": true,
+                    "scrollX": true,
+                    "columns": [
+                        { className: "border-end  border-gray-400 border-start min-w-50px text-center", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                        { className: "border-end  border-gray-400 min-w-150px", },
+                    ],
+
+                });
+            }
+
+            // Hook export buttons
+            var exportButtons = () => {
+                const documentTitle = 'Models_Report';
+                var buttons = new $.fn.dataTable.Buttons(table, {
+                    buttons: [
+                        {
+                            extend: 'copyHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'csvHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            title: documentTitle
+                        }
+                    ]
+                }).container().appendTo($('#TablaModels_buttons'));
+
+                const exportButtons = document.querySelectorAll('#TablaModels_export_menu [data-kt-exportModels]');
+                exportButtons.forEach(exportButton => {
+                    exportButton.addEventListener('click', e => {
+                        e.preventDefault();
+
+                        var exportValue = e.target.getAttribute('data-kt-exportModels');
+                        var target = document.querySelector('div[id="TablaModels_buttons"]');
+                        target = target.querySelector('.buttons-' + exportValue);
+
+                        target.click();
+                    });
+                });
+            }
+
+            var handleSearchDatatableModels = () => {
+                const filterSearch = document.querySelector('[data-kt-filter="searchModels"]');
+                filterSearch.addEventListener('keyup', function (e) {
+                    datatable.search(e.target.value).draw();
+                });
+            }
+
+            return {
+                init: function () {
+                    table = document.querySelector('#TablaModels');
+
+                    if (!table) {
+                        return;
+                    }
+
+                    initDatatableModels();
+                    exportButtons();
+                    handleSearchDatatableModels();
+                }
+            };
+        }();
+
+        KTUtil.onDOMContentLoaded(function () {
+            KTDatatablesTablaModels.init();
+        });
+    </script>
+
+    @*Libreria datatable Cells*@
+    <script type="text/javascript">
+        var KTDatatablesTablaCells = function () {
+            var table;
+            var datatable;
+
+            var initDatatableCells = function () {
+                const tableRows = table.querySelectorAll('tbody tr');
+
+                tableRows.forEach(row => {
+                    const dateRow = row.querySelectorAll('td');
+                });
+
+                datatable = $(table).DataTable({
+                    "info": true,
+                    "order": [],
+                    "pageLength": 25,
+                    "columns": [
+                        { className: "border-end  border-gray-400 border-start min-w-50px text-center", },
+                        { className: "border-end  border-gray-400 min-w-1000px", },
+                    ],
+
+                });
+            }
+
+            // Hook export buttons
+            var exportButtons = () => {
+                const documentTitle = 'Cells_Report';
+                var buttons = new $.fn.dataTable.Buttons(table, {
+                    buttons: [
+                        {
+                            extend: 'copyHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'csvHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            title: documentTitle
+                        }
+                    ]
+                }).container().appendTo($('#TablaCells_buttons'));
+
+                const exportButtons = document.querySelectorAll('#TablaCells_export_menu [data-kt-exportCells]');
+                exportButtons.forEach(exportButton => {
+                    exportButton.addEventListener('click', e => {
+                        e.preventDefault();
+
+                        const exportValue = e.target.getAttribute('data-kt-exportCells');
+                        var target = document.querySelector('div[id="TablaCells_buttons"]');
+                        target = target.querySelector('.buttons-' + exportValue);
+
+                        target.click();
+                    });
+                });
+            }
+
+            var handleSearchDatatableCells = () => {
+                const filterSearch = document.querySelector('[data-kt-filter="searchCells"]');
+                filterSearch.addEventListener('keyup', function (e) {
+                    datatable.search(e.target.value).draw();
+                });
+            }
+
+            return {
+                init: function () {
+                    table = document.querySelector('#TablaCells');
+
+                    if (!table) {
+                        return;
+                    }
+
+                    initDatatableCells();
+                    exportButtons();
+                    handleSearchDatatableCells();
+                }
+            };
+        }();
+
+        KTUtil.onDOMContentLoaded(function () {
+            KTDatatablesTablaCells.init();
+        });
+    </script>
+
+   @*============================================Familias========================================================*@
+
+    @*Save a New Family*@
+    <script>
+        function AddNewFamily() 
+        {
+            var Family = $("#Family").val();
+            var CellId = $("#CellId").val();
+
+            $.ajax({
+                url: "@Url.Action("SaveNewFamily","CP_Models")",
+                data: {
+                    Family: Family,
+                    CellId: CellId,
+                    IdSeccion: IdSeccion
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if (result != null) {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else {
+
+                        var obj = JSON.parse(result);
+
+                        var Respuesta = obj.Result;
+
+                        if (Respuesta == 'Exists') 
+                        {
+                            swal.fire({
+                                text: "Sorry, There's one Family with this name, please try again.",
+                                icon: "warning",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-light-primary"
+                                }
+                            })
+                        }
+                        else
+                        {
+                            var t = $('#TablaFamily').DataTable();
+
+                            var options = "";
+
+                            for (var i = 0; i < obj.ComboCells.length; i++) {
+                                if (obj.ComboCells[i].Value == CellId) 
+                                {
+                                    options = options +
+                                    '<option value="' + obj.ComboCells[i].Value + '" Selected>' + obj.ComboCells[i].Text + '</option>'
+                                }
+                                else
+                                {
+                                    options = options +
+                                    '<option value="' + obj.ComboCells[i].Value + '">' + obj.ComboCells[i].Text + '</option>'
+                                }
+                            }
+
+
+                            Swal.fire({
+                                text: "The action has been successfully submitted!",
+                                icon: "success",
+                                buttonsStyling: false,
+                                allowEscapeKey: false,
+                                allowOutsideClick: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+
+                                    document.querySelectorAll('[data-selected]').forEach(e => { e.value = e.dataset.selected });
+
+                                    t.row.add([
+                                        `<a class="p-0 btn btn-sm  me-2" onclick="DeleteFamily(this, ${Respuesta})"><i class="fas fa-times fs-3 text-danger"></i></a>`,
+                                        `<a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="OpenUpdateFamily(this, ${Respuesta}, '${Family}', ${CellId})"> ${Family}</a>`,
+                                        `<select id="Select-${Respuesta}" onchange="ChangeCell(this, this.value, ${Respuesta}, '${Family}')" data-selected="${CellId}" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">` +
+                                        '<option></option>' +
+                                        options +
+                                        '</select>'
+                                    ]).draw();
+
+                                    KTApp.init();
+                                    KTApp.initPageLoader();
+                                    KTMenu.init();
+
+                                    $("#Family").val("");
+                                    $("#CellId").val(null).trigger('change');
+
+                                    $('#NewFamily').modal('hide');
+                                }
+                            });
+                        }
+
+                        
+                    }
+                }
+                else {
+                    SystemServerError()
+                }
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+
+        }
+    </script>
+
+    @*Update Family*@
+    <script>
+        function OpenUpdateFamily(UpdateRowX, FamilyId, Family, CellId)
+        {
+            $('#UpdateFamily').modal('show')
+
+            UpdateRowFamily = UpdateRowX;
+            $("#IdUpFamily").val(FamilyId)
+            $("#UpFamily").val(Family)
+            $("#CellUpdate").val(CellId).trigger('change');
+
+        }
+
+        function UpdateFamily() {
+            
+            var FamilyId = $("#IdUpFamily").val();
+            var Family = $("#UpFamily").val();
+            var CellId = $("#CellUpdate").val();
+
+            $.ajax({
+                url: "@Url.Action("UpdateNewFamily","CP_Models")",
+                data: {
+                    FamilyId : FamilyId, 
+                    Family: Family,
+                    CellId: CellId,
+                    IdSeccion: IdSeccion
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if (result != null) {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else {
+
+                        var obj = JSON.parse(result);
+
+                        var Respuesta = obj.Result;
+
+                        if (Respuesta == 'Exists') {
+                            swal.fire({
+                                text: "Sorry, There's one Family with this name, please try again.",
+                                icon: "warning",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-light-primary"
+                                }
+                            })
+                        }
+                        else 
+                        {
+                            var t = $('#TablaFamily').DataTable();
+
+                            var options = "";
+
+                            for (var i = 0; i < obj.ComboCells.length; i++) {
+                                if (obj.ComboCells[i].Value == CellId) {
+                                    options = options +
+                                        '<option value="' + obj.ComboCells[i].Value + '" Selected>' + obj.ComboCells[i].Text + '</option>'
+                                }
+                                else {
+                                    options = options +
+                                        '<option value="' + obj.ComboCells[i].Value + '">' + obj.ComboCells[i].Text + '</option>'
+                                }
+                            }
+
+                                Swal.fire({
+                                    text: "The action has been successfully submitted!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    allowEscapeKey: false,
+                                    allowOutsideClick: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+
+                                      document.querySelectorAll('[data-selected]').forEach(e => { e.value = e.dataset.selected });
+
+                                    t.row($(UpdateRowFamily).parents('tr')).data([
+                                        `<a class="p-0 btn btn-sm  me-2" onclick="DeleteFamily(this, ${Respuesta})"><i class="fas fa-times fs-3 text-danger"></i></a>`,
+                                        `<a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="OpenUpdateFamily(this, ${Respuesta}, '${Family}', ${CellId})"> ${Family}</a>`,
+                                        `<select id="Select-${Respuesta}" onchange="ChangeCell(this, this.value, ${Respuesta}, '${Family}')" data-selected="${CellId}" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">` +
+                                        '<option></option>' +
+                                        options +
+                                        '</select>'
+                                    ]).draw();
+
+                                        KTApp.init();
+                                        KTApp.initPageLoader();
+                                        KTMenu.init();
+
+                                        $("#IdUpFamily").val("");
+                                        $("#CellUpdate").val(null).trigger('change');
+
+                                        $('#UpdateFamily').modal('hide');
+                                    }
+                                });
+                        }
+                        
+                    }
+                }
+                else {
+                    SystemServerError()
+                }
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+        }
+    </script>
+
+    @*Update the Cell -> Family*@
+    <script>
+        function ChangeCell(UpdateData, CellId, FamilyId, Family) {
+
+            Swal.fire({
+                text: "Are you sure to save the change?",
+                icon: "question",
+                buttonsStyling: false,
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                showCancelButton: true,
+                closeOnCancel: true,
+                confirmButtonText: "Confirm",
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-danger'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "@Url.Action("UpdateCellFamily","CP_Models")",
+                        data: {
+                            CellId: CellId,
+                            FamilyId: FamilyId,
+                            IdSeccion: IdSeccion
+                        },
+                        type: "POST",
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                    }).done(function (result) {
+                        if (result != null) {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else 
+                            {
+                                var obj = JSON.parse(result);
+
+                                var Respuesta = obj.Result;
+
+
+                                var t = $('#TablaFamily').DataTable();
+
+                                var options = "";
+
+                                for (var i = 0; i < obj.ComboCells.length; i++) {
+                                    if (obj.ComboCells[i].Value == CellId) {
+                                        options = options +
+                                            '<option value="' + obj.ComboCells[i].Value + '" Selected>' + obj.ComboCells[i].Text + '</option>'
+                                    }
+                                    else {
+                                        options = options +
+                                            '<option value="' + obj.ComboCells[i].Value + '">' + obj.ComboCells[i].Text + '</option>'
+                                    }
+                                }
+                            
+                                    document.querySelectorAll('[data-selected]').forEach(e => { e.value = e.dataset.selected });
+
+                                    t.row($(UpdateData).parents('tr')).data([
+                                        `<a class="p-0 btn btn-sm  me-2" onclick="DeleteFamily(this, ${Respuesta})"><i class="fas fa-times fs-3 text-danger"></i></a>`,
+                                        `<a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="OpenUpdateFamily(this, ${Respuesta}, '${Family}', ${CellId})"> ${Family}</a>`,
+                                        `<select id="Select-${Respuesta}" onchange="ChangeCell(this, this.value, ${Respuesta}, '${Family}')" data-selected="${CellId}" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">` +
+                                        '<option></option>' +
+                                        options +
+                                        '</select>'
+                                    ]).draw();
+
+                                    KTApp.init();
+                                    KTApp.initPageLoader();
+                                    KTMenu.init();
+
+                                    $("#IdUpFamily").val("");
+                                    $("#CellUpdate").val(null).trigger('change');
+
+                                    $('#UpdateFamily').modal('hide');
+
+
+                                    Swal.fire({
+                                        text: "The action has been successfully submitted!",
+                                        icon: "success",
+                                        buttonsStyling: false,
+                                        allowEscapeKey: false,
+                                        allowOutsideClick: false,
+                                        confirmButtonText: "Ok, got it!",
+                                        customClass: {
+                                            confirmButton: "btn btn-primary"
+                                        }
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+
+                                        }
+                                    });
+                            }
+                        }
+                        else {
+                            SystemServerError()
+                        }
+                    }).fail(function (error) {
+                        swalErrorServer()
+                    });
+
+                }
+                else {
+                    $('#Select-' + FamilyId).val(idGlobal).trigger('change');
+                    $('.swal2-container').css('display', 'none');
+                }
+            });
+
+        }
+    </script>
+
+     @*Delete the Family*@
+    <script>
+        function DeleteFamily(DeleteRow, FamilyId) {
+            Swal.fire({
+                text: "Are you sure to Delete the Family?",
+                icon: "question",
+                buttonsStyling: false,
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                showCancelButton: true,
+                closeOnCancel: true,
+                confirmButtonText: "Confirm",
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-danger'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "@Url.Action("DeleteFamily","CP_Models")",
+                        data: {
+                            FamilyId: FamilyId,
+                            IdSeccion: IdSeccion
+                        },
+                        type: "POST",
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                    }).done(function (result) {
+                        if (result != null) {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else {
+
+                                Swal.fire({
+                                    text: "The action has been successfully submitted!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    allowEscapeKey: false,
+                                    allowOutsideClick: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) 
+                                    {
+                                        var table = $('#TablaFamily').DataTable();
+                                        table.row($(DeleteRow).parents('tr')).remove().draw();
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            SystemServerError()
+                        }
+                    }).fail(function (error) {
+                        swalErrorServer()
+                    });
+
+                }
+                else {
+                    $('.swal2-container').css('display', 'none');
+                }
+            });
+
+
+
+        }
+    </script>
+
+    @*==================================================Cells====================================================================*@
+   
+    @*Save a New Cell*@
+    <script>
+        function AddNewCell() {
+            var Cell = $("#IdNewCell").val();
+
+            $.ajax({
+                url: "@Url.Action("SaveNewCell","CP_Models")",
+                data: {
+                    Cell: Cell,
+                    IdSeccion: IdSeccion
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if (result != null) {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'Exists') 
+                    {
+                        Swal.fire({
+                            text: "Sorry, There's one Cell with the same name, please try with diferent name.",
+                            icon: "warning",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                                $("#IdNewCell").val("");
+                                $('#NewCell').modal('hide');
+                            }
+                        });
+                    }
+                    else
+                    {
+                        var tCell = $('#TablaCells').DataTable();
+
+                        var IdCell = result;
+
+
+                        Swal.fire({
+                            text: "The action has been successfully submitted!",
+                            icon: "success",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                                tCell.row.add([
+                                    `<a class="p-0 btn btn-sm  me-2" onclick="DeleteCell(this, ${IdCell})"><i class="fas fa-times fs-3 text-danger"></i></a>`,
+                                    `<a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="OpenUpdateCell(this, ${IdCell}, '${Cell}')"> ${Cell}</a>`
+                                ]).draw();
+
+                                KTApp.init();
+                                KTApp.initPageLoader();
+                                KTMenu.init();
+
+                                $("#IdNewCell").val("");
+                                $('#NewCell').modal('hide');
+                            }
+                        });
+                    }
+                    
+                }
+                else {
+                    SystemServerError()
+                }
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+
+        }
+    </script>
+    
+    @*Update Cell*@
+    <script>
+        function OpenUpdateCell(UpdateRowX, CellId, Cell)
+        {
+            $('#UpdateCell').modal('show')
+
+            UpdateRowCell = UpdateRowX;
+            $("#IdCellUpdate").val(CellId)
+            $("#IdUpCell").val(Cell)
+        }
+
+        function UpdateCell() {
+            
+            var Cell = $("#IdUpCell").val();
+            var CellId = $("#IdCellUpdate").val();
+
+            $.ajax({
+                url: "@Url.Action("UpdateCell","CP_Models")",
+                data: {
+                    Cell: Cell,
+                    CellId: CellId,
+                    IdSeccion: IdSeccion
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if (result != null) {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'Exists') 
+                    {
+                        Swal.fire({
+                            text: "Sorry, There's one Cell with the same name, please try with diferent name.",
+                            icon: "warning",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                                $("#IdUpCell").val("");
+                                $('#UpdateCell').modal('hide');
+                            }
+                        });
+                    }
+                    else
+                    {
+                        var tCell = $('#TablaCells').DataTable();
+
+                        var IdCell = result;
+
+                        Swal.fire({
+                            text: "The action has been successfully submitted!",
+                            icon: "success",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                                 tCell.row($(UpdateRowCell).parents('tr')).data([
+                                    `<a class="p-0 btn btn-sm  me-2" onclick="DeleteCell(this, ${IdCell})"><i class="fas fa-times fs-3 text-danger"></i></a>`,
+                                    `<a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="OpenUpdateCell(this, ${IdCell}, '${Cell}')"> ${Cell}</a>`
+                                ]).draw();
+
+                                $("#IdUpCell").val("");
+                                $('#UpdateCell').modal('hide');
+                            }
+                        });
+                    }
+                    
+                }
+                else {
+                    SystemServerError()
+                }
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+        }
+    </script>
+
+    @*Delete Cell*@
+    <script>
+        function DeleteCell(DeleteRow, CellId) {
+            Swal.fire({
+                text: "Are you sure to Delete the Cell?",
+                icon: "question",
+                buttonsStyling: false,
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                showCancelButton: true,
+                closeOnCancel: true,
+                confirmButtonText: "Confirm",
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-danger'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "@Url.Action("DeleteCell","CP_Models")",
+                        data: {
+                            CellId: CellId,
+                            IdSeccion: IdSeccion
+                        },
+                        type: "POST",
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                    }).done(function (result) {
+                        if (result != null) {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else {
+
+                                Swal.fire({
+                                    text: "The action has been successfully submitted!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    allowEscapeKey: false,
+                                    allowOutsideClick: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        var table = $('#TablaCells').DataTable();
+                                        table.row($(DeleteRow).parents('tr')).remove().draw();
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            SystemServerError()
+                        }
+                    }).fail(function (error) {
+                        swalErrorServer()
+                    });
+
+                }
+                else {
+                    $('.swal2-container').css('display', 'none');
+                }
+            });
+
+
+
+        }
+    </script>
+
+    @*============================================Models========================================================*@
+
+    @*New Model*@
+    <script>
+        function saveModel() {
+            var formData = new FormData();
+            $.ajax({
+                url: "@Url.Action("saveNewModel","CP_Models")",
+                data: {
+                    ModalModel: $('#ModalModel').val(),
+                    ModalVegecode           : $('#ModalVegecode').val(),
+                    ModalDescription        : $('#ModalDescription').val(),
+                    ModalFamily             : $('#ModalFamily').val(),
+                    ModalCell               : $('#ModalCell').val(),
+                    ModalStatus             : $('#ModalStatus').val(),
+                    NewQTYTemporal          : $('#NewQTYTemporal').val(),
+                    NewDescripcionTemporal  : $('#NewDescripcionTemporal').val(),
+                    NewDescripcionCancelado : $('#NewDescripcionCancelado').val(),
+                    Component               : $('#Component').val(),
+                    Proof                   : $('#Proof').val(),
+                    Packaging               : $('#Packaging').val(),
+                    Huacal                  : $('#Huacal').val(),
+                    Inserto                 : $('#Inserto').val(),
+                    InsertoMadera           : $('#InsertoMadera').val(),
+                    Tapa                    : $('#Tapa').val(),
+                    Base                    : $('#Base').val()
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if (result != null) {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'Existe') {
+
+                        Swal.fire({
+                            text: "Sorry, There's one Model with the same name, please try with diferent name.",
+                            icon: "warning",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#IdFormNewModel')[0].reset();
+                                $("#ModalFamily").val(null).trigger("change");
+                                $("#ModalStatus").val(null).trigger("change");
+                                $("#Component").val(null).trigger("change");
+                                $("#Proof").val(null).trigger("change");
+                                $("#Packaging").val(null).trigger("change");
+                                $("#Huacal").val(null).trigger("change");
+                                $("#Inserto").val(null).trigger("change");
+                                $("#InsertoMadera").val(null).trigger("change");
+                                $("#Tapa").val(null).trigger("change");
+                                $("#Base").val(null).trigger("change");
+                            }
+                        });
+
+                    }
+                    else {
+
+                        Swal.fire({
+                            text: "The action has been successfully submitted!",
+                            icon: "success",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#IdFormNewModel')[0].reset();
+                                $("#ModalFamily").val(null).trigger("change");
+                                $("#ModalStatus").val(null).trigger("change");
+                                $("#Component").val(null).trigger("change");
+                                $("#Proof").val(null).trigger("change");
+                                $("#Packaging").val(null).trigger("change");
+                                $("#Huacal").val(null).trigger("change");
+                                $("#Inserto").val(null).trigger("change");
+                                $("#InsertoMadera").val(null).trigger("change");
+                                $("#Tapa").val(null).trigger("change");
+                                $("#Base").val(null).trigger("change");
+                                $('#NewModel').modal('hide');
+
+                            }
+                        });
+                    }
+                }
+                else {
+                    SystemServerError()
+                }
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+        }
+    </script>
+
+    @*show the data model Update Modelo *@
+    <script>
+        var statusGlobal = "";
+        function OpenUpdateModel(UpdateRowX, Modelo)
+        {
+            $.ajax({
+            url: "@Url.Action("ReportModel","CP_Models")",
+            data: {
+               Modelo: Modelo,
+               IdSeccion: IdSeccion
+            },
+            type: "POST",
+            beforeSend: function (xhr)
+            {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            }).done(function(result)
+            {
+                if(result != null)
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession')
+                    {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry')
+                    {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage')
+                    {
+                        swalNoAuthorized()
+                    }
+                    else
+                    {
+                        var obj = JSON.parse(result);
+
+                       $("#IdUpdateModel").val(obj[0].ID_Modelo);
+                       $("#UpModelModelo").val(obj[0].Modelo);
+                       $("#UpModelVegeCode").val(obj[0].VegeCode);
+                       $("#UpModelDescription").val(obj[0].Descripcion);
+                       $("#UpModelCell").val(obj[0].Celda);
+                       $("#UpModelFamily option:contains(" + obj[0].Familia + ")").attr('selected', true).trigger('change');
+                       $("#UpModelComponent option:contains(" + obj[0].DescripcionComponente + ")").attr('selected', true).trigger('change');
+                       $("#UpModelProof option:contains(" + obj[0].Prueba + ")").attr('selected', true).trigger('change');
+                       $("#UpModelStatus option:contains(" + obj[0].Status + ")").attr('selected', true).trigger('change');
+                       $("#UpModelPackaging option:contains(" + obj[0].PackagingType + ")").attr('selected', true).trigger('change');
+                       $("#UpModelHuacal option:contains(" + obj[0].Huacal + ")").attr('selected', true).trigger('change');
+
+                        var status = $("#UpModelStatus").val();
+                        var pack =   $("#UpModelPackaging").val();
+                        statusGlobal = status;
+                        updStatusModel(status,0)
+                        updPackaging(pack)
+                        BlockPantalla.release();
+
+                        $('#UpdateModel').modal('show')
+
+                    }
+                }
+                else
+                {
+                     SystemServerError()
+                }
+            }).fail(function (error)
+            {
+                swalErrorServer()
+            });
+        }
+    </script>
+
+    @*Update Modelo*@
+    <script>
+        function UpdateModelo()
+        {
+             var formData = new FormData();
+             formData.append("ModeloID", $("#IdUpdateModel").val());
+             formData.append("Model", $("#UpModelModelo").val());
+             formData.append("ModalVegecode", $("#UpModelVegeCode").val());
+             formData.append("ModalDescription", $("#UpModelDescription").val());
+             formData.append("Component", $("#UpModelComponent").val());
+             formData.append("ModalFamily", $("#UpModelFamily").val());
+             formData.append("ModalCell", $("#UpModelModalCell").val());
+             formData.append("ModalStatus", $("#UpModelStatus").val());
+             formData.append("QTYTemporal", $("#UpModelNewQTYTemporal").val());
+             formData.append("DescripcionTemporal", $("#UpModelNewDescripcionTemporal").val());
+             formData.append("DescripcionCancelado", $("#UpModelNewDescripcionCancelado").val());
+             formData.append("DescripcionDesaprobado", $("#updDescripcionDesaprobado").val());
+             formData.append("Proof", $("#UpModelProof").val());
+             formData.append("Packaging", $("#UpModelPackaging").val());
+             formData.append("Huacal", $("#UpModelHuacal").val());
+             formData.append("Inserto", $("#UpModelInserto").val());
+             formData.append("InsertoMadera", $("#UpModelInsertoMadera").val());
+             formData.append("Tapa", $("#UpModelTapa").val());
+             formData.append("Base", $("#UpModelBase").val());
+            
+             $.ajax({
+                url: "@Url.Action("UpdateModel","CP_Models")",
+                data: formData,
+                type: "POST",
+                processData: false,
+                contentType: false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if(result != null)
+                {
+                        if (result == 'Error') 
+                    {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'Existe') 
+                    {
+                        Swal.fire({
+                            text: "Sorry, There's one Cell with the same name, please try with diferent name.",
+                            icon: "warning",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                
+                                $('#UpdateCell').modal('hide');
+                            }
+                        });
+                    }
+                    else
+                    {
+
+                        var t = $('#TablaModels').DataTable();
+
+                        var Id= result;
+
+                        Swal.fire({
+                            text: "The action has been successfully submitted!",
+                            icon: "success",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                            }
+                        });
+
+
+                    }
+                    
+                }
+                else {
+                    SystemServerError()
+                }
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+
+        }
+    </script>
+    
+    @*Delete Modelos*@
+    <script>
+        function DeleteModel(DeleteRow, ModelId) {
+            Swal.fire({
+                text: "Are you sure to Delete the Cell?",
+                icon: "question",
+                buttonsStyling: false,
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                showCancelButton: true,
+                closeOnCancel: true,
+                confirmButtonText: "Confirm",
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-danger'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "@Url.Action("DeleteModel","CP_Models")",
+                        data: {
+                            ModelId: ModelId,
+                            IdSeccion: IdSeccion
+                        },
+                        type: "POST",
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                    }).done(function (result) {
+                        if (result != null) {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else {
+
+                                Swal.fire({
+                                    text: "The action has been successfully submitted!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    allowEscapeKey: false,
+                                    allowOutsideClick: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                       
+                                        var table = $('#TablaModels').DataTable();
+                                       
+                                        table.row($(DeleteRow).parents('tr')).remove().draw();
+
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            SystemServerError()
+                        }
+                    }).fail(function (error) {
+                        swalErrorServer()
+                    });
+
+                }
+                else {
+                    $('.swal2-container').css('display', 'none');
+                }
+            });
+        }
+    </script>
+
+    @*Buscar el reporte Models con el select2*@
+    <script>
+        function SearchWithCombo(val,type)
+        {
+            BlockPantalla.block();
+        
+                var reportModel = document.getElementById("hideDataTable");
+                reportModel.classList.add("d-none");
+
+            var hideMess = document.getElementById("hideMessege");
+            hideMess.classList.add("d-none");
+
+            if(type == 1){
+                var IdFamily = val;
+                var model = '';
+            }else if(type == 2){
+                var IdFamily = '';
+                var model = val;
+            }
+            console.log(IdFamily);
+           if((IdFamily != null && IdFamily!= '' && model== null  || model== '') || (model!= null && model!= '' && IdFamily==null || IdFamily==''))
+           {
+           
+               $.ajax({
+                    url: "@Url.Action("ReportModel","CP_Models")",
+                    data: {
+                    IdFamily: IdFamily,
+                    Modelo :model,
+                    Type : type,
+                    IdSeccion: IdSeccion
+                    },
+                    type: "POST",
+                    beforeSend: function (xhr)
+                    {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    }).done(function(result)
+                    {
+                        if(result != null)
+                        {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            else if (result == 'noSession')
+                            {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry')
+                            {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage')
+                            {
+                                swalNoAuthorized()
+                            }
+                            else if(result == 'NoData')
+                            {
+                                hideMess.classList.remove("d-none");
+                                BlockPantalla.release();
+                            }
+                            else
+                            {
+                                var obj = JSON.parse(result);
+
+                                var tablaModel = $('#TablaModels').DataTable();
+
+                                tablaModel.clear().draw();
+
+                                if(obj.length > 0)
+                                {
+
+                                    for(var i = 0; i < obj.length; i++) {
+                                
+                                        tablaModel.row.add(
+                                            [
+                                                `<a class="p-0 btn btn-sm  me-2" onclick="DeleteModel(this, ${obj[i].ID_Modelo})"><i class="fas fa-times fs-3 text-danger"></i></a>`,
+                                                `<a class="text-primary opacity-75-hover fs-6 fw-bold" onclick="OpenUpdateModel(this, '${obj[i].Modelo}')"> ${obj[i].Modelo}</a>`,
+                                                obj[i].Descripcion,
+                                                obj[i].VegeCode,
+                                                obj[i].FechaRegistro,
+                                                obj[i].UsuarioRegistro,
+                                                obj[i].FechaUltimaActualizacion,
+                                                obj[i].UsuarioUltimaActualizacion,
+                                                obj[i].Familia,
+                                                obj[i].DescripcionComponente,
+                                                obj[i].Prueba,
+                                                obj[i].Status,
+                                                obj[i].Linea,
+                                                obj[i].Celda,
+                                                obj[i].PackagingType,
+                                                obj[i].Huacal,
+                                                obj[i].Tub_Insert,
+                                                obj[i].Tub_Insert_Wood,
+                                                obj[i].Tub_Base,
+                                                obj[i].Tub_Tapa
+                                            ]).draw(false);
+                                    }
+
+                                    reportModel.classList.remove("d-none");
+
+                                }
+                                else
+                                {
+                                    hideMess.classList.remove("d-none");
+                                }
+
+                                BlockPantalla.release();
+                            }
+                        }
+                        else
+                        {
+                            SystemServerError()
+                        }
+                    }).fail(function (error)
+                    {
+                        swalErrorServer()
+                    });
+                }
+            
+        }
+    </script>
+
+    @*===========================================Form validation Family ========================================================*@
+    @*Form validation for New Family*@
+    <script>
+        //Form Validation
+        var FamilyForm = document.getElementById('IdFormSendFamily');
+        var validatorNew = FormValidation.formValidation(
+            FamilyForm,
+            {
+                fields: {
+                    Family: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Input Family is required!'
+                            }
+                        }
+                    },
+                    CellId: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Input Cell is required!'
+                            }
+                        }
+                    },
+
+                },
+
+                plugins: { //Learn more: https://formvalidation.io/guide/plugins
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        var submitButton = document.getElementById('SendNewFamily');
+
+        submitButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (validatorNew) {
+                validatorNew.validate().then(function (status) {
+                    if (status == 'Valid') {
+
+                        submitButton.setAttribute('data-kt-indicator', 'on');
+                        submitButton.disabled = true;
+                        setTimeout(function () {
+                            submitButton.removeAttribute('data-kt-indicator');
+                            submitButton.disabled = false;
+                            AddNewFamily()
+                        }, 900);
+                    }
+                    else {
+                        submitButton.setAttribute('data-kt-indicator', 'on');
+                        submitButton.disabled = true;
+                        setTimeout(function () {
+                            submitButton.removeAttribute('data-kt-indicator');
+                            submitButton.disabled = false;
+
+                        }, 100);
+
+                    }
+                });
+            }
+        });
+    </script>
+
+    @*Form validation for Update Family*@
+    <script>
+        //Form Validation
+        var FamilyFormUpdate = document.getElementById('IdFormUpdateFamily');
+        var validatorUpdate = FormValidation.formValidation(
+            FamilyFormUpdate,
+            {
+                fields: {
+                    UpFamily: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Input Family is required!'
+                            }
+                        }
+                    },
+                    CellUpdate: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Input Cell is required!'
+                            }
+                        }
+                    },
+
+                },
+
+                plugins: { //Learn more: https://formvalidation.io/guide/plugins
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        var UpdateButton = document.getElementById('SendUpdateFamily');
+
+        UpdateButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (validatorUpdate) {
+                validatorUpdate.validate().then(function (status) {
+                    if (status == 'Valid') {
+
+                        UpdateButton.setAttribute('data-kt-indicator', 'on');
+                        UpdateButton.disabled = true;
+                        setTimeout(function () {
+                            UpdateButton.removeAttribute('data-kt-indicator');
+                            UpdateButton.disabled = false;
+                        
+                            UpdateFamily()
+                        
+                        }, 900);
+                    }
+                    else {
+                        UpdateButton.setAttribute('data-kt-indicator', 'on');
+                        UpdateButton.disabled = true;
+                        setTimeout(function () {
+                            UpdateButton.removeAttribute('data-kt-indicator');
+                            UpdateButton.disabled = false;
+
+                        }, 100);
+
+                    }
+                });
+            }
+        });
+    </script>
+
+    @*===========================================Form validation Cells ========================================================*@
+    @*Form validation for New Cell*@
+    <script>
+        //Form Validation
+        var CellForm = document.getElementById('IdFormNewCell');
+        var validatorNewCell = FormValidation.formValidation(
+            CellForm,
+            {
+                fields: {
+                    IdNewCell: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Input Cell is required!'
+                            }
+                        }
+                    }
+                    
+                },
+
+                plugins: { //Learn more: https://formvalidation.io/guide/plugins
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        var submitButtonCell = document.getElementById('SendNewCell');
+
+        submitButtonCell.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (validatorNewCell) {
+                validatorNewCell.validate().then(function (status) {
+                    if (status == 'Valid') {
+
+                        submitButtonCell.setAttribute('data-kt-indicator', 'on');
+                        submitButtonCell.disabled = true;
+                        setTimeout(function () {
+                            submitButtonCell.removeAttribute('data-kt-indicator');
+                            submitButtonCell.disabled = false;
+
+                            AddNewCell()
+
+                        }, 900);
+                    }
+                    else {
+                        submitButtonCell.setAttribute('data-kt-indicator', 'on');
+                        submitButtonCell.disabled = true;
+                        setTimeout(function () {
+                            submitButtonCell.removeAttribute('data-kt-indicator');
+                            submitButtonCell.disabled = false;
+
+                        }, 100);
+
+                    }
+                });
+            }
+        });
+    </script>
+
+    @*Form validation for Update Cell*@
+    <script>
+        //Form Validation
+        var CellUpForm = document.getElementById('IdFormUpCell');
+        var validatorUpCell = FormValidation.formValidation(
+            CellUpForm,
+            {
+                fields: {
+                    IdUpCell: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Input Cell is required!'
+                            }
+                        }
+                    }
+
+                },
+
+                plugins: { //Learn more: https://formvalidation.io/guide/plugins
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        var updButtonCell = document.getElementById('SendUpdateCell');
+
+        updButtonCell.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (validatorUpCell) {
+                validatorUpCell.validate().then(function (status) {
+                    if (status == 'Valid') {
+
+                        updButtonCell.setAttribute('data-kt-indicator', 'on');
+                        updButtonCell.disabled = true;
+                        setTimeout(function () {
+                            updButtonCell.removeAttribute('data-kt-indicator');
+                            updButtonCell.disabled = false;
+
+                            UpdateCell()
+
+                        }, 900);
+                    }
+                    else {
+                        updButtonCell.setAttribute('data-kt-indicator', 'on');
+                        updButtonCell.disabled = true;
+                        setTimeout(function () {
+                            updButtonCell.removeAttribute('data-kt-indicator');
+                            updButtonCell.disabled = false;
+
+                        }, 100);
+
+                    }
+                });
+            }
+        });
+    </script>
+
+    @*===========================================Form validation Models ========================================================*@
+    @*Form validation for Update Model*@
+    <script>
+   
+        //Form Validation
+        var FormUpdateModel = document.getElementById('IdFormUpModel');
+        var fvUpModel = FormValidation.formValidation(
+            FormUpdateModel,
+            {
+                fields: {
+                    UpModalModel: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Model is required!'
+                            }
+                        }
+                    },
+                    UpModalVegecode: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Vege Code is required!'
+                            }
+                        }
+                    },
+                    UpModalDescription: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Description is required!'
+                            }
+                        }
+                    },
+                    UpModalFamily: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Family is required!'
+                            }
+                        }
+                    },
+                    UpModalStatus: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Status is required!'
+                            }
+                        }
+                    },
+                    UpModelComponent: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Component is required!'
+                            }
+                        }
+                    },
+                    UpModelProof: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Proof is required!'
+                            }
+                        }
+                    },
+                    UpModelPackaging: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Packaging is required!'
+                            }
+                        }
+                    },
+                    UpModelNewDescripcionCancelado: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'Descripcion is required!'
+                            }
+                        }
+                    },
+                    UpModelNewQTYTemporal: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'Qty is required!'
+                            }
+                        }
+                    },
+                    UpModelNewDescripcionTemporal: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'Description Temporary is required!'
+                            }
+                        }
+                    },
+                    UpModelHuacal: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'Huacal is required!'
+                            }
+                        }
+                    },
+                    UpModelInserto: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Plastic insert is required!'
+                            }
+                        }
+                    },
+                    UpModelInsertoMadera: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Wood insert is required!'
+                            }
+                        }
+                    },
+                    UpModelTapa: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Lid is required!'
+                            }
+                        }
+                    },
+                    UpModelBase: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+                    updCantidadTemporal: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+                    updDescripcionTemporal: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+                    updDescripcionCancelado: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+                    updDescripcionCambio: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+                    updInserto: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+                    updInsertoMadera: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+                    updTapa: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+                    updBase: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },updQTYTemporal: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+                    updDescripcionDesaprobado: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+
+                },
+
+                plugins: { //Learn more: https://formvalidation.io/guide/plugins
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        var BtnUpModel = document.getElementById('UpModelBtn');
+
+        BtnUpModel.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (fvUpModel) {
+                fvUpModel.validate().then(function (status) {
+                    if (status == 'Valid') {
+
+                        BtnUpModel.setAttribute('data-kt-indicator', 'on');
+                        BtnUpModel.disabled = true;
+                        setTimeout(function () {
+                            BtnUpModel.removeAttribute('data-kt-indicator');
+                            BtnUpModel.disabled = false;
+
+                            UpdateModelo()
+                        
+                        }, 900);
+                    }
+                    else {
+                        BtnUpModel.setAttribute('data-kt-indicator', 'on');
+                        BtnUpModel.disabled = true;
+                        setTimeout(function () {
+                            BtnUpModel.removeAttribute('data-kt-indicator');
+                            BtnUpModel.disabled = false;
+
+                        }, 100);
+
+                    }
+                });
+            }
+        });
+
+    </script>
+    
+    @*Form validation for New Model*@
+    <script>
+        var global = false;
+        //Form Validation
+        var FamilyFormUpdate = document.getElementById('IdFormNewModel');
+        var fv = FormValidation.formValidation(
+            FamilyFormUpdate,
+            {
+                fields: {
+                    ModalModel: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Model is required!'
+                            }
+                        }
+                    },
+                    ModalVegecode: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Vege Code is required!'
+                            }
+                        }
+                    },
+                    ModalDescription: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Description is required!'
+                            }
+                        }
+                    },
+                    ModalFamily: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Family is required!'
+                            }
+                        }
+                    },
+                    ModalStatus: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Status is required!'
+                            }
+                        }
+                    },
+                    Component: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Component is required!'
+                            }
+                        }
+                    },
+                    Proof: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Proof is required!'
+                            }
+                        }
+                    },
+                    Packaging: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Packaging is required!'
+                            }
+                        }
+                    },
+                    NewDescripcionCancelado: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'Descripcion is required!'
+                            }
+                        }
+                    },
+                    NewQTYTemporal: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'Qty is required!'
+                            }
+                        }
+                    },
+                    NewDescripcionTemporal: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'Description Temporary is required!'
+                            }
+                        }
+                    },
+                    Huacal: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'Huacal is required!'
+                            }
+                        }
+                    },
+                    Inserto: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Plastic insert is required!'
+                            }
+                        }
+                    },
+                    InsertoMadera: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Wood insert is required!'
+                            }
+                        }
+                    },
+                    Tapa: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Lid is required!'
+                            }
+                        }
+                    },
+                    Base: {
+                        validators: {
+                            notEmpty: {
+                                enabled: false,
+                                message: 'TUB Base is required!'
+                            }
+                        }
+                    },
+                },
+
+                plugins: { //Learn more: https://formvalidation.io/guide/plugins
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        var UpdateButton = document.getElementById('SendNewModel');
+
+        UpdateButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (fv) {
+                fv.validate().then(function (status) {
+                    if (status == 'Valid') {
+
+                        UpdateButton.setAttribute('data-kt-indicator', 'on');
+                        UpdateButton.disabled = true;
+                        setTimeout(function () {
+                            UpdateButton.removeAttribute('data-kt-indicator');
+                            UpdateButton.disabled = false;
+                        
+                            saveModel()
+                        
+                        }, 900);
+                    }
+                    else {
+                        UpdateButton.setAttribute('data-kt-indicator', 'on');
+                        UpdateButton.disabled = true;
+                        setTimeout(function () {
+                            UpdateButton.removeAttribute('data-kt-indicator');
+                            UpdateButton.disabled = false;
+
+                        }, 100);
+
+                    }
+                });
+            }
+        });
+
+    </script>
+
+    <script>
+    function comboStatus(valor){
+        if(valor == 1){
+            //Ocultar Divs
+            document.getElementById('insertDescripcionTemporalDiv').style.display='none';
+            document.getElementById('insertCantidadTemporalDiv').style.display='none';
+            document.getElementById('insertDescripcionCanceladoDiv').style.display='none';
+            //Desactivar form validation
+            fv.disableValidator('NewDescripcionCancelado');
+            fv.disableValidator('NewQTYTemporal');
+            fv.disableValidator('NewDescripcionTemporal');
+        }else if(valor == 2){
+            //Ocultar Divs
+            document.getElementById('insertDescripcionTemporalDiv').style.display='none';
+            document.getElementById('insertCantidadTemporalDiv').style.display='none';
+            //Mostar Divs
+            document.getElementById('insertDescripcionCanceladoDiv').style.display='';
+            //Activar form validation
+            fv.enableValidator('NewDescripcionCancelado');
+            //Desactivar form validation
+            fv.disableValidator('NewQTYTemporal');
+            fv.disableValidator('NewDescripcionTemporal');
+        }else if(valor == 3){
+            //Mostar Divs
+            document.getElementById('insertDescripcionTemporalDiv').style.display='';
+            document.getElementById('insertCantidadTemporalDiv').style.display='';
+            document.getElementById('insertDescripcionCanceladoDiv').style.display='';
+            //Activar form validation
+            fv.enableValidator('NewDescripcionCancelado');
+            fv.enableValidator('NewQTYTemporal');
+            fv.enableValidator('NewDescripcionTemporal');
+        }
+    }
+</script>
+    @*Evento combo packing*@
+    <script>
+        function packing(valor){
+            if(valor == 1){
+                //Activar form validation
+                fv.enableValidator('Huacal');
+                //Mostar Divs
+                document.getElementById('huacalDiv').style.display='';
+                //Ocultar Divs
+                document.getElementById('insertDiv').style.display='none';
+                document.getElementById('insertMaderaDiv').style.display='none';
+                document.getElementById('tapaDiv').style.display='none';
+                document.getElementById('baseDiv').style.display='none';
+                //Desactivar form validation
+                    fv.disableValidator('Inserto');
+                    fv.disableValidator('InsertoMadera');
+                    fv.disableValidator('Tapa');
+                    fv.disableValidator('Base');
+            }else if(valor == 2){
+                //Desactivar form validation
+                fv.disableValidator('Huacal');
+                //Ocultar Divs
+                document.getElementById('huacalDiv').style.display='none';
+                //Mostar Divs
+                document.getElementById('insertDiv').style.display='';
+                document.getElementById('insertMaderaDiv').style.display='';
+                document.getElementById('tapaDiv').style.display='';
+                document.getElementById('baseDiv').style.display='';
+                //Activar form validation
+                    fv.enableValidator('Inserto');
+                    fv.enableValidator('InsertoMadera');
+                    fv.enableValidator('Tapa');
+                    fv.enableValidator('Base');
+            }else if(valor == 3){
+                document.getElementById('huacalDiv').style.display='';
+                document.getElementById('insertDiv').style.display='';
+                document.getElementById('insertMaderaDiv').style.display='';
+                document.getElementById('tapaDiv').style.display='';
+                document.getElementById('baseDiv').style.display='';
+                //Activar form validation
+                    fv.enableValidator('Huacal');
+                    fv.enableValidator('Inserto');
+                    fv.enableValidator('InsertoMadera');
+                    fv.enableValidator('Tapa');
+                    fv.enableValidator('Base');
+            }
+        }
+    </script>
+    <script>
+        function updStatusModel(status,opt){
+            if(status == 1){
+                document.getElementById('updDescripcionTemporalDiv').style.display='none';
+                document.getElementById('updCantidadTemporalDiv').style.display='none';
+                document.getElementById('updDescripcionCanceladoDiv').style.display='none';
+
+                fvUpModel.disableValidator('updQTYTemporal');
+                fvUpModel.disableValidator('updDescripcionTemporal');
+                fvUpModel.disableValidator('updDescripcionCancelado');
+            
+                if(opt == 1){
+                
+                    if((statusGlobal == 2 && opt == 1) || (statusGlobal == 3 && opt == 1)){
+                        document.getElementById('updDescripcionCambioDiv').style.display='';
+                        fvUpModel.enableValidator('updDescripcionDesaprobado');
+                    }else if(statusGlobal == 1 && opt == 1){
+                        document.getElementById('updDescripcionCambioDiv').style.display='none';
+                        fvUpModel.disableValidator('updDescripcionDesaprobado');
+                    }
+                }
+    
+            }else if(status == 2){
+                document.getElementById('updDescripcionTemporalDiv').style.display='none';
+                document.getElementById('updCantidadTemporalDiv').style.display='none';
+                document.getElementById('updDescripcionCanceladoDiv').style.display='';
+
+                fvUpModel.disableValidator('updQTYTemporal');
+                fvUpModel.disableValidator('updDescripcionTemporal');
+                fvUpModel.enableValidator('updDescripcionCancelado');
+
+                if(opt == 1){
+                
+                    if((statusGlobal == 1 && opt == 1) || (statusGlobal == 3 && opt == 1)){
+                        document.getElementById('updDescripcionCambioDiv').style.display='';
+                        fvUpModel.enableValidator('updDescripcionDesaprobado');
+                    }else if(statusGlobal == 2 && opt == 1){
+                        document.getElementById('updDescripcionCambioDiv').style.display='none';
+                        fvUpModel.disableValidator('updDescripcionDesaprobado');
+                    }
+                }
+            }else if(status == 3){
+                document.getElementById('updDescripcionTemporalDiv').style.display='';
+                document.getElementById('updCantidadTemporalDiv').style.display='';
+                document.getElementById('updDescripcionCanceladoDiv').style.display='';
+            
+                fvUpModel.disableValidator('updQTYTemporal');
+                fvUpModel.disableValidator('updDescripcionTemporal');
+                fvUpModel.enableValidator('updDescripcionCancelado');
+
+                if(opt == 1){
+                
+                    if((statusGlobal == 1 && opt == 1) || (statusGlobal == 2 && opt == 1)){
+                        document.getElementById('updDescripcionCambioDiv').style.display='';
+                        fvUpModel.enableValidator('updDescripcionDesaprobado');
+                    }else if(statusGlobal == 3 && opt == 1){
+                        document.getElementById('updDescripcionCambioDiv').style.display='none';
+                        fvUpModel.disableValidator('updDescripcionDesaprobado');
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        function updPackaging(val){
+            if(val == 1){
+                document.getElementById('updhuacalDiv').style.display='';
+                document.getElementById('updinsertDiv').style.display='none';
+                document.getElementById('updinsertMaderaDiv').style.display='none';
+                document.getElementById('updtapaDiv').style.display='none';
+                document.getElementById('updbaseDiv').style.display='none';
+           
+                fvUpModel.enableValidator('UpModelHuacal');
+                //fvUpModel.disableValidator('updInserto');
+                //fvUpModel.disableValidator('updInsertoMadera');
+                fvUpModel.disableValidator('updTapa');
+                fvUpModel.disableValidator('updBase');
+
+    
+            }else if(val == 2){
+                document.getElementById('updhuacalDiv').style.display='none';
+                document.getElementById('updinsertDiv').style.display='';
+                document.getElementById('updinsertMaderaDiv').style.display='';
+                document.getElementById('updtapaDiv').style.display='';
+                document.getElementById('updbaseDiv').style.display='';
+           
+                fvUpModel.disableValidator('UpModelHuacal');
+                //fvUpModel.enableValidator('updInserto');
+                //fvUpModel.enableValidator('updInsertoMadera');
+                fvUpModel.enableValidator('updTapa');
+                fvUpModel.enableValidator('updBase');
+
+            }else if(val == 3){
+                document.getElementById('updhuacalDiv').style.display='';
+                document.getElementById('updinsertDiv').style.display='';
+                document.getElementById('updinsertMaderaDiv').style.display='';
+                document.getElementById('updtapaDiv').style.display='';
+                document.getElementById('updbaseDiv').style.display='';
+
+                fvUpModel.enableValidator('UpModelHuacal');
+                //fvUpModel.enableValidator('updInserto');
+                //fvUpModel.enableValidator('updInsertoMadera');
+                fvUpModel.enableValidator('updTapa');
+                fvUpModel.enableValidator('updBase');
+            
+            }
+        }
+    </script>
+}

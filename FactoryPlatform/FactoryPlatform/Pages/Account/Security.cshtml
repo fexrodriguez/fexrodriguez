@@ -1,0 +1,92 @@
+﻿@page "/StandarizationSecurity"
+@{
+    ViewData["Title"] = " Standarization Security";
+
+}
+
+<div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <!--begin::Accordion-->
+        <div class="accordion" id="kt_accordion_1">
+
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_1">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_1" aria-expanded="false" aria-controls="kt_accordion_1_body_1">
+                        Action Filter
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_1" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_1" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">...</div>
+                        <!--begin::Code-->
+                        <div class="py-2">
+                            <div class="highlight">
+                                <button class="highlight-copy btn" data-bs-toggle="tooltip" title="Copy code">copy</button>
+                                <div class="highlight-code">
+                                    <pre class="language-sql">
+                                    <code class="language-sql">
+                                       //Este filtro se coloca en todos los controladores ya que validad que exista una secion en el sistema.
+                                       [ServiceFilter(typeof(AuthorizeActionFilter), Order = 1)]
+
+                                       //Este filtro se coloca en los controladores Master sirve para la validacion de paginas si tiene acceso o no
+                                       [ServiceFilter(typeof(AuthorizeMethodFilter), Order = 2)]
+
+                                       //Este filtro se coloca en los controladores que utiliza las tarjetas del Service Now 
+                                       [ServiceFilter(typeof(ActionMethodServiceNowFilter), Order = 1)]
+
+                                    </code>
+                                </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Code-->
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_2">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_2" aria-expanded="false" aria-controls="kt_accordion_1_body_2">
+                        Add Antiforgery Tocken
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_2" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_2" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">Sirve para evitar atackes de cross stike.</div>
+                        <!--begin::Code-->
+                        <div class="py-2">
+                            <div class="highlight">
+                                <button class="highlight-copy btn" data-bs-toggle="tooltip" title="Copy code">copy</button>
+                                <div class="highlight-code">
+                                    <pre class="language-sql">
+                                    <code class="language-sql">
+                                        
+                                         //1.- Poner esta line en el Starup
+                                         services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");///Globaliza la antiforainKey
+                                         
+                                         //2.- Este linea se coloca en las vistas al inicio para utilizar el Antiforgery
+                                         Html.AntiForgeryToken()
+
+                                         //3.- Para poder utilizarlo se coloca en el controlador 
+                                         [ValidateAntiForgeryToken]
+
+                                         //4.- Para mandar peticiones con Ajax a un controlador con tiForgeryToken
+                                         type: "POST",
+                                            beforeSend: function(xhr) {
+                                                xhr.setRequestHeader("XSRF-TOKEN",
+                                                    $('input:hidden[name="__RequestVerificationToken"]').val());
+                                            },
+
+                                    </code>
+                                </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Code-->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--end::Accordion-->
+    </div>
+</div>

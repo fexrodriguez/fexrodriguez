@@ -1,0 +1,435 @@
+﻿@using FactoryPlatform.Areas.Quality.Models.PhotoCenter
+@model PhotocenterViewModel
+@Html.AntiForgeryToken()
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+}
+
+<div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <div id="kt_block_ModelFeacture">
+            <div class="card mb-7">
+                <div class="card-body p-5" id="kt_block_PhotoCenter">
+                    <input type="hidden" name="Station" id="Station" value="@Model.Station" />
+                    <input type="hidden" name="SeccionId" id="IdSeccion" value="@Model.IdSeccion" />
+                    <input type="hidden" name="Tipo" id="Tipo" value="@Model.Tipo" />
+                    <div class="row">
+                        <div class="col-lg-2 fv-row mb-4">
+                            <label class="fs-6 form-label fw-bolder text-dark">Serie</label>
+                            <input name="Serie" id="Serie" onChange="Validar(this.value); myDropzone.removeAllFiles(true); $('.dropzone-start').css('display','none'); document.getElementById('attachFile').disabled = true;document.getElementById('archivos').disabled = true;" placeholder="Serie" type="text" class="form-control ps-3 p-3 fs-8" autocomplete="off" />
+                        </div>
+                        <div class="col-lg-2 fv-row mb-4">
+                            <label class="fs-6 form-label fw-bolder text-dark">Modelo</label>
+                            <input name="Modelo" id="Modelo" type="text" class="form-control ps-3 p-3 fs-8" placeholder="Modelo" disabled />
+                        </div>
+
+                        <div class="border border-gray-100 p-0 mb-0"></div>
+
+                        <div class="card-body p-3">
+                            <form method="post" id="itForm" enctype="multipart/form-data" onsubmit="return false">
+                                <div class="col-lg-10 p-0">
+                                    <!--begin::Dropzone-->
+                                    <div class="dropzone dropzone-queue mb-2" id="kt_dropzonejs_example_2">
+                                        <div class="dropzone-panel mb-lg-0 mb-2">
+                                            <button type="button" class="dropzone-select btn btn-sm btn-primary me-2" id="attachFile" disabled="disabled">Add files</button>
+                                            <button type="button" class="dropzone-upload btn btn-sm btn-primary me-2" onclick="$('#itForm').submit();" id="archivos" disabled="disabled">Upload All</button>
+                                            <button type="button" class="dropzone-remove-all btn btn-sm btn-danger">Remove All</button>
+                                        </div>
+                                        <div class="dropzone-items wm-200px">
+                                            <div class="dropzone-item" style="display:none">
+                                                <div class="dropzone-file">
+                                                    <div class="dropzone-filename" title="some_image_file_name.jpg">
+                                                        <span data-dz-name>some_image_file_name.jpg</span>
+                                                        <strong>(<span data-dz-size>340kb</span>)</strong>
+                                                    </div>
+                                                    <div class="dropzone-success text-success" data-dz-successmessage></div>
+                                                    <div class="dropzone-error" data-dz-errormessage></div>
+                                                </div>
+                                                <div class="dropzone-progress">
+                                                    <div class="progress">
+                                                        <div class="progress-bar bg-primary"
+                                                             role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-dz-uploadprogress>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="dropzone-toolbar">
+                                                    <span class="dropzone-start"><i class="bi bi-play-fill fs-3"></i></span>
+                                                    <span class="dropzone-cancel" data-dz-remove style="display: none;"><i class="bi bi-x fs-3"></i></span>
+                                                    <span class="dropzone-delete" data-dz-remove><i class="bi bi-x fs-1"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end::Dropzone-->
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+<script>
+    function Validar() {
+        var station = $("#Station").val();
+        var serie = $("#Serie").val();
+        var idSeccion = $('#IdSeccion').val();
+
+        if (serie != '') {
+
+            $.ajax({
+                    url: "@Url.Action("ValidateInternalServices","PhotoCenter")",
+                data: {
+                    serie: serie,
+                    station: station,
+                    idSeccion: idSeccion
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+
+                if (result != null) {
+                    if (result == 'Error') {
+                        SystemServerError()
+                        BlockPantalla.release();
+                        document.getElementById('archivos').disabled = true;
+                        document.getElementById('attachFile').disabled = true;
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                        BlockPantalla.release();
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                        BlockPantalla.release();
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                        BlockPantalla.release();
+                    }
+                    else {
+                        var obj = JSON.parse(result);
+                        
+                        let Result = obj.Resultado;
+
+                        if (Result == 'continua' || Result.substring(0, 6) == 'modelo') {
+                            if (Result.substring(0, 6) == 'modelo') {
+                                // Llenar campo de modelo.
+                                document.getElementById('Modelo').value = Result.substring(7);
+                                ValidarStopModelo(Result.substring(7));
+                            } else {
+                                document.getElementById('Modelo').value = '';
+                            }
+                            document.getElementById('archivos').disabled = true;
+                            document.getElementById('attachFile').disabled = true;
+
+                        } else if (Result == 'errorap') {
+
+                            toastr.error("The test is not registered (Antes de prueba)","Alert");
+                            document.getElementById('Serie').value = '';
+                            document.getElementById('Modelo').value = '';
+                            document.getElementById('archivos').disabled = true;
+                            document.getElementById('attachFile').disabled = true;
+                           
+                        } else if (Result == 'noexistesecuencia') {
+
+                            toastr.error("There is no sequence for this model, please contact authorized personnel to create sequences", "Alert");
+				            document.getElementById('Serie').value = '';
+				            document.getElementById('Modelo').value = '';
+				            document.getElementById('archivos').disabled = true;
+				            document.getElementById('attachFile').disabled = true;
+                            
+                        } else if (Result == 'secuencianovalida') {
+
+                            toastr.error("The series in its sequence does not carry this test", "Alert");
+                            document.getElementById('Serie').value = '';
+                            document.getElementById('Modelo').value = '';
+                            document.getElementById('archivos').disabled = true;
+                            document.getElementById('attachFile').disabled = true;
+                            
+                        } else if (Result.substring(0, 19) == 'errorpruebaanterior') {
+
+                            toastr.error("The model has a sequence of tests and the previous one (" + Result.substring(20) + ") is not registered", "Alert");
+                            document.getElementById('Serie').value = '';
+                            document.getElementById('Modelo').value = '';
+                            document.getElementById('archivos').disabled = true;
+                            document.getElementById('attachFile').disabled = true;
+                            
+                        } else if (Result.substring(0, 19) == 'errorregistrocausa') {
+
+                            toastr.error("The engine can not continue because it is in Internal Service and still does not have the record of the cause.", "Alert");
+                            document.getElementById('Serie').value = '';
+                            document.getElementById('Modelo').value = '';
+                            document.getElementById('archivos').disabled = true;
+                            document.getElementById('attachFile').disabled = true;
+                           
+                        } else {
+
+                            toastr.error("Error with Serial #", "Alert");
+                            document.getElementById('Serie').value = '';
+                            document.getElementById('Modelo').value = '';
+                            document.getElementById('archivos').disabled = true;
+                            document.getElementById('attachFile').disabled = true;
+                           
+                        }
+                            
+
+                    }
+                }
+                else {
+                    BlockPantalla.release();
+                    document.getElementById('archivos').disabled = true;
+                    document.getElementById('attachFile').disabled = true;
+                }
+
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+
+        } else {
+            $('#Modelo').val("");
+        }
+
+    }
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // set the dropzone container id
+    var id = "#kt_dropzonejs_example_2";
+    var dropzone = document.querySelector(id);
+
+    // set the preview element template
+    var previewNode = dropzone.querySelector(".dropzone-item");
+    previewNode.id = "";
+    var previewTemplate = previewNode.parentNode.innerHTML;
+    previewNode.parentNode.removeChild(previewNode);
+
+    var myDropzone = new Dropzone(id, { // Make the whole body a dropzone
+        url: "@Url.Action("FTPUpload","PhotoCenter")",
+        parallelUploads: 1,
+        acceptedFiles: '.jpg,.jpeg',
+        previewTemplate: previewTemplate,
+        maxFilesize: 30, // Max filesize in MB
+        autoQueue: false, // Make sure the files aren't queued until manually added
+        previewsContainer: id + " .dropzone-items", // Define the container to display the previews
+        clickable: id + " .dropzone-select", // Define the element that should be used as click trigger to select files.
+        init: function () {
+            this.on("success", function (file, responseText) {
+                if (responseText != null) {
+                        if (responseText == 'Error') {
+                        SystemServerError()
+                        BlockPantalla.release();
+                        document.getElementById('archivos').disabled = true;
+                        document.getElementById('attachFile').disabled = true;
+                    }
+                    if (responseText == 'noSession') {
+                        swalExpired()
+                        BlockPantalla.release();
+                    }
+                        else if (responseText == 'Sorry') {
+                        swalNoAuthorized()
+                        BlockPantalla.release();
+                    }
+                    else if (responseText == 'NoPage') {
+                        swalNoAuthorized()
+                        BlockPantalla.release();
+                    }
+                    else {
+                        if (responseText == "success") {
+                            file.previewElement.querySelector('[data-dz-successmessage]').textContent = "success";
+                        }
+                        else {
+                            Swal.fire({
+                                title: '<h1>The next file can not Upload:</h1> <br> <p class="text-danger">' + file.name,
+                                icon: "danger",
+                                width: '450px',
+                                showCancelButton: false,
+                                buttonsStyling: false,
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                confirmButtonText: "Ok",
+                                customClass: {
+                                    confirmButton: "btn btn-danger"
+                                }
+                            })
+                        }
+                    }
+                }
+            });
+        }
+
+    });
+
+    myDropzone.on("addedfile", function (file) {
+        // Hookup the start button
+        file.previewElement.querySelector(id + " .dropzone-start").onclick = function () { myDropzone.enqueueFile(file) };
+        const dropzoneItems = dropzone.querySelectorAll('.dropzone-item');
+        dropzoneItems.forEach(dropzoneItem => {
+            dropzoneItem.style.display = '';
+        });
+        dropzone.querySelector('.dropzone-upload').style.display = "inline-block";
+        dropzone.querySelector('.dropzone-remove-all').style.display = "inline-block";
+    });
+
+    // Update the total progress bar
+    myDropzone.on("totaluploadprogress", function (progress) {
+        const progressBars = dropzone.querySelectorAll('.progress-bar');
+        progressBars.forEach(progressBar => {
+            progressBar.style.width = progress + "%";
+        });
+    });
+
+    myDropzone.on("sending", function (file, xhr, data) {
+        // Show the total progress bar when upload starts
+        const progressBars = dropzone.querySelectorAll('.progress-bar');
+        progressBars.forEach(progressBar => {
+            progressBar.style.opacity = "1";
+        });
+        // And disable the start button
+        file.previewElement.querySelector(id + " .dropzone-start").setAttribute("disabled", "disabled");
+        data.set("Serie", $("#Serie").val());
+        data.set("Modelo", $("#Modelo").val());
+        data.set("Station", $("#Station").val());
+        data.set("IdSeccion", $("#IdSeccion").val());
+        data.set("__RequestVerificationToken", $('input:hidden[name="__RequestVerificationToken"]').val());
+    });
+
+    // Hide the total progress bar when nothing's uploading anymore
+    myDropzone.on("complete", function (progress) {
+        const progressBars = dropzone.querySelectorAll('.dz-complete');
+        setTimeout(function () {
+            progressBars.forEach(progressBar => {
+                progressBar.querySelector('.progress-bar').style.opacity = "0";
+                progressBar.querySelector('.progress').style.opacity = "0";
+                progressBar.querySelector('.dropzone-start').style.opacity = "0";
+            });
+        }, 300);
+    });
+
+    // Setup the buttons for all transfers
+    dropzone.querySelector(".dropzone-upload").addEventListener('click', function () {
+        myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
+    });
+
+    // Setup the button for remove all files
+    dropzone.querySelector(".dropzone-remove-all").addEventListener('click', function () {
+        dropzone.querySelector('.dropzone-upload').style.display = "none";
+        dropzone.querySelector('.dropzone-remove-all').style.display = "none";
+        myDropzone.removeAllFiles(true);
+    });
+
+    // On all files completed upload
+    myDropzone.on("queuecomplete", function (progress) {
+        const uploadIcons = dropzone.querySelectorAll('.dropzone-upload');
+        uploadIcons.forEach(uploadIcon => {
+            uploadIcon.style.display = "none";
+        });
+    });
+
+    // On all files removed
+    myDropzone.on("removedfile", function (file) {
+        if (myDropzone.files.length < 1) {
+            dropzone.querySelector('.dropzone-upload').style.display = "none";
+            dropzone.querySelector('.dropzone-remove-all').style.display = "none";
+        }
+    });
+            //show the modal with it
+
+            //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+</script>
+<script>
+        function ValidarStopModelo(modelo){
+            if (modelo != '') {
+
+                $.ajax({
+                    url: "@Url.Action("ValidateStopModel","PhotoCenter")",
+                    data: {
+                        modelo: modelo
+                    },
+                    type: "POST",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (result) {
+
+                    if (result != null) {
+                        if (result == 'Error') {
+                            SystemServerError()
+                            BlockPantalla.release();
+                            document.getElementById('archivos').disabled = true;
+                            document.getElementById('attachFile').disabled = true;
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                            BlockPantalla.release();
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                            BlockPantalla.release();
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                            BlockPantalla.release();
+                        }
+                        else {
+                            var obj = JSON.parse(result);
+
+                            let Result = obj.Result;
+
+                            if (Result == 'NoPasa' ) {
+
+                                document.getElementById('Modelo').value = '';
+                                document.getElementById('archivos').disabled = true;
+                                document.getElementById('attachFile').disabled = true;
+
+                                Swal.fire({
+                                    title: MensajeAlert,
+                                    icon: "warning",
+                                    width: '450px',
+                                    showCancelButton: false,
+                                    buttonsStyling: false,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    confirmButtonText: "Ok",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+
+                                    }
+                                })
+
+                            }else{
+                                document.getElementById('archivos').disabled = false;
+                                document.getElementById('attachFile').disabled = false;
+                            } 
+
+
+                        }
+                    }
+                    else {
+                        BlockPantalla.release();
+                        document.getElementById('archivos').disabled = true;
+                        document.getElementById('attachFile').disabled = true;
+                    }
+
+                }).fail(function (error) {
+                    swalErrorServer()
+                });
+
+            } else {
+                toastr.error("The Model is not valid.", "Alert");
+            }
+        }
+</script>
+}

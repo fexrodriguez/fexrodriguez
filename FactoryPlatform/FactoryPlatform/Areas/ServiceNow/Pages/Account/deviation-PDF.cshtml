@@ -1,0 +1,259 @@
+﻿@page "/ServiceNow/deviation-PDF"
+@model FactoryPlatform.Areas.ServiceNow.Pages.Account.deviationPDFModel
+@{
+    Layout = "";
+    int validCode = 7;
+
+    if(Model != null)
+    {
+        if(Model.Desviations.Codigo == null)
+        {
+            validCode = 8;
+        }
+    }
+}
+
+<html lang="en">
+<!--begin::Head-->
+<head>
+    <base href="../../">
+    <title>FactoryPlatform - @ViewData["Title"]</title>
+    <meta name="description" content="The most advanced Bootstrap Admin Theme on Themeforest trusted by 94,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue &amp; Laravel versions. Grab your copy now and get life-time updates for free." />
+    <meta name="keywords" content="Metronic, bootstrap, bootstrap 5, Angular, VueJs, React, Laravel, admin themes, web design, figma, web development, free templates, free admin themes, bootstrap theme, bootstrap template, bootstrap dashboard, bootstrap dak mode, bootstrap button, bootstrap datepicker, bootstrap timepicker, fullcalendar, datatables, flaticon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://keenthemes.com/metronic" />
+    <meta property="og:site_name" content="Keenthemes | Metronic" />
+    <link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
+    <link rel="shortcut icon" href="~/Images/SystemPictures/favicons.png" />
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <!--end::Fonts-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <!--end::Global Stylesheets Bundle-->
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body" class="bg-body">
+    @if (Model.Desviations != null)
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid p-10 py-lg-15">
+
+                    <!-- begin::Wrapper-->
+                    <div class="mw-lg-950px mx-auto w-100">
+                        <div class="d-flex justify-content-between flex-column flex-sm-row mb-6">
+                            <img alt="Logo" src="~/Images/SystemPictures/logo-lkq_3.png" class="w-250px" />
+                        </div>
+                        <div class="d-flex flex-column flex-column-fluid text-center p-3 py-lg-15">
+                            <div class="pt-lg-1 mb-4">
+                                <h4 class="card-title fs-3qx">Desviación @Model.Desviations.DeviationType # @Model.Desviations.ID_Registro</h4>
+                            </div>
+                            <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-5">
+                                <tbody>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" rowspan="@validCode" scope="rowgroup">Applicant:</th>
+                                        <th class="border-bottom border-end p-3" colspan="2" scope="colgroup">@Model.Desviations.FechaRegistro - @Model.Desviations.Registro</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Deviation Type:</th>
+                                        <td class="border-bottom border-end p-3">@Model.Desviations.DeviationType</td>
+                                    </tr>
+                                    @if(Model.Desviations.Codigo != null)
+                                    {
+                                        <tr>
+                                            <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Part code: </th>
+                                            <td class="border-bottom border-end p-3">@Model.Desviations.Codigo</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Plant: </th>
+                                            <td class="border-bottom border-end p-3">@Model.Desviations.Descripcion</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Departament: </th>
+                                            <td class="border-bottom border-end p-3">@Model.Desviations.Dpto</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Origin of Change:</th>
+                                        <td class="border-bottom border-end p-3">
+                                            @Model.Desviations.OriginChange
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Description:</th>
+                                        <td class="border-bottom border-end p-3">
+                                            @Model.Desviations.Description
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Duration: </th>
+                                        <td class="border-bottom border-end p-3">@Model.Desviations.Duartion</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Expiration date:</th>
+                                        <td class="border-bottom border-end p-2">
+                                            @if (Model.Desviations.LimitDate == null)
+                                            {
+                                                 <p class="p-0 mb-0">@Model.Desviations.Quantity Motores</p>
+                                            }
+                                            else
+                                            {
+                                                @Model.Desviations.LimitDate
+                                            } 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" rowspan="1" scope="rowgroup">Manager Approval: </th>
+                                        <th class="border-bottom border-end p-3" colspan="2">
+                                            <p class="p-0 mb-0">@Model.Desviations.Mgr1Fecha -  @Model.Desviations.Mgr1 - Approval</p>
+                                            <p class="p-0 mb-0">@Model.Desviations.Mgr2Fecha -  @Model.Desviations.Mgr2 - Approval</p>
+                                            <p class="p-0 mb-0">@Model.Desviations.Mgr3Fecha -  @Model.Desviations.Mgr3 - Approval</p>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" rowspan="4" scope="rowgroup">Admin Warranty: </th>
+                                        <th class="border-bottom border-end p-3" colspan="2" scope="colgroup">@Model.Desviations.FechaWarranty - @Model.Desviations.UsuarioWarranty</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-240px p-2" scope="row">Comments:</th>
+                                        <td class="border-bottom border-end p-3">@Model.Desviations.Comentario</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-240px p-2" scope="row">Traceability method: </th>
+                                        <td class="border-bottom border-end p-3">@Model.Desviations.MetodoTrazabilidad</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-240px p-2" scope="row">Responsable Traceability:</th>
+                                        <td class="border-bottom border-end p-3">@Model.Desviations.UsuarioTrazabilidad</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" rowspan="1" scope="rowgroup">Supply Quality:</th>
+                                        <th class="border-bottom border-end p-3" colspan="2">
+                                            <p class="p-0 mb-0">@Model.Desviations.FechaLiberado - @Model.Desviations.Supply</p>
+                                            <p class="p-0 mb-0">
+                                                <span class="fw-bolder me-5">Comments: </span>  @Model.Desviations.SupplyComment
+                                            </p>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" rowspan="4" scope="rowgroup">Engineering:</th>
+                                        <th class="border-bottom border-end p-3" colspan="2" scope="colgroup">@Model.Desviations.FechaEngineer - @Model.Desviations.Engineer</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2 me-5" scope="row">Comments:</th>
+                                        <td class="border-bottom border-end p-3">@Model.Desviations.EngineerComments</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Determination</th>
+                                        <td class="border-bottom border-end p-3">@Model.Desviations.Determination</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">WorkStation:</th>
+                                        <td class="border-bottom border-end p-2">
+                                            @{
+                                                var station = Model.Desviations.Estaciones.Split(',');
+                                                foreach (var item in station)
+                                                {
+                                                   <p class="p-0 mb-0">@item</p>
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                    @if(Model.Desviations.Accion == null)
+                                    {
+                                        <tr>
+                                            <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" rowspan="1" scope="rowgroup">Corrective Actions:</th>
+                                            <th class="border-bottom border-end p-2" colspan="2"></th>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" rowspan="5" scope="rowgroup">Corrective Actions:</th>
+                                            <th class="border-bottom border-end p-3" colspan="2" scope="colgroup">@Model.Desviations.FechaAccionRegistro - @Model.Desviations.Accion</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Comments:</th>
+                                            <td class="border-bottom border-end p-3">@Model.Desviations.ComentariosAccion</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Responsible:</th>
+                                            <td class="border-bottom border-end p-3">@Model.Desviations.AccionResponsable</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Corrective Action:</th>
+                                            <td class="border-bottom border-end p-3">@Model.Desviations.AccionCorrectiva</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border-bottom border-end fw-bolder text-gray-900 w-200px p-2" scope="row">Date Action:</th>
+                                            <td class="border-bottom border-end p-3">@Model.Desviations.FechaAccion</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--end::Text-->
+                        <!-- begin::Footer-->
+                        <div class="d-flex flex-stack flex-wrap mt-lg-2 pt-13">
+                            <div class="my-1 me-5">
+                            </div>
+                            <div class="my-1 text-end">
+                                Clave: R-15-83-001<br>
+                                Edicion: 14<br>
+                                Tiempo de retencion: 1 mes<br>
+                                Dueño del registro: Coordinador de Calidad
+                            </div>
+                        </div>
+                        <!-- end::Footer-->
+                    </div>
+                    <!-- end::Wrapper-->
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid text-center p-10 py-lg-15">
+                    <a class="mb-10 pt-lg-10">
+                        <img alt="Logo" src="~/Images/SystemPictures/LKQ.png" class="w-300px mb-5" />
+                    </a>
+                    <div class="pt-lg-10 mb-10">
+                        <h1 class="fw-bolder fs-4qx text-danger mb-10">System Error</h1>
+                        <div class="fw-bold fs-3 text-muted mb-15">
+                            @ViewData["Message"]
+                            <br />Please try again later.
+                        </div>
+                        <div class="text-center">
+                            <a href="/FactoryPlatform" class="btn btn-lg btn-primary fw-bolder">Go to homepage</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+    <script>var hostUrl = "assets/";</script>
+    <!--begin::Javascript-->
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script src="~/assets/plugins/global/plugins.bundle.js"></script>
+    <script src="~/assets/js/scripts.bundle.js"></script>
+    <!--end::Global Javascript Bundle-->
+    <!--end::Javascript-->
+</body>
+<!--end::Body-->
+</html>

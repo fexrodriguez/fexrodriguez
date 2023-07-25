@@ -1,0 +1,268 @@
+﻿@using FactoryPlatform.Areas.Quality.Models.ControlPanel.UpdModelToSerie
+@model CP_UpdModelToSerieModelView
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+}
+
+<div class="post d-flex flex-column-fluid border" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <div id="kt_block">
+            <div class="card mb-5">
+                <div class="card-body p-5 mb-0" id="BlockPantalla">
+                    <input type="hidden" name="SeccionId" id="IdSeccion" value="@Model.IdSeccion" />
+                    <input type="hidden" name="Tipo" id="Tipo" value="@Model.Tipo" />
+                    <div class="row">
+                        <div class="col-lg-3 fv-row mb-4">
+                            <label class="fs-6 form-label fw-bolder text-dark">Serie:</label>
+                            <input id="StrSerie" name="StrSerie" type="text" class="form-control form-control-sm p-3 fs-8" placeholder="Write the Serie" />
+                        </div>
+                        <div class="col-lg-3 fv-row mb-4 pt-8 me-0">
+                            <button type="button" onclick="SerieSearch()" id="Search" class="btn btn-primary p-3 fs-7 me-3"><i class="fas fa-search"></i>Search</button>
+                        </div>
+                    </div>
+
+                    <div class="p-0 d-none" id="InputsSearch">
+                        <div class="border-gray-300 border-bottom border-bottom-dashed mb-4 pt-3"></div>
+                        <div class="row mb-2">
+                            <div class="col-lg-3 fv-row mb-4">
+                                <label class="fs-6 form-label fw-bolder text-dark">Modelo:</label>
+                                <input type="text" id="StrModelo" name="StrModelo" class="form-control p-3 form-control-sm fs-8" placeholder="Write the Modelo" />
+                            </div>
+                            <div class="col-lg-3 fv-row mb-4 pt-8 me-0">
+                                <button type="button" onclick="UpdateModelo()" id="Search" class="btn btn-primary p-3 fs-7 me-3"><i class="fas fa-sync-alt text-white"></i>Update</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive d-none" id="TablaModelos">
+                        <table class="table border table-rounded table-hover table-row-bordered gy-4 gs-7 border-gray-400">
+                            <thead>
+                                <tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-gray-400 border-bottom">
+                                    <th class="align-middle min-w-10px">Modelo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="FilaModelos">
+                                   
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-warning d-flex align-items-center p-5 d-none" id="AlertWarning">
+                        <span class="svg-icon svg-icon-2x svg-icon-light me-4">
+                            <i class="fas fa-exclamation-triangle fs-2x text-warning"></i>
+                        </span>
+                        <div class="d-flex flex-column">
+                            <h6 class="text-warning">-- There are no records --</h6>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+
+    @*Block pantalla*@
+    <script>
+        var button = document.querySelector("#BlockPantalla");
+        var target = document.querySelector("#BlockPantalla");
+
+        var BlockPantalla = new KTBlockUI(target, {
+            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+        });
+    </script>
+
+    @*globales*@
+    <script>
+        var IdSeccion = $("#IdSeccion").val();
+    </script>
+
+    @*search with the serie*@
+    <script>
+        function SerieSearch()
+        {
+            BlockPantalla.block()
+
+            var divInput = document.getElementById("InputsSearch");
+            divInput.classList.add("d-none");
+
+            var TableDiv = document.getElementById("TablaModelos");
+            TableDiv.classList.add("d-none");
+
+            var AlertDiv = document.getElementById("AlertWarning");
+            AlertDiv.classList.add("d-none");
+
+            var Serie = $("#StrSerie").val()
+            $.ajax({
+                url: "@Url.Action("SerieSearch","CP_UpdModelToSerie")",
+                data: {
+                    Serie: Serie,
+                    IdSeccion: IdSeccion
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if (result != null) 
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') 
+                    {
+                        swalNoAuthorized()
+                    } 
+                    else if (result == 'NoData') 
+                    {
+                        //divInput.classList.remove("d-none");
+                        AlertDiv.classList.remove("d-none");
+                        BlockPantalla.release()
+                    } 
+                    else {
+                        var obj = JSON.parse(result);
+
+                        var row = "";
+
+                        if (obj.length > 0) 
+                        {
+                            for (var i = 0; i < obj.length; i++) 
+                            {
+                                row= row +
+                                `<td class="align-middle min-w-10px">${obj[i].Modelo}</td>`;
+                            }
+
+                            $('#FilaModelos').html(row);
+
+                            divInput.classList.remove("d-none");
+                            TableDiv.classList.remove("d-none");
+                            BlockPantalla.release()
+                        }
+                    }
+                }
+                else {
+                    SystemServerError()
+                }
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+
+        }
+    </script>
+    
+    @*Udpate modelo*@
+    <script>
+        function UpdateModelo()
+        {
+            BlockPantalla.block()
+
+            var divInput = document.getElementById("InputsSearch");
+            divInput.classList.add("d-none");
+
+            var TableDiv = document.getElementById("TablaModelos");
+            TableDiv.classList.add("d-none");
+
+            var AlertDiv = document.getElementById("AlertWarning");
+            AlertDiv.classList.add("d-none");
+
+            var Serie = $("#StrSerie").val()
+            var Modelo = $("#StrModelo").val()
+
+            $.ajax({
+                url: "@Url.Action("NewModel","CP_UpdModelToSerie")",
+                data: {
+                    Serie: Serie,
+                    Modelo: Modelo,
+                    IdSeccion: IdSeccion
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if (result != null) 
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+
+                    } 
+                    else if (result == 'NoExist') 
+                    {
+                        Swal.fire({
+                            text: "The Model does not exist!",
+                            icon: "warning",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $("#StrModelo").val("");
+                                BlockPantalla.release()
+                            }
+                        });
+                    }
+                    else if (result == 'Success') 
+                    {
+                        Swal.fire({
+                            text: "The action has been successfully submitted!",
+                            icon: "success",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                var row = `<td class="align-middle min-w-10px">${Modelo}</td>`;
+
+                                $('#FilaModelos').html(row);
+
+                                divInput.classList.remove("d-none");
+                                TableDiv.classList.remove("d-none");
+
+                                BlockPantalla.release()
+                            }
+                        });
+                    }
+                }
+                else {
+                    SystemServerError()
+                }
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+
+        }
+    </script>
+
+
+
+}

@@ -1,0 +1,715 @@
+﻿@model DocViewerViewModel
+<style>
+    embed {
+        pointer-events: none;
+    }
+</style>
+<!--begin::Row-->
+<div class="row g-5 g-xl-8 p-3" id="kt_block_DocView">
+    <!--begin::Col-->
+    <div class="col-xl-7">
+        <div class="card-header border-0">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label fw-bolder text-dark">Search for documents</span>
+            </h3>
+        </div>
+        <!--end::Header-->
+        <!--begin::Body-->
+        <div class="card-body pt-3">
+            <div class="row mb-8">
+                <label class="col-lg-4 col-form-label required fw-bold fs-6">Plants: </label>
+                <div class="col-lg-6 fv-row">
+                    <select id="PlantDoc" name="PlantDoc" onchange="SetCombos(this.value, @ViewData["MenuId"])" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- Select a Plant --" data-allow-clear="true">
+                        <option></option>
+                        @foreach (var item in Model.Factories)
+                        {
+                            <option value="@item.ID_Planta">@item.Descripcion</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-8">
+                <label class="col-lg-4 col-form-label required fw-bold fs-6">Departments: </label>
+                <div class="col-lg-6 fv-row">
+                    <select id="DepartDoc" name="DepartDoc" class="form-select form-select-sm form-select p-3 fs-8" onchange="SetCombosStations($('#PlantDoc').val(), @ViewData["MenuId"],this.value)"  data-control="select2" data-placeholder="-- Select a Department --" data-allow-clear="true">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-8">
+                <label class="col-lg-4 col-form-label required fw-bold fs-6">Workstation: </label>
+                <div class="col-lg-6 fv-row">
+                    <select id="WorkStDoc" name="WorkStDoc" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- Select a Workstation --" data-allow-clear="true">
+                        <option></option>
+                        @foreach (var item in Model.ProductionStations)
+                        {
+                            <option value="@item.ID_Estacion">@item.Descripcion</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-8">
+                <label class="col-lg-4 col-form-label required fw-bold fs-6">Document Type: </label>
+                <div class="col-lg-6 fv-row">
+                    <select id="TypeDoc" name="TypeDoc" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- Select a Document Type --" data-allow-clear="true">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-8">
+                <label class="col-lg-4 col-form-label fw-bold fs-6">Key: </label>
+                <div class="col-lg-6 fv-row">
+                    <input type="text" id="KeyDoc" name="KeyDoc" class="form-control p-3 fs-8" placeholder="Key..." />
+                </div>
+            </div>
+            <div class="row mb-8">
+                <label class="col-lg-4 col-form-label fw-bold fs-6">Title: </label>
+                <div class="col-lg-6 fv-row">
+                    <input type="text" id="TitleDoc" name="TitleDoc" class="form-control p-3 fs-8" placeholder="Title..." />
+                </div>
+            </div>
+            <div class="row mb-8">
+                <label class="col-lg-4 col-form-label fw-bold fs-6">Description: </label>
+                <div class="col-lg-6 fv-row">
+                    <input type="text" id="DescripDoc" name="DescripDoc" class="form-control p-3 fs-8" placeholder="Description..." />
+                </div>
+            </div>
+            <div class="row mt-12">
+                <div class="col-md-9 offset-md-4">
+                    <button type="button" class="btn btn-primary p-3 fs-7 me-3" onclick="sendFormDoc()" id="itbutton_submit">
+                        <span class="indicator-label"><i class="fas fa-search"></i>Search</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!--end::Body-->
+    </div>
+    <!--end::Col-->
+    <!--begin::Col-->
+    <div class="col-xl-5" id="Result" style="display:none;">
+        <div class="card-header border-0 pt-5">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label fw-bolder fs-3 mb-1">Result</span>
+            </h3>
+        </div>
+        <div class="card-body py-3">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="kt_table_widget_5_tab_1">
+                    <div class="table-responsive h-500px">
+                        <form id="Form" asp-controller="DocViewer" asp-action="ExportToPDF" target="_blank" method="post">
+                            <input value="" type="hidden" name="DigitalID" id="DigitalID" />
+                            <input value="" type="hidden" name="TipoDigital" id="TipoDigital" />
+                            <input value="" type="hidden" name="Ruta" id="Ruta" />
+                            <input value="" type="hidden" name="PlantaID" id="PlantaID" />
+                            <input value="" type="hidden" name="NewWind" id="NewWind" />
+                        </form>
+                        <table class="table table-row-dashed table-row-gray-200 align-middle gs-0 gy-4">
+                            <thead>
+                                <tr class="border-0">
+                                    <th class="p-0 w-10px"></th>
+                                    <th class="p-0 min-w-150px"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="documentsList">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Col-->
+</div>
+<!--end::Row-->
+
+@*Modal for show Documents*@
+<div class="modal fade" id="kt_modal_1" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  modal-xl p-9">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="TituloDoc"></h2>
+                <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body">
+                <embed id="idRutaDoc" width="100%" height="1100" type="application/pdf" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    <script src="~/assets/js/custom/documentation/forms/select2.js"></script>
+
+    //loading
+    <script>
+        var button = document.querySelector("#kt_block_DocView");
+        var target = document.querySelector("#kt_block_DocView");
+
+        var BlockPantalla = new KTBlockUI(target, {
+            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+        });
+    </script>
+
+    //Setear combo info
+    <script>
+        function SetCombos(plant, IdMenuService) 
+        {
+            if (plant != "") 
+            {
+                $.ajax({
+
+                    url: "@Url.Action("DocViewerComboData","DocViewer")",
+                    type: "post",
+                    data: { plant: plant, IdMenuService: IdMenuService },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (result) 
+                {
+                    if (result != null) 
+                    {
+                        if (result == 'Error') {
+                            SystemServerError()
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else 
+                        {
+                            var obj = JSON.parse(result);
+                            $('#DepartDoc').empty().trigger("change");
+
+                            for (i = 0; i < obj.ProductionDepartments.length; i++) 
+                            {
+                                var newDep = new Option(obj.ProductionDepartments[i].Descripcion, obj.ProductionDepartments[i].ID_Departamento, false, false);
+                                $('#DepartDoc').append(newDep).trigger('change');
+                                $('#DepartDoc').val(null).trigger('change');
+                            }
+
+                            $('#WorkStDoc').empty().trigger("change");
+
+                            for (i = 0; i < obj.ProductionStations.length; i++) 
+                            {
+                                var newStation = new Option(obj.ProductionStations[i].Descripcion, obj.ProductionStations[i].ID_Estacion, false, false);
+                                $('#WorkStDoc').append(newStation).trigger('change');
+                                $('#WorkStDoc').val(null).trigger('change');
+                            }
+
+
+                            $('#TypeDoc').empty().trigger("change");
+
+                            for (i = 0; i < obj.Quality_Docs_DocumentsTypes.length; i++) 
+                            {
+                                var newDT = new Option(obj.Quality_Docs_DocumentsTypes[i].Descripcion, obj.Quality_Docs_DocumentsTypes[i].ID_Tipo, false, false);
+                                $('#TypeDoc').append(newDT).trigger('change');
+                                $('#TypeDoc').val(null).trigger('change');
+                            }
+                        }
+                    }
+                    else 
+                    {
+                        SystemServerError()
+                    }
+                }).fail(function (xhr, status, error) 
+                {
+                    swalErrorServer()
+                })
+            }
+        }
+
+        function SetCombosStations(plant, IdMenuService, Dpto) 
+        {
+            if (plant != "") 
+            {
+                $.ajax({
+                    url: "@Url.Action("DocViewerComboData","DocViewer")",
+                    type: "post",
+                    data: { plant: plant, Departamento: Dpto, IdMenuService: IdMenuService },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (result) 
+                {
+                    if (result != null) 
+                    {
+                        if (result == 'Error') {
+                            SystemServerError()
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else 
+                        {
+                            var obj = JSON.parse(result);
+                            $('#WorkStDoc').empty().trigger("change");
+
+                            for (i = 0; i < obj.ProductionStations.length; i++) 
+                            {
+                                var newStation = new Option(obj.ProductionStations[i].Descripcion, obj.ProductionStations[i].ID_Estacion, false, false);
+                                $('#WorkStDoc').append(newStation).trigger('change');
+                                $('#WorkStDoc').val(null).trigger('change');
+                            }
+                        }
+                    }
+                    else 
+                    {
+                        toastr.error("An error occurred on the server, please try again later!");
+                    }
+                }).fail(function (xhr, status, error) 
+                {
+                      swalErrorServer()
+                })
+            }
+        }
+    </script>
+
+    //Set search and get results
+    <script>
+        function sendFormDoc() 
+        {
+            var Planta = $('#PlantDoc').val();
+            var Departamento = $('#DepartDoc').val();
+            var Estacion = $('#WorkStDoc').val();
+            var TipoDocumento = $('#TypeDoc').val();
+            var Clave = ($('#KeyDoc').val() != '') ? $('#KeyDoc').val() : '-';
+            var Titulo = ($('#TitleDoc').val() != '') ? $('#TitleDoc').val() : '-';
+            var Descripcion = ($('#DescripDoc').val() != '') ? $('#DescripDoc').val() : '-';
+            var InternalWords = $('#SearchFilesDoc').val();
+
+            var IdMenuService = '@ViewData["MenuId"]';
+
+            if (Planta != '' && Clave == '-' && Titulo == '-' && Descripcion == '-') 
+            {
+                if (Planta != '' && (TipoDocumento == 0 || TipoDocumento == null) && (Departamento == 0 || Departamento == null) && (Estacion == 0 || Estacion == null))
+                {
+                    BlockPantalla.block()
+                    toastr.warning("You need to select another filter !");
+                    $('#Result').css("display", "none");
+                    BlockPantalla.release()
+                }
+                else
+                {
+                    BlockPantalla.block()
+                    $.ajax({
+                        url: "@Url.Action("GetDocumentList","DocViewer")",
+                        type: "post",
+                        data:
+                        {
+                            Planta: Planta,
+                            Departamento: Departamento,
+                            Estacion: Estacion,
+                            TipoDocumento: TipoDocumento,
+                            Clave: Clave,
+                            Titulo: Titulo,
+                            Descripcion: Descripcion,
+                            InternalWords: InternalWords,
+                            IdMenuService: IdMenuService
+                        },
+                        beforeSend: function(xhr) {
+                                xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                            },
+                        }).done(function(result) 
+                    {
+                        if (result != null) 
+                        {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == "NoData") 
+                            {
+                                toastr.info("No find result for this search !");
+                                $('#Result').css("display", "none");
+                                BlockPantalla.release()
+                            }
+                            else {
+
+                                var obj = JSON.parse(result);
+
+                                var datos = '';
+                                for (i = 0; i < obj.length; i++) 
+                                {
+                                    var editDoc = '';
+                                    var digitales = '';
+
+                                    if (obj[i].TipoDigital == 9) 
+                                    {
+                                        datos = datos +
+                                            '<tr>' +
+                                            '<td>' +
+                                            '<div class="symbol symbol-45px mb-1">' +
+                                            '<a class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" onclick="donwPdf(`' + obj[i].DigitalID + '`,`' + obj[i].TipoDigital + '`,`' + obj[i].Ruta + '`,' + obj[i].PlantaID + ', 0 )">' +
+                                            '<i class="text-gray-400 fas fa-file-download fs-2 text-hover-primary"></i>' +
+                                            '</a>' +
+                                            '</div>' +
+                                            '</td>' +
+                                            '<td>' +
+                                            '<a  class="text-dark fw-bolder text-hover-primary mb-1"  onclick="donwPdf(`' + obj[i].DigitalID + '`,`' + obj[i].TipoDigital + '`,`' + obj[i].Ruta + '`,' + obj[i].PlantaID + ',1)">' +
+                                            obj[i].Clave +
+                                            '</a>' +
+                                            '<span class="text-muted fw-bold d-block">' + obj[i].Descripcion + '</span>' +
+                                            '</td>' +
+                                            '</tr>';
+                                    }
+                                    else 
+                                    {
+                                        if (obj[i].Formato == 1) 
+                                        {
+                                            var typeFile = '';
+
+                                            switch (obj[i].TipoArchivo) 
+                                            {
+                                                case 'doc':
+                                                case 'docx':
+                                                    typeFile = '<i class="text-gray-400 fas fa-file-word fs-2 text-hover-primary"></i>';
+                                                    break;
+                                                case 'xls':
+                                                case 'xlsx':
+                                                    typeFile = '<i class="text-gray-400 fas fa-file-excel fs-2 text-hover-success"></i>';
+                                                    break;
+                                                case 'ppt':
+                                                    typeFile = '<i class="text-gray-400 fas fa-file-powerpoint fs-2 text-hover-danger"></i>';
+                                                    break;
+                                            }
+
+                                            editDoc =
+                                                '<div class="symbol symbol-45px">' +
+                                                '<a href="https://mxesc1vapp001/fp_data_center/planta' + obj[i].PlantaID + '/documents-center/' + obj[i].Clave + '/' + obj[i].RevisionID + '/' + obj[i].Clave + '.' + obj[i].TipoArchivo + ' " class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" >' +
+                                                typeFile +
+                                                '</a>' +
+                                                '</div>';
+                                        }
+
+                                        if (obj[i].TipoArchivo == 'Digital') 
+                                        {
+                                            digitales = '<td>' +
+                                                '<a  class="text-dark fw-bolder text-hover-primary mb-1 fs-6"  onclick="ShowDocument(`' + obj[i].DigitalID + '`,`' + obj[i].TipoDigital + '`,`' + obj[i].TipoArchivo + '`,`' + obj[i].Clave + '`,' + obj[i].RevisionID + ',`' + obj[i].Ruta + '`,' + obj[i].PlantaID + ')">' + obj[i].Clave + '</a>' +
+                                                '<span class="text-muted fw-bold d-block">' + obj[i].Descripcion + '</span>' +
+                                                '</td>';
+                                        }
+                                        else 
+                                        {
+                                            digitales = '<td>' +
+                                                '<a href="https://mxesc1vapp001/fp_data_center/planta' + obj[i].PlantaID +'/documents-center/' + obj[i].Clave + '/' + obj[i].RevisionID + '/' + obj[i].Clave + '.pdf?#toolbar=0" target="_blank" class="text-dark fw-bolder text-hover-primary mb-1 fs-6">' + obj[i].Clave + '</a>' +
+                                                '<span class="text-muted fw-bold d-block">' + obj[i].Descripcion + '</span>' +
+                                                '</td>';
+                                        }
+
+                                        datos = datos +
+                                            '<tr>' +
+                                            '<td>' +
+                                            '<div class="symbol symbol-45px mb-1">' +
+                                            '<button type="button" class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" onclick="ShowDocument(`' + obj[i].DigitalID + '`,`' + obj[i].TipoDigital + '`,`' + obj[i].TipoArchivo + '`,`' + obj[i].Clave + '`,' + obj[i].RevisionID + ',`' + obj[i].Ruta + '`,' + obj[i].PlantaID + ')">' +
+                                            '<i class="text-gray-400 fas fa-eye fs-2 text-hover-primary"></i>' +
+                                            '</button>' +
+                                            '</div>' +
+                                            editDoc +
+                                            '</td>' +
+                                            digitales +
+                                            '</tr>';
+                                    }
+                                }
+
+
+                                $('#documentsList').html(datos);
+                                $('#Result').css("display", "block");
+                                BlockPantalla.release()
+                            }
+                        }
+                        else 
+                        {
+                            SystemServerError()
+                            BlockPantalla.release()
+                        }
+                    }).fail(function(xhr, status, error) 
+                    {
+                        swalErrorServer()
+                    })
+                }
+
+            } 
+            else if (Clave != '-' || Titulo != '-' || Descripcion != '-' || Estacion != '') 
+            {
+                BlockPantalla.block()
+
+                $.ajax({
+                    url: "@Url.Action("GetDocumentList","DocViewer")",
+                    type: "post",
+                    data:
+                    {
+                        Planta: Planta,
+                        Departamento: Departamento,
+                        Estacion: Estacion,
+                        TipoDocumento: TipoDocumento,
+                        Clave: Clave,
+                        Titulo: Titulo,
+                        Descripcion: Descripcion,
+                        InternalWords: InternalWords,
+                        IdMenuService: IdMenuService
+                    },
+                    beforeSend: function(xhr) 
+                    {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function(result) 
+                {
+                    if (result != null) 
+                    {
+                        if (result == 'Error') {
+                            SystemServerError()
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == "NoData") 
+                        {
+                            toastr.info("No find result for this search !");
+                            $('#Result').css("display", "none");
+                            BlockPantalla.release()
+                        }
+                        else 
+                        {
+                            var obj = JSON.parse(result);
+
+                            var datos = '';
+                            for (i = 0; i < obj.length; i++) 
+                            {
+                                var editDoc = '';
+                                var digitales = '';
+
+                                if (obj[i].TipoDigital == 9) 
+                                {
+                                    datos = datos +
+                                        '<tr>' +
+                                        '<td>' +
+                                        '<div class="symbol symbol-45px mb-1">' +
+                                        '<a class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" onclick="donwPdf(`' + obj[i].DigitalID + '`,`' + obj[i].TipoDigital + '`,`' + obj[i].Ruta + '`,' + obj[i].PlantaID + ', 0 )">' +
+                                        '<i class="text-gray-400 fas fa-file-download fs-2 text-hover-primary"></i>' +
+                                        '</a>' +
+                                        '</div>' +
+                                        '</td>' +
+                                        '<td>' +
+                                        '<a  class="text-dark fw-bolder text-hover-primary mb-1 fs-6"  onclick="donwPdf(`' + obj[i].DigitalID + '`,`' + obj[i].TipoDigital + '`,`' + obj[i].Ruta + '`,' + obj[i].PlantaID + ',1)">' +
+                                        obj[i].Clave + 
+                                        '</a>' +
+                                        '<span class="text-muted fw-bold d-block">' + obj[i].Descripcion + '</span>' + 
+                                        '</td>' +
+                                        '</tr>';
+                                }
+                                else 
+                                {
+                                    if (obj[i].Formato == 1) 
+                                    {
+                                        var typeFile = '';
+
+                                        switch (obj[i].TipoArchivo) 
+                                        {
+                                            case 'doc':
+                                            case 'docx':
+                                                typeFile = '<i class="text-gray-400 fas fa-file-word fs-2 text-hover-primary"></i>';
+                                                break;
+                                            case 'xls':
+                                            case 'xlsx':
+                                                typeFile = '<i class="text-gray-400 fas fa-file-excel fs-2 text-hover-success"></i>';
+                                                break;
+                                            case 'ppt':
+                                                typeFile = '<i class="text-gray-400 fas fa-file-powerpoint fs-2 text-hover-danger"></i>';
+                                                break;
+                                        }
+
+                                        editDoc =
+                                            '<div class="symbol symbol-45px">' +
+                                            '<a href="https://mxesc1vapp001/fp_data_center/planta' + obj[i].PlantaID + '/documents-center/' + obj[i].Clave + '/' + obj[i].RevisionID + '/' + obj[i].Clave + '.' + obj[i].TipoArchivo + ' " class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" >' +
+                                            typeFile +
+                                            '</a>' +
+                                            '</div>';
+                                    }
+
+                                    if (obj[i].TipoArchivo == 'Digital') {
+                                        digitales = '<td>' +
+                                            '<a  class="text-dark fw-bolder text-hover-primary mb-1 fs-6"  onclick="ShowDocument(`' + obj[i].DigitalID + '`,`' + obj[i].TipoDigital + '`,`' + obj[i].TipoArchivo + '`,`' + obj[i].Clave + '`,' + obj[i].RevisionID + ',`' + obj[i].Ruta + '`,' + obj[i].PlantaID + ')">' + obj[i].Clave + '</a>' +
+                                            '<span class="text-muted fw-bold d-block">' + obj[i].Descripcion + '</span>' +
+                                            '</td>';
+                                    }
+                                    else {
+                                        digitales = '<td>' +
+                                            '<a href="https://mxesc1vapp001/fp_data_center/planta' + obj[i].PlantaID +'/documents-center/' + obj[i].Clave + '/' + obj[i].RevisionID + '/' + obj[i].Clave + '.pdf?#toolbar=0" target="_blank" class="text-dark fw-bolder text-hover-primary mb-1 fs-6">' + obj[i].Clave + '</a>' +
+                                            '<span class="text-muted fw-bold d-block">' + obj[i].Descripcion + '</span>' +
+                                            '</td>';
+                                    }
+
+                                    datos = datos +
+                                        '<tr>' +
+                                        '<td>' +
+                                        '<div class="symbol symbol-45px mb-1">' +
+                                        '<button type="button" class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" onclick="ShowDocument(`' + obj[i].DigitalID + '`,`' + obj[i].TipoDigital + '`,`' + obj[i].TipoArchivo + '`,`' + obj[i].Clave + '`,' + obj[i].RevisionID + ',`' + obj[i].Ruta + '`,' + obj[i].PlantaID + ')">' +
+                                        '<i class="text-gray-400 fas fa-eye fs-2 text-hover-primary"></i>' +
+                                        '</button>' +
+                                        '</div>' +
+                                        editDoc +
+                                        '</td>' +
+                                        digitales +
+                                        '</tr>';
+                                }
+                            }
+
+                            $('#documentsList').html(datos);
+                            $('#Result').css("display", "block");
+                            BlockPantalla.release()
+                        }
+
+                    }
+                    else {
+                        toastr.error("An error occurred on the server, please try again later!");
+                        BlockPantalla.release()
+                    }
+                }).fail(function(xhr, status, error) {
+                      swalErrorServer()
+                })
+            }
+            else 
+            {
+                toastr.warning("You need to select one or more filters!");
+                $('#Result').css("display", "none");
+                BlockPantalla.release()
+            }
+        }
+    </script>
+
+    //Show the files
+    <script>
+        function ShowDocument(DigitalID, TipoDigital, TipoArchivo, Clave, RevisionID, Ruta, PlantaID) 
+        {
+            if (TipoArchivo != 'Digital') 
+            {
+                BlockPantalla.block()
+                var ruta = 'https:/' + `/mxesc1vapp001/fp_data_center/planta${PlantaID}/documents-center/${Clave}/${RevisionID}/${Clave}.pdf?#toolbar=0`;
+                $("#idRutaDoc").attr("src", ruta);
+                $('#kt_modal_1').modal('toggle');
+                $('#TituloDoc').html(Clave);
+                BlockPantalla.release()
+            }
+            else 
+            {
+                BlockPantalla.block()
+
+                $.ajax({
+                    url: "@Url.Action("ExportToPDF","DocViewer")",
+                    type: "post",
+                    data: {
+                        DigitalID: DigitalID,
+                        TipoDigital: TipoDigital,
+                        TipoArchivo: TipoArchivo,
+                        Clave: Clave,
+                        RevisionID: RevisionID,
+                        Ruta: Ruta
+                    },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function(result) 
+                {
+                    if (result != null) 
+                    {
+                        if (result == 'Error') {
+                            SystemServerError()
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else 
+                        {
+                            var ruta = `data:application/pdf;base64, ${result} #toolbar=0`;
+
+                            $("#idRutaDoc").attr("src", ruta);
+
+                            BlockPantalla.release()
+                            $('#kt_modal_1').modal('toggle');
+                            $('#TituloDoc').html(Clave);
+                        }
+                    }
+                    else 
+                    {
+                        SystemServerError()
+                        BlockPantalla.release()
+                    }
+                }).fail(function(xhr, status, error) 
+                {
+                    swalErrorServer()
+                })
+            }
+        }
+    </script>
+
+    //Dowload files
+    <script>
+        function donwPdf(DigitalID, TipoDigital, Ruta, PlantaID, Nw) 
+        {
+            if (DigitalID != '') 
+            {
+                if (Nw == 1) 
+                {
+                    $('#DigitalID').val(DigitalID);
+                    $('#TipoDigital').val(TipoDigital);
+                    $('#Ruta').val(Ruta);
+                    $('#PlantaID').val(PlantaID);
+                    $('#NewWind').val(1);
+                }
+                else 
+                {
+                    $('#DigitalID').val(DigitalID);
+                    $('#TipoDigital').val(TipoDigital);
+                    $('#Ruta').val(Ruta);
+                    $('#PlantaID').val(PlantaID);
+                    $('#NewWind').val(0);
+                }
+
+                $('#Form').submit();
+            }
+            else 
+            {
+                toastr.error("An error please wait!");
+            }
+        }
+    </script>
+}

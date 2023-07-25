@@ -1,0 +1,51 @@
+﻿@using Newtonsoft.Json
+@model ServiceMenuViewModel
+
+
+@if (Model != null)
+{
+    <div class="card-header">
+        <h3 class="card-title fs-2 fw-bold">@ViewData["TituloOrderPartial"]</h3>
+        <div class="card-toolbar">
+            <button type="button" onclick="location.reload()" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" title="Close"
+            class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto">
+                <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="far fa-times-circle fs-1"></i></span>
+            </button>
+        </div>
+    </div>
+
+    @switch (ViewData["MenuId"])
+    {
+        case 1:
+            <script src="~/assets/js/custom/documentation/forms/select2.js"></script>
+            <partial name="_SmDocViewer" model="Model.DocViewerViewModel"/>
+            break;
+        case 2:
+            <partial name="_SmNewANP" />
+            break;
+        case 4:
+            <partial name="_SmNewMissingItem" />
+            break;
+        case 7:
+            <partial name="_SmEngWorkOrders" model="Model.EngWorkOrdersModel" />
+            break;  
+        case 8:
+            <partial name="_SmITWorkOrders" model="Model.ItWorkOrdersModel" />
+            break;
+        case 9:
+            <partial name="_SmMTCEWorkOrders" model="Model.MTCEWorkOrdersModel" />
+            break;
+        case 10:
+            <partial name="_SmQltyWorkOrders" model="Model.QltyWorkOrdersModel" />
+            break;
+        case 13:
+            <partial name="_SmHRWorkOrders" model="Model.HRWorkOrdersModel" />
+            break;
+        case 25:
+            <partial name="_SmNewItem" model="Model.CaptureNewItem" />
+            break;
+            case 28:
+            <partial name="_SmCorrectiveAction" model="Model.CorrectiveActionViewModel" />
+            break;
+    }
+}

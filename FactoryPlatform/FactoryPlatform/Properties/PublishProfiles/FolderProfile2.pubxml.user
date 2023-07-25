@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>\\10.208.122.234\lkqmxesc1fpapp001\FactoryPlatform</_PublishTargetUrl>
+    <History>True|2023-02-22T14:18:27.4546916Z;True|2023-02-22T08:05:30.3071866-06:00;True|2023-02-20T11:42:18.8899388-06:00;True|2023-02-20T11:33:50.2472714-06:00;True|2023-02-20T11:28:18.3431293-06:00;</History>
+    <LastFailureDetails />
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="fp_lkq_motors">
+      <Value>Data Source=MXESC1VAPP001\MXESC1FPAPP001%3bInitial Catalog=LKQMXFPAPP%3bUser ID=FPMXAPPLogin%3bPassword=.L0calAdm1n..</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+  <ItemGroup>
+    <EFMigrations Include="FactoryPlatform.Data.AppDbContext.StoresProceduresDbContext">
+      <Value>Data Source=MXESC1VAPP001\MXESC1FPAPP001%3bInitial Catalog=LKQMXFPAPP%3bUser ID=FPMXAPPLogin%3bPassword=.L0calAdm1n..</Value>
+    </EFMigrations>
+    <EFMigrations Include="FactoryPlatform.Data.ApplicationDbContext">
+      <Value>Data Source=MXESC1VAPP001\MXESC1FPAPP001%3bInitial Catalog=LKQMXFPAPP%3bUser ID=FPMXAPPLogin%3bPassword=.L0calAdm1n..</Value>
+    </EFMigrations>
+    <EFMigrations Include="FactoryPlatform.Data.LKQMXFPAPPContext">
+      <Value>Data Source=MXESC1VAPP001\MXESC1FPAPP001%3bInitial Catalog=LKQMXFPAPP%3bUser ID=FPMXAPPLogin%3bPassword=.L0calAdm1n..</Value>
+    </EFMigrations>
+  </ItemGroup>
+</Project>

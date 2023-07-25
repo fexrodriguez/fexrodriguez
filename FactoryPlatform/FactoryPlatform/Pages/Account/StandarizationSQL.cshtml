@@ -1,0 +1,193 @@
+﻿@page "/StandarizationSQL"
+@{
+    ViewData["Title"] = " Standarization SQL";
+
+}
+
+<div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <!--begin::Accordion-->
+        <div class="accordion" id="kt_accordion_1">
+            
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_1">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_1" aria-expanded="false" aria-controls="kt_accordion_1_body_1">
+                       Row counter
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_1" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_1" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">This line its for put a counter in the select.</div>
+                        <!--begin::Code-->
+                        <div class="py-2">
+                            <div class="highlight">
+                                <button class="highlight-copy btn" data-bs-toggle="tooltip" title="Copy code">copy</button>
+                                <div class="highlight-code">
+                                    <pre class="language-sql">
+                                    <code class="language-sql">
+                                        CAST (SELECT  ROW_NUMBER() OVER (ORDER BY (SELECT 0)) AS INT) AS ID) 
+                                    </code>
+                                </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Code-->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_2">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_2" aria-expanded="false" aria-controls="kt_accordion_1_body_2">
+                       Stuff
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_2" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_2" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">Query for function is to concatenate the values of multiple rows.</div>
+                        <!--begin::Code-->
+                        <div class="py-2">
+                            <div class="highlight">
+                                <button class="highlight-copy btn" data-bs-toggle="tooltip" title="Copy code">copy</button>
+                                <div class="highlight-code">
+                                    <pre class="language-sql">
+                                    <code class="language-sql">
+                                        SELECT
+                                        STUFF( (SELECT ';' + Email
+                                        FROM Customers
+                                        where (Email is not null and Email <> '')
+                                        ORDER BY Email ASC
+                                        FOR XML PATH('')),
+                                        1, 1, '')
+
+                                        --=========================================================================================
+
+                                        (SELECT STUFF( (SELECT '*', preguntas 
+                                        FROM Quality_CheckList_AMEF_Questions Q 
+                                        INNER JOIN Quality_CheckList_AMEF_Questions_Results R ON Q.ID_Registro = R.PreguntaID 
+                                        WHERE R.AmefID = ID ORDER BY Q.ID_Registro ASC
+                                        FOR XML PATH, TYPE).value('.[1]','varchar(max)'), 1, 1, '')) AS QuestionsAMEF
+                                    </code>
+                                </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Code-->
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_3">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_3" aria-expanded="false" aria-controls="kt_accordion_1_body_3">
+                        Date Format
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_3" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_3" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">Format for the Dates.</div>
+                        <div class="py-2">
+                            <div class="highlight">
+                                <button class="highlight-copy btn" data-bs-toggle="tooltip" title="Copy code">copy</button>
+                                <div class="highlight-code">
+                                    <pre class="language-sql">
+                                    <code class="language-sql">
+                                           =============== Date complete ==================
+                                           SELECT FORMAT(GETDATE(), N'G')
+
+                                           G 9/5/2016 12:01:02 AM
+                                           g 9/5/2016 12:01 AM
+
+                                           FORMAT( GETDATE(), 'd', 'EN-US')
+                                           d 9/5/2016
+
+                                           =============== Hour Month/Day/Year ==============
+                                           FORMAT( GETDATE(), 'MM/dd/yyyy')
+                                    </code>
+                                </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_4">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_4" aria-expanded="false" aria-controls="kt_accordion_1_body_4">
+                        STRING_SPLIT
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_4" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_4" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">
+                            Returns a single column table where each row contains a fragment of the string. The name of the columns is value,
+                            and the datatype is nvarchar if any of the parameters is either nchar or nvarchar, otherwise varchar.
+                            The following example splits a string using space as a separator:
+                        </div>
+                        <!--begin::Code-->
+                        <div class="py-2">
+                            <div class="highlight">
+                                <button class="highlight-copy btn" data-bs-toggle="tooltip" title="Copy code">copy</button>
+                                <div class="highlight-code">
+                                    <pre class="language-sql">
+                                    <code class="language-sql">
+                                    SELECT value FROM STRING_SPLIT('Lorem ipsum dolor sit amet.', ' ');
+
+                                    Result:
+                                    value
+                                    -----
+                                    Lorem
+                                    ipsum
+                                    dolor
+                                    sit
+                                    </code>
+                                </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Code-->
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h1 class="accordion-header" id="kt_accordion_1_header_4">
+                    <button class="accordion-button fs-4 fw-semibold collapsed" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#kt_accordion_1_body_5" aria-expanded="false" aria-controls="kt_accordion_1_body_5">
+                        HELPER
+                    </button>
+                </h1>
+                <div id="kt_accordion_1_body_5" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_4" data-bs-parent="#kt_accordion_1">
+                    <div class="accordion-body">
+                        <div class="py-5">
+                            ...
+                        </div>
+                        <!--begin::Code-->
+                        <div class="py-2">
+                            <div class="highlight">
+                                <button class="highlight-copy btn" data-bs-toggle="tooltip" title="Copy code">copy</button>
+                                <div class="highlight-code">
+                                    <pre class="language-sql">
+                                    <code class="language-sql">
+                                        //Esta line se corre una vez para pode rutilizar la funcion string_split
+                                        ALTER DATABASE [LKQMXFPAPP-DEV] SET COMPATIBILITY_LEVEL = 130
+
+                                        //Esta line se ejecuta en packe managemen console para hacer un data firts que es un mapeo automatico de la base de datos
+                                        Scaffold-dbContext "Data Source=MXESC1VAPP001\MXESC1FPAPP001; database=LKQMXFPAPP-DEV; User ID=FPMXAPPLogin;Password=password.;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" Microsoft.EntityFrameworkCore.SqlServer -OutPutDir Data -Force
+                                    </code>
+                                </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Code-->
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--end::Accordion-->
+    </div>
+</div>

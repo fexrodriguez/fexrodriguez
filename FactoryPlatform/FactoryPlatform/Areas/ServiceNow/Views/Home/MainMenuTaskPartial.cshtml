@@ -1,0 +1,84 @@
+﻿@model MainMenuTaskViewModel
+
+@if (Model != null)
+{
+    <div class="card-header">
+        <h3 class="card-title">@ViewData["TituloMenuTask"]</h3>
+        <div class="card-toolbar">
+            <button type="button" onclick="showReport(@ViewData["MenuTaskId"])" data-bs-toggle="tooltip" data-bs-custom-class="tooltip" data-bs-placement="top" title="Refresh"
+            class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto">
+                <span class="svg-icon svg-icon-2x svg-icon-light text-hover-primary"><i class="fas fa-redo-alt fs-2"></i></span>
+            </button>
+            <button type="button" onclick="location.reload()" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" title="Close"
+            class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto">
+                <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger"><i class="far fa-times-circle fs-1"></i></span>
+            </button>
+        </div>
+    </div>
+    @switch (ViewData["MenuTaskId"])
+    {
+        case 1:
+            <partial name="_TmDocsEdition" model="Model.DocsEditionTaskModel"/>
+            <script type="text/javascript">
+                    KTApp.init();
+                    KTApp.initPageLoader();
+                    KTMenu.init();
+            </script>
+        break;
+        case 2:
+            <partial name="_TmPreApproval" model="Model.PreApprovalTaskModel" />
+            <script type="text/javascript">
+                    KTApp.init();
+                    KTApp.initPageLoader();
+                    KTMenu.init();
+            </script>
+        break;
+        case 3:
+            <partial name="_TmFinalSignature" model="Model.FinalSignatureTaskModel" />
+            <script type="text/javascript">
+                    KTApp.init();
+                    KTApp.initPageLoader();
+                    KTMenu.init();
+            </script>
+        break;
+        case 6:
+            <partial name="_TmAnpControl" model="Model.TMAnpControlViewModel" />
+            <script type="text/javascript">
+                    KTApp.init();
+                    KTApp.initPageLoader();
+                    KTMenu.init();
+            </script>
+        break;
+        case 15:
+            <partial name="_TmDocsStructure" model="Model.DocsStructureTaskModel" />
+            <script type="text/javascript">
+                KTApp.init();
+                KTApp.initPageLoader();
+                KTMenu.init();
+            </script>
+            break;
+        case 10:
+            <partial name="_TmTrainingDocsUpdate" model="Model.DocumentTrainingTaskModel" />
+            <script type="text/javascript">
+                    KTApp.init();
+                    KTApp.initPageLoader();
+                    KTMenu.init();
+            </script>
+            break;
+        case 12:
+            <partial name="_TmITWorkOrders" model="Model.ITWorkOrderTaskModel" />
+            break;
+        case 13:
+            <partial name="_TmCorrectiveActions"  model="Model.TMCorrectiveActionViewModel"/>
+            <script type="text/javascript">
+                KTApp.init();
+                KTApp.initPageLoader();
+                KTMenu.init();
+            </script>
+            break;
+
+    }
+
+}
+
+

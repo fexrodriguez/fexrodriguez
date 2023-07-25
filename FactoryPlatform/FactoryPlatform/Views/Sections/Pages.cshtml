@@ -1,0 +1,78 @@
+﻿@model SectionsViewModel
+@Html.AntiForgeryToken()
+@{
+    ViewData["Title"] = "Sections";
+}
+@if (Model.spFPAPP_Sys_SectionPages.Count > 0)
+{
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <!--begin::Container-->
+    <div id="kt_content_container" class="container-fluid">
+            <div class="d-flex flex-wrap flex-stack mb-6">
+                <h3 class="fw-bolder my-2">@ViewData["Department"] - @ViewData["Aplication"]</h3>
+                <div class="d-flex my-2">
+                    <div class="d-flex align-items-center position-relative me-4">
+                        <span class="svg-icon svg-icon-3 position-absolute ms-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="black" />
+                                <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="black" />
+                            </svg>
+                        </span>
+                        <input type="text" id="kt_filter_search" class="form-control form-control-white form-control-sm w-250px ps-9" placeholder="Search Screen Or Report" 
+                        onkeyup="searchOption(this.value)" />
+                    </div>
+
+                </div>
+            </div>
+            <div class="row g-6 g-xl-9 mb-6 mb-xl-9" id="Options">
+                @foreach (var item in Model.spFPAPP_Sys_SectionPages)
+                {
+                    <div class="col-md-6 col-lg-4 col-xl-3 datos" onclick="viewScreen(@item.ID_Seccion)">
+                        <form asp-controller="@item.Direccion.Split('/')[2]" asp-action="@item.Direccion.Split('/')[3]" method="post" id="Form-@item.ID_Seccion">
+                            <input type="hidden" name="SeccionId" value="@item.ID_Seccion" />
+                            <input type="hidden" name="Tipo" value="@item.Tipo" />
+                            <div class="card h-100">
+                                <div class="card-body d-flex justify-content-center text-center flex-column p-8">
+                                    <a class="text-gray-800 text-hover-primary d-flex flex-column">
+                                        <div class="symbol symbol-100px mb-4">
+                                            <img src="https://img.icons8.com/plasticine/100/undefined/new-window.png" />
+                                        </div>
+                                        <div class="fs-5 fw-bolder mb-2">@item.Seccions</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+<script>
+    function searchOption(search){
+        var input = search
+
+        $(".datos").css("display", "none");
+
+        $('.datos').each(function(){
+           if($(this).text().toUpperCase().indexOf(input.toUpperCase()) != -1)
+           {
+               $(this).css("display", "block");
+           }
+        });
+    }
+    
+    function viewScreen(idSeccion)
+    {
+        if(idSeccion != '')
+        {
+            $('#Form-'+idSeccion).submit();
+        }
+        else
+        {
+           toastr.error("An error please wait!"); 
+        }
+    }
+
+</script>

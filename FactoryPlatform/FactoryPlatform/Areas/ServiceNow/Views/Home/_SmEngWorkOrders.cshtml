@@ -1,0 +1,345 @@
+﻿@model EngWorkOrdersModel
+
+<div class="card-body">
+        <form id="EngWorkordersForm" asp-area="ServiceNow" asp-controller="Home" asp-action="CreateWorkOrders" method="post" class="form">
+            <div class="card-body p-9">
+                <div class="row mb-6">
+                    <label class="col-lg-3 col-form-label required fw-bold fs-6">Class: </label>
+                    <div class="col-lg-3 fv-row">
+                        <select id="ClassEng" name="ClassEng" onchange="clearFormEng()" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" autofocus>
+                            <option></option>
+                            @foreach (var item in Model.Services_now_WorkOrders_Class)
+                            {
+                                <option value="@item.ID_Clase">@item.Clase</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <label class="col-lg-3 col-form-label required fw-bold fs-6">Type</label>
+                    <div class="col-lg-3 fv-row">
+                        <select id="TypeEng" name="TypeEng" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --">
+                            <option></option>
+                            @foreach (var item in Model.TypeWorkOrder)
+                            {
+                                <option value="@item.ID_Tipo">@item.TipoOrdenTrabajo</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <label class="col-lg-3 col-form-label required fw-bold fs-6">WorkStation</label>
+                    <div class="col-lg-3 fv-row">
+                        <select id="WorkStationEng" name="WorkStationEng" onchange="readDataEng(this.value, @ViewData["MenuId"])" class="form-select form-select-sm form-select p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --">
+                            <option></option>
+                            @foreach (var item in Model.Production_Stations)
+                            {
+                                <option value="@item.ID_Estacion">@item.Descripcion</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <label class="col-lg-3 col-form-label  fw-bold fs-6">Department</label>
+                    <div class="col-lg-3 fv-row">
+                        <select id="DepEng" name="DepEng" class="form-select form-select-sm form-select-solid p-3 fs-8" data-control="select2" data-placeholder="-" disabled>
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <label class="col-lg-3 col-form-label fw-bold fs-6">Plant</label>
+                    <div class="col-lg-3 fv-row">
+                        <select id="PlantEng" name="PlantEng" class="form-select form-select-sm form-select-solid p-3 fs-8" data-control="select2" data-placeholder="-" disabled>
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <label class="col-lg-3 col-form-label required fw-bold fs-6">Comments: </label>
+                    <div class="col-lg-9 fv-row">
+                        <textarea id="CommentEng" name="CommentEng" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                    </div>
+                </div>
+                <div class="row mt-12">
+                    <div class="col-md-9 offset-md-3">
+                    <button type="button" id="Engbutton_submit" class="btn btn-primary p-3 fs-7 me-3">
+                        <span class="indicator-label"><i class="fas fa-save"></i>Save</span>
+                        <span class="indicator-progress">
+                            Please wait...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+@if (Model != null)
+{
+<script>
+    $('#CommentEng').maxlength({
+        threshold: 500,
+        warningClass: "badge badge-danger",
+        limitReachedClass: "badge badge-success",
+        separator: ' of ',
+        preText: 'You have ',
+        postText: ' chars remaining.',
+        validate: true
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+
+    function readDataEng(station, IdMenuService) 
+    {
+        if (station != "") 
+        {
+            $.ajax({
+
+            url: "@Url.Action("WorkOrderComboData","ServiceMenu")",
+                type: "post",
+                data: { station: station, IdMenuService: IdMenuService },
+                beforeSend: function(xhr) 
+                {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function(result) 
+            {
+                if (result != null) 
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else 
+                    {
+                        var obj = JSON.parse(result);
+
+                        var pd1 = obj.Production_Departments[0].ID_Departamento;
+                        var pd2 = obj.Production_Departments[0].Descripcion;
+
+                        $('#DepEng').empty().trigger("change");
+                        var newDep = new Option(pd2, pd1, false, false);
+                        $('#DepEng').append(newDep).val(pd1).trigger('change');
+
+                        //----------------------------------------------------------
+
+                        var sf1 = obj.Services_Factories[0].ID_Planta;
+                        var sf2 = obj.Services_Factories[0].Descripcion;
+
+                        $('#PlantEng').empty().trigger("change");
+                        var newPlant = new Option(sf2, sf1, false, false);
+                        $('#PlantEng').append(newPlant).val(sf1).trigger('change');
+                    }
+                }
+                else 
+                {
+                        SystemServerError()
+                }
+            }).fail(function(xhr, status, error) 
+            {
+                    swalErrorServer()
+            })
+        }
+    }
+
+    //---------------------------------------------------------------------------------------------------------
+    function clearFormEng() 
+    {
+        $('#TypeEng').val(null).trigger('change');
+        $('#WorkStationEng').val(null).trigger('change');
+        $('#DepEng').empty().trigger("change");
+        $('#PlantEng').empty().trigger("change");
+    }
+
+    function sendFormEng() 
+    {
+        var classId = $('#ClassEng').val();
+        var workStationId = $('#WorkStationEng').val();
+        var departamentId = $('#DepEng').val();
+        var typeId = $('#TypeEng').val();
+        var plantId = $('#PlantEng').val();
+        var commentStr = $('#CommentEng').val();
+        var IdMenuService = '@ViewData["MenuId"]';
+
+        $.ajax({
+
+        url: "@Url.Action("CreateWorkOrders","ServiceMenu")",
+            type: "post",
+            data:
+            {
+                classId: classId,
+                workStationId: workStationId,
+                departamentId: departamentId,
+                plantId: plantId,
+                typeId: typeId,
+                commentStr: commentStr,
+                IdMenuService: IdMenuService
+            },
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+        }).done(function(result) 
+        {
+            if (result != null)
+            {
+                if (result == 'Error') {
+                    SystemServerError()
+                }
+                if (result == 'noSession') {
+                    swalExpired()
+                }
+                else if (result == 'Sorry') {
+                    swalNoAuthorized()
+                }
+                else if (result == 'NoPage') {
+                    swalNoAuthorized()
+                }
+                if (result == "correct")
+                {
+                    Swal.fire({
+                        text: "Engineering Work Order has been successfully submitted!",
+                        icon: "success",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn btn-primary"
+                        }
+                    });
+
+                    clearFormEng();
+                    $('#ClassEng').val(null).trigger('change');
+                    $('#CommentEng').val(null);
+                }
+                
+            }
+            else 
+            {
+                    SystemServerError()
+            }
+        }).fail(function(xhr, status, error) 
+        {
+                swalErrorServer()
+        })
+    }
+</script>
+
+@*form validation*@
+ <script>
+    const EngForm = document.getElementById('EngWorkordersForm');
+    var validator = FormValidation.formValidation(
+        EngForm,
+                {
+                    fields: {
+                            ClassEng: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Class is required'
+                                    }
+                                }
+                            },
+                            TypeEng: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Type is required'
+                                    }
+                                }
+                            },
+                            WorkStationEng: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'WorkStation is required'
+                                    }
+                                }
+                            },
+                            CommentEng: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Comment is required'
+                                    }
+                                }
+                            },
+
+                        },
+
+                    plugins: { //Learn more: https://formvalidation.io/guide/plugins
+                        trigger: new FormValidation.plugins.Trigger(),
+                        bootstrap: new FormValidation.plugins.Bootstrap5({
+                            rowSelector: '.fv-row',
+                            eleInvalidClass: '',
+                                eleValidClass: ''
+                        })
+                    }
+                }
+    );
+
+    $(EngForm.querySelector('[name="ClassEng"]')).on('change', function() {
+        validator.revalidateField('ClassEng');
+    }); 
+    $(EngForm.querySelector('[name="TypeEng"]')).on('change', function() {
+        validator.revalidateField('TypeEng');
+    }); 
+    $(EngForm.querySelector('[name="WorkStationEng"]')).on('change', function() {
+        validator.revalidateField('WorkStationEng');
+    }); 
+
+    // Submit button handler
+    const submitButton = document.getElementById('Engbutton_submit');
+        
+    submitButton.addEventListener('click', function(e) {
+        // Prevent default button action
+        e.preventDefault();
+
+        // Validate form before submit
+        if (validator) {
+            validator.validate().then(function(status) {
+                    if (status == 'Valid') {
+                         
+                        submitButton.setAttribute('data-kt-indicator', 'on');
+                    submitButton.disabled = true;
+                    setTimeout(function () {
+                        submitButton.removeAttribute('data-kt-indicator');
+                        submitButton.disabled = false;
+                        
+                        sendFormEng()
+
+                        }, 900);
+                    }
+                    else 
+                    {
+                    submitButton.setAttribute('data-kt-indicator', 'on');
+                    submitButton.disabled = true;
+                    setTimeout(function ()
+                    {
+                    submitButton.removeAttribute('data-kt-indicator');
+                    submitButton.disabled = false;
+                        
+                        swal.fire({
+                            text: "Sorry, looks like there are some empty inputs detected, please try again.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        });
+
+                    }, 100);
+
+                    }
+            });
+        }
+    });
+</script>
+
+}

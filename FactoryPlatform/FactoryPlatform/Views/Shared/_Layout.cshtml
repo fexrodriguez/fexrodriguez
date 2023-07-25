@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+@*<html lang="en" data-theme="light">
+*@<html lang="en">
+<head>
+    <base href="../../">
+    <title>FactoryPlatform - @ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="article" />
+    <link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
+    <link rel="shortcut icon" href="~/Images/SystemPictures/favicons.png" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <!--begin::Page Vendor Stylesheets(used by this page)-->
+    <link href="~/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/custom/prismjs/prismjs.bundle.css" rel="stylesheet" type="text/css" />
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body id="kt_body" data-kt-aside-minimize="off" class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed toolbar-tablet-and-mobile-fixed aside-enabled aside-fixed" --kt-toolbar-height:0px;--kt-toolbar-height-tablet-and-mobile:0px>
+    <div class="d-flex flex-column flex-root">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <!--begin::Page-->
+            <div class="page d-flex flex-row flex-column-fluid">
+                <partial name="_MenuPartial" />
+                <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+                    <partial name="_ResponsiveHeader" />
+                    <!--begin::Content-->
+                    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                        @RenderBody()
+                    </div>
+                    <!--End::Content-->
+                    <!--begin::Footer-->
+                    <div class="footer py-1 d-flex flex-lg-column" id="kt_footer">
+                        <div class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
+                            <div class="text-dark order-2 order-md-1">
+                                <span class="text-muted fw-bold me-1">2022©</span>
+                                <a class="text-gray-800 text-hover-primary">Factory Platform - By LKQ Corp</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end::Footer-->
+                </div>
+            </div>
+            <!--end::Page-->
+        }
+        else
+        {
+            @RenderBody()
+        }
+    </div>
+    <!--end::Root-->
+
+@*    <partial name="_DocViewerDrawer"/>
+*@
+    <!--begin::Scrolltop-->
+    <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
+        <span class="svg-icon">
+            <i class="fas fa-arrow-up text-white"></i>
+        </span>
+    </div>
+    <!--end::Scrolltop-->
+    <!--end::Main-->
+    <!--begin::Javascript-->
+    <script>var hostUrl = "assets/";</script>
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script type="text/javascript" src="~/assets/plugins/global/plugins.bundle.js"></script>
+    <script type="text/javascript" src="~/assets/js/scripts.bundle.js"></script>
+    <!--begin::Page Vendors Javascript(used by this page)-->
+    <script type="text/javascript" src="~/assets/plugins/custom/prismjs/prismjs.bundle.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+    <script type="text/javascript" src="~/assets/js/custom/documentation/documentation.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+    <!--end::Javascript-->
+    
+    <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

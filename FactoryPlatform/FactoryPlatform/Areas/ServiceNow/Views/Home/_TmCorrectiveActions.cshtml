@@ -1,0 +1,3185 @@
+﻿@using Newtonsoft.Json
+@model TMCorrectiveActionViewModel
+@*/////////////////////////////////////////////////////////
+/// Pagina:          _TmCorrectiveSctions
+/// Fecha creaci�n:  28/oct/2022
+/// Editor:          Fernando Rdz, Balta Rdz
+/// Correo editor:   
+/// Descripcion:     Descripción.
+/// 
+/// --- BITACORA DE EDICION -----------------------------
+/// 28/oct/2022:    Inicio de programacion.
+////////////////////////////////////////////////////////*@
+
+<div class="card-body p-5" id="BlockDocEdition">
+    @if (Model.TMReportCorrectiveAction.Any())
+    {
+        <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+            <div class="card-title">
+                <div class="d-flex align-items-center position-relative my-1">
+                    <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                    <input type="text" data-kt-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Report" />
+                </div>
+                <div id="table_CorrectiveA_export" class="d-none"></div>
+            </div>
+            <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                    <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                    Export report
+                </button>
+                <div id="table_CorrectiveA_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3" data-kt-export="excel">
+                            Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                        </a>
+                    </div>
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3" data-kt-export="csv">
+                            Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                        </a>
+                    </div>
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                            Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="table_DocsEdition" class="table table-striped  border-gray-300 gy-7 gs-7">
+                <thead class="p-2">
+                    <tr class="p-2 fw-bolder text-uppercase bg-gray-300 border-top border-bottom border-end border-gray-400 fs-6 text-gray-800">
+                        <th class="min-w-10px  align-middle text-center">#</th>
+                        <th class="min-w-200px align-middle ">Buttons</th>
+                        <th class="min-w-150px align-middle ">Key</th>
+                        <th class="min-w-300px align-middle ">Actions</th>
+                        <th class="min-w-250px align-middle ">Resp. Act.</th>
+                        <th class="min-w-150px align-middle text-center">Aperture</th>
+                        <th class="min-w-150px align-middle text-center">Promise</th>
+                        <th class="min-w-50px align-middle text-center">Level</th>
+                        <th class="min-w-250px align-middle ">Comments</th>
+                        <th class="min-w-250px align-middle ">Leader PCA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var counter = 1;
+                        foreach (var item in Model.TMReportCorrectiveAction)
+                        {
+                                    <tr class="mb-1 border-top border-end border-gray-400 ">
+                                        <td class="p-2 min-w-10px align-middle  text-center">@counter</td>
+                                        <td class="p-2 min-w-200px align-middle">
+                                            <button type="button" class="btn fs-8 btn-opacity-75 btn-primary ps-3 p-2" onclick="ModalInfo('@item.ID_Registro')">
+                                            <i class="fas fa-info text-white fs-8 text-center"></i>
+                                            </button>
+                                            
+                                            @if(item.Privilegio == 2 || item.Privilegio == 1)
+                                        {<button type="button" class="btn fs-8 btn-success ps-3 p-2" onclick="ModalUpdate('@item.ID_Registro')" style="background-color: #32c5d2;" >
+                                                <i class="fas fa-sync-alt text-white fs-8 text-center"></i>
+                                            </button>  }  
+                                            @{var colorRev = item.Tipo == 1 ? "success" : "secondary";
+                                        var desableButton = item.Tipo == 1 ? "" : "disabled";}
+                                                <button onclick="ModalReview(@item.ID_Registro, @item.CloseBit, @item.Nivel)" type="button" class="p-2 fs-8 btn btn-@colorRev me-2" @desableButton><i class="@item.IconoRev"></i>Review</button>
+                                            @if(item.Retorno != "-"){<span class="badge badge-danger">@item.Retorno</span>}
+                                        </td>
+                                        <td class="p-2 min-w-150px align-middle ">@item.Clave </td>
+                                        <td class="p-2 min-w-300px align-middle ">@item.Acciones</td>
+                                        <td class="p-2 min-w-250px align-middle ">@item.ResponsableActividad </td>
+                                        <td class="p-2 min-w-150px align-middle text-center">@item.FechaApertura</td>
+                                        <td class="p-2 min-w-150px align-middle text-center">@item.FechaPromesa</td>
+                                        <td class="p-2 min-w-50px align-middle text-center"><span class="badge badge-primary">Step-@item.Nivel</span></td>
+                                        <td class="p-2 min-w-250px align-middle ">@item.Comentarios </td>
+                                        <td class="p-2 min-w-250px align-middle ">@item.ResponsableSeguimiento</td>
+                                    </tr>
+                            counter++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info d-flex align-items-center p-5 mb-10">
+            <span class="svg-icon svg-icon-2x svg-icon-light"> <i class="fas fa-exclamation-triangle fs-2x text-info"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <div class="d-flex flex-column">
+                <h6 class="text-info">There are no documents for the moment.</h6>
+            </div>
+        </div>
+    }
+</div>
+
+@*Modal Information*@
+<div class="modal fade" id="InfoCA" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  mw-900px p-9">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    Information
+                </h2>
+                <a  class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger" id="BtnNewRevision"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body p-10">
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Key:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="IdKey" class="badge badge-success" style="background-color:#36c6d3;"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Tool:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="IdTool"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Source:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="IdSource"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Department:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="IdDepartment"></span>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Process:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span id="IdProcess"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Lider PCA:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="IdLiderPCA"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Activity leader:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="IDLeader"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Action category:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="IdCategory"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Aperture date:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="IdApertureDate"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Promise date:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="IdPromiseDate"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Causes:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="IdCauses"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Actions:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <span class="fs-6" id="IdActions"></span>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <div class="col-lg border-end border-white p-5">
+                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">Documents:</h1>
+                            <div class="pe-2 row border border-gray-300 ">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Evidence file:</label>
+                                <div class="col-lg-8 border-end border-white p-5">
+                                <span class="fs-6" id="IdEvidence"></span>
+                                </div>
+                            </div>
+                            <div class="pe-2 row border border-gray-300 ">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Problem analysis:</label>
+                                <div class="col-lg-8 border-end border-white p-5">
+                                <span class="fs-6" id="IdProblem"></span>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+
+                <div class="pe-2 row border border-gray-300 ">
+                    <div class="col-lg border-end border-white p-5">
+                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">History:</h1>
+                        <div class="table-responsive">
+                            <table class="table table-striped  gy-7 gs-7">
+                                <thead>
+                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                        <th class="">#</th>
+                                        <th class="">Applicant</th>
+                                        <th class="">Responsable</th>
+                                        <th class="text-center">Date</th>
+                                        <th class="text-center">Step</th>
+                                        <th class="">Comments</th>
+                                        <th class="text-center">Operation</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody">
+                                   
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                  <button type="button" class="btn btn-secondary p-3 fs-8" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Update Information*@
+<div class="modal fade" id="ModalReviewUpdate" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  mw-900px p-9">
+        <div class="modal-content">
+            <form id="FormUpdate">
+                <div class="modal-header">
+                <h2 class="modal-title">
+                    Review
+                </h2>
+                <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger" id="BtnNewRevision"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body p-10">
+                <input id="idRegistroReviewUpdate" name="idRegistroReviewUpdate" type="hidden" value="" />
+                <input id="idStepReviewUpdate" name="idStepReviewUpdate" type="hidden"  value=""/>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Key:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <div class="input-group mb-5 fv-row">
+                            <span class="input-group-text" id="basic-addon1">
+                                <div class="form-check form-check-custom form-check-success ">
+                                    <input class="form-check-input p-1" type="checkbox" onclick="enableInput(this)" value="" />
+                                </div>
+                           </span>
+                            <input id="IdKeyReviewUpdate" type="text" class="form-control p-3 fs-7 ps-2" aria-label="Text input with checkbox" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Tool:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <input disabled type="text" id="IdToolReviewUpdate" name="IdToolReviewUpdate" maxlength="250" class="form-control p-3 fs-8"/>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Source:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <select id="IdSourceReviewUpdate" name="IdSourceReviewUpdate" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Quality_CA_Sources)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                        <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Department:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <select id="IdDepartmentReviewUpdate" name="IdDepartmentReviewUpdate" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Production_Departments)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Process:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <select id="IdProcessReviewUpdate" name="IdProcessReviewUpdate" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Quality_Processes)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Lider PCA:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                            <select id="IdLiderPCAReviewUpdate" name="IdLiderPCAReviewUpdate" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Quality_CA_Responsible)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Activity leader:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <select id="IdActivityReviewUpdate" name="IdActivityReviewUpdate" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Quality_CA_Activity)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Action category:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <select id="IdActionCategoryReviewUpdate" name="IdActionCategoryReviewUpdate" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Quality_CA_CategoryAccion)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Aperture date:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <input disabled type="text" id="IdApertureDateReviewUpdate" name="IdApertureDateReviewUpdate" maxlength="250" class="form-control p-3 fs-8"/>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Promise date:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                         <div class="position-relative d-flex align-items-center fv-row">
+                             <span class="svg-icon svg-icon-2 position-absolute mx-4"><i class="fas fa-calendar-alt fs-3"></i></span>
+                            <input id="IdPromiseDateReviewUpdate" name="IdPromiseDateReviewUpdate" class="form-control p-3 fs-7 ps-10" placeholder="Pick a date" value="" />
+                         </div>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Causes:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <textarea id="IdCausesReviewUpdate" name="IdCausesReviewUpdate" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Actions:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <textarea id="IdActionsReviewUpdate" name="IdActionsReviewUpdate" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                    </div>
+                </div>
+                <!--begin::Accordion-->
+                <div class="accordion pe-2 row border border-gray-300 mb-5" id="accordion_review">
+                    <div class="accordion-item border border-transparent">
+                        <h2 class="accordion-header" id="review_header">
+                            <button style="background-color:white;" class="accordion-button  accordion-white  fs-4 fw-semibold border border-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#review_body" aria-expanded="true" aria-controls="review_body">
+                                 <h1 class="fw-bold fs-5 text-center p-2 mb-0">History:</h1>
+                            </button>
+                        </h2>
+                        <div id="review_body" class="accordion-collapse collapse hide" aria-labelledby="review_header" data-bs-parent="#accordion_review">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped  gy-7 gs-7">
+                                        <thead>
+                                            <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                <th class="">#</th>
+                                                <th class="">Applicant</th>
+                                                <th class="">Responsable</th>
+                                                <th class="text-center">Date</th>
+                                                <th class="text-center">Step</th>
+                                                <th class="">Comments</th>
+                                                <th class="text-center">Operation</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyReviewUpdate">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end::Accordion-->
+            </div>
+            <div class="modal-footer text-center">
+                 <button type="button" class="btn btn-secondary p-3 fs-8 me-3" data-bs-dismiss="modal">Close</button>
+                <button type="button" onclick="DeleteAccion($('#idRegistroReviewUpdate').val())"  class="btn btn-danger p-3 fs-8">Delete</button>
+                <button type="button" id="BtnSendReviewUpdate" class="btn btn-primary p-3 fs-8 me-3">
+                    <span class="indicator-label"><i class="far fa-save"></i>Save</span>
+                    <span class="indicator-progress">
+                        Please wait...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*Modal Review Step 1*@
+<div class="modal fade" id="ModalReviewStep1" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  mw-900px p-9">
+        <div class="modal-content">
+            <form id="FormStep1">
+                <div class="modal-header">
+                <h2 class="modal-title">
+                    Review
+                </h2>
+                <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger" id="BtnNewRevision"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body p-10">
+                <input id="idRegistroReviewStep1" name="idRegistroReviewStep1" type="hidden" value="" />
+                <input id="idStepReviewStep1" name="idStepReviewStep1" type="hidden"  value=""/>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Key:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <h2><span id="IdKeyReviewStep1" class="badge badge-success" style="background-color:#36c6d3;"></span></h2>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Tool:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <input disabled type="text" id="IdToolReviewStep1" name="IdToolReviewStep1" maxlength="250" class="form-control p-3 fs-8"/>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Source:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <select id="IdSourceReviewStep1" name="IdSourceReviewStep1" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Quality_CA_Sources)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                        <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Department:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <select id="IdDepartmentReviewStep1" name="IdDepartmentReviewStep1" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Production_Departments)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Process:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <select id="IdProcessReviewStep1" name="IdProcessReviewStep1" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Quality_Processes)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Lider PCA:</label>
+                    <div class="col-lg-8 border-end border-white p-5">
+                        <input disabled type="text" id="IdLiderPCAReviewStep1" name="IdLiderPCAReviewStep1" maxlength="250" class="form-control p-3 fs-8"/>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Activity leader:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <select id="IdActivityReviewStep1" name="IdActivityReviewStep1" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Quality_CA_Activity)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Action category:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <select id="IdActionCategoryReviewStep1" name="IdActionCategoryReviewStep1" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                            <option></option>
+                            @foreach (var item in Model.Quality_CA_CategoryAccion)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Aperture date:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <input disabled type="text" id="IdApertureDateReviewStep1" name="IdApertureDateReviewStep1" maxlength="250" class="form-control p-3 fs-8"/>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Promise date:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <input disabled type="text" id="IdPromiseDateReviewStep1" name="IdPromiseDateReviewStep1" maxlength="250" class="form-control p-3 fs-8"/>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Causes:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <textarea id="IdCausesReviewStep1" name="IdCausesReviewStep1" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5 required">Actions:</label>
+                    <div class="col-lg-8 border-end border-white p-5 fv-row">
+                        <textarea id="IdActionsReviewStep1" name="IdActionsReviewStep1" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                    </div>
+                </div>
+                <div class="pe-2 row border border-gray-300 ">
+                    <div class="col-lg border-end border-white p-5">
+                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">Closed:</h1>
+                        <div class="pe-2 row border border-gray-300 ">
+                            <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 align-middle p-5">Problem analysis:</label>
+                            <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                <span class="fs-6 mb-5 me-3" id="IdProblemReviewStep1"></span>
+                                <div class="pt-3">
+                                    <button type="button" onclick="disableInput()" class="btn bg-info bg-opacity-75 bg-hover-opacity-50 fs-8 p-2 mb-3 text-white"><i class="fas fa-window-restore text-white"></i>Change File</button>  
+                                </div>
+                                <div class="fv-row" id="FileHide" style="display: none;">
+                                    <input id="FileACReviewStep1" name="FileACReviewStep1" accept=".pdf" class="form-control ps-3 p-3 fs-8" type="file" placeholder="Change File" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pe-2 row border border-gray-300 ">
+                            <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">RASP Family:</label>
+                            <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                <input type="text" id="IdFamilyRASPReviewStep1" name="IdFamilyRASPReviewStep1" maxlength="250" class="form-control p-3 fs-8" placeholder="RASP Family" />
+                            </div>
+                        </div>
+                        <div class="pe-2 row border border-gray-300 ">
+                            <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">RASP Failure code:</label>
+                            <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                <input type="text" id="IdFailureReviewStep1" name="IdFailureReviewStep1" maxlength="250" class="form-control p-3 fs-8" placeholder="RASP Failure code" />
+                            </div>
+                        </div>
+                            <div class="pe-2 row border border-gray-300 ">
+                            <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Comments:</label>
+                            <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                <textarea id="CommentReviewStep1" name="CommentReviewStep1" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--begin::Accordion-->
+                <div class="accordion pe-2 row border border-gray-300 mb-5" id="accordion_review">
+                    <div class="accordion-item border border-transparent">
+                        <h2 class="accordion-header" id="review_header">
+                            <button style="background-color:white;" class="accordion-button  accordion-white  fs-4 fw-semibold border border-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#review_body" aria-expanded="true" aria-controls="review_body">
+                                 <h1 class="fw-bold fs-5 text-center p-2 mb-0">History:</h1>
+                            </button>
+                        </h2>
+                        <div id="review_body" class="accordion-collapse collapse hide" aria-labelledby="review_header" data-bs-parent="#accordion_review">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped  gy-7 gs-7">
+                                        <thead>
+                                            <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                <th class="">#</th>
+                                                <th class="">Applicant</th>
+                                                <th class="">Responsable</th>
+                                                <th class="text-center">Date</th>
+                                                <th class="text-center">Step</th>
+                                                <th class="">Comments</th>
+                                                <th class="text-center">Operation</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyReviewStep1">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end::Accordion-->
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-secondary p-3 fs-8 me-3" data-bs-dismiss="modal">Close</button>
+                <button type="button" onclick="DeleteAccion($('#idRegistroReviewStep1').val())"  class="btn btn-danger p-3 fs-8">Delete</button>
+                <button type="button" id="BtnSendReviewStep1" class="btn btn-primary p-3 fs-8 me-3">
+                    <span class="indicator-label"><i class="far fa-save"></i>Save</span>
+                    <span class="indicator-progress">
+                        Please wait...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*Modal Review Step 2*@
+<div class="modal fade" id="ModalReviewStep2" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  mw-900px p-9">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    Review
+                </h2>
+                <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger" id="BtnNewRevision"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body p-10">
+                <!--begin::Accordion-->
+                <div class="accordion pe-2 row border border-gray-300 mb-5" id="accordion_review">
+                    <div class="accordion-item border border-transparent">
+                        <h2 class="accordion-header" id="review_header">
+                            <button style="background-color:white;" class="accordion-button  accordion-white  fs-4 fw-semibold border border-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#review_body" aria-expanded="true" aria-controls="review_body">
+                                <span id="IdKeyReviewStep2Title"></span>
+                            </button>
+                        </h2>
+                        <div id="review_body" class="accordion-collapse collapse hide" aria-labelledby="review_header" data-bs-parent="#accordion_review">
+                            <div class="accordion-body">
+
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Key:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdKeyReviewStep2" class="badge badge-success" style="background-color:#36c6d3;"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Tool:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdToolReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Source:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdSourceReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Department:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdDepartmentReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Process:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdProcessReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Lider PCA:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdLiderPCAReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Activity leader:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IDLeaderReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Action category:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdCategoryReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Aperture date:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdApertureDateReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Promise date:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdPromiseDateReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Causes:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdCausesReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Actions:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdActionsReviewStep2"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <div class="col-lg border-end border-white p-5">
+                                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">Documents:</h1>
+                                        <div class="pe-2 row border border-gray-300 ">
+                                            <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Evidence file:</label>
+                                            <div class="col-lg-8 border-end border-white p-5">
+                                                <span class="fs-6" id="IdEvidenceReviewStep2"></span>
+                                            </div>
+                                        </div>
+                                        <div class="pe-2 row border border-gray-300 ">
+                                            <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Problem analysis:</label>
+                                            <div class="col-lg-8 border-end border-white p-5">
+                                                <span class="fs-6" id="IdProblemReviewStep2"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <div class="col-lg border-end border-white p-5">
+                                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">History:</h1>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped  gy-7 gs-7">
+                                                <thead>
+                                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                        <th class="">#</th>
+                                                        <th class="">Applicant</th>
+                                                        <th class="">Responsable</th>
+                                                        <th class="text-center">Date</th>
+                                                        <th class="text-center">Step</th>
+                                                        <th class="">Comments</th>
+                                                        <th class="text-center">Operation</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodyReviewStep2">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end::Accordion-->
+                <div class="pe-2 row border border-gray-300 ">
+                    <div class="col-lg border-end border-white p-5">
+                        <h1 class="fw-bold fs-5 text-center align-middle border-bottom p-2 mb-0">Closed:</h1>
+                        <form id="IdFormReviewStep2">
+                            <input id="idRegistroReviewStep2" name="idRegistroReviewStep2" type="hidden" value="" />
+                            <input id="idStepReviewStep2" name="idStepReviewStep2" type="hidden" value="" />
+                            <div class="pe-2 row border border-gray-300 ">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Evidence file:</label>
+                                <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                    <input id="FileACReviewStep2" name="FileACReviewStep2" accept=".*" class="form-control ps-3 p-3 fs-8" type="file" />
+                                </div>
+                            </div>
+                            <div class="pe-2 row border border-gray-300 ">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Comments:</label>
+                                <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                    <textarea id="CommentACReviewStep2" name="CommentACReviewStep2" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer text-center">
+                                <button type="button" id="idReturn" onclick="ReturnStep2()" class="btn btn-dark p-3 fs-8 me-3">
+                                    <span class="indicator-label"><i class="fas fa-undo-alt"></i>Return</span>
+                                </button>
+                                <button type="button" id="BtnSendReviewStep2" class="btn btn-primary p-3 fs-8 me-3">
+                                    <span class="indicator-label"><i class="far fa-save"></i>Save</span>
+                                    <span class="indicator-progress">
+                                        Please wait...
+                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                  <button type="button" class="btn btn-secondary p-3 fs-8" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@*Modal Review Step 3_1*@
+<div class="modal fade" id="ModalReviewStep3_1" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  mw-900px p-9">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    Review
+                </h2>
+                <a class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger" id="BtnNewRevision"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body p-10">
+                <!--begin::Accordion-->
+                <div class="accordion pe-2 row border border-gray-300 mb-5" id="accordion_review">
+                    <div class="accordion-item border border-transparent">
+                        <h2 class="accordion-header" id="review_header">
+                            <button style="background-color:white;" class="accordion-button  accordion-white  fs-4 fw-semibold border border-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#review_body" aria-expanded="true" aria-controls="review_body">
+                                <span id="IdKeyReviewStep3_1Title"></span>
+                            </button>
+                        </h2>
+                        <div id="review_body" class="accordion-collapse collapse hide" aria-labelledby="review_header" data-bs-parent="#accordion_review">
+                            <div class="accordion-body">
+
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Key:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdKeyReviewStep3_1" class="badge badge-success" style="background-color:#36c6d3;"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Tool:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdToolReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Source:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdSourceReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Department:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdDepartmentReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Process:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdProcessReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Lider PCA:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdLiderPCAReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Activity leader:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IDLeaderReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                 <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Action category:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdCategoryReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Aperture date:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdApertureDateReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Promise date:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdPromiseDateReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Causes:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdCausesReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Actions:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdActionsReviewStep3_1"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <div class="col-lg border-end border-white p-5">
+                                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">Documents:</h1>
+                                        <div class="pe-2 row border border-gray-300 ">
+                                            <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Evidence file:</label>
+                                            <div class="col-lg-8 border-end border-white p-5">
+                                                <span class="fs-6" id="IdEvidenceReviewStep3_1"></span>
+                                            </div>
+                                        </div>
+                                        <div class="pe-2 row border border-gray-300 ">
+                                            <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Problem analysis:</label>
+                                            <div class="col-lg-8 border-end border-white p-5">
+                                                <span class="fs-6" id="IdProblemReviewStep3_1"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <div class="col-lg border-end border-white p-5">
+                                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">History:</h1>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped  gy-7 gs-7">
+                                                <thead>
+                                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                        <th class="">#</th>
+                                                        <th class="">Applicant</th>
+                                                        <th class="">Responsable</th>
+                                                        <th class="text-center">Date</th>
+                                                        <th class="text-center">Step</th>
+                                                        <th class="">Comments</th>
+                                                        <th class="text-center">Operation</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodyReviewStep3_1">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end::Accordion-->
+                <div class="pe-2 row border border-gray-300 ">
+                    <div class="col-lg border-end border-white p-5">
+                        <h1 class="fw-bold fs-5 text-center align-middle border-bottom p-2 mb-0">Closed:</h1>
+                        <form id="IdFormReviewStep3_1">
+                            <input id="idRegistroReviewStep3_1" name="idRegistroReviewStep3_1" type="hidden" value="" />
+                            <input id="idStepReviewStep3_1" name="idStepReviewStep3_1" type="hidden" value="" />
+                            <div class="pe-2 row border border-gray-300 ">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Comments:</label>
+                                <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                    <textarea id="CommentACReviewStep3_1" name="CommentACReviewStep3_1" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer text-center">
+                                <button type="button" class="btn btn-secondary p-3 fs-8 me-3" data-bs-dismiss="modal">Close</button>
+                                <button type="button" id="idReturn" onclick="ReturnStep3(1)" class="btn btn-dark p-3 fs-8 me-3">
+                                    <span class="indicator-label"><i class="fas fa-undo-alt"></i>Return</span>
+                                </button>
+                                <button type="button" id="BtnSendStep3_1" class="btn btn-primary p-3 fs-8 me-3">
+                                    <span class="indicator-label"><i class="far fa-save"></i>Save</span>
+                                    <span class="indicator-progress">
+                                        Please wait...
+                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Review Step 3 y 4*@
+<div class="modal fade" id="ModalReviewStep3" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog  mw-900px p-9">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    Review 
+                </h2>
+                <a  class="btn btn-icon ms-2" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span class="svg-icon svg-icon-2x svg-icon-light text-hover-danger" id="BtnNewRevision"><i class="fas fa-times fs-3"></i></span>
+                </a>
+            </div>
+            <div class="modal-body p-10" id="BodyReviewBit">
+                <!--begin::Accordion-->
+                <div class="accordion pe-2 row border border-gray-300 mb-5" id="accordion_review">
+                    <div class="accordion-item border border-transparent">
+                        <h2 class="accordion-header" id="review_header">
+                            <button style="background-color:white;" class="accordion-button  accordion-white  fs-4 fw-semibold border border-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#review_body" aria-expanded="true" aria-controls="review_body">
+                               <span id="IdKeyreviewTitleBitComplete"></span>
+                            </button>
+                        </h2>
+                        <div id="review_body" class="accordion-collapse collapse hide" aria-labelledby="review_header" data-bs-parent="#accordion_review">
+                            <div class="accordion-body">
+
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Key:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdKeyBitComplete" class="badge badge-success" style="background-color:#36c6d3;"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Tool:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdToolBitComplete"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Source:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdSourceBitComplete"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Department:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdDepartmentBitComplete"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Process:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span id="IdProcessBitComplete"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Lider PCA:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdLiderPCABitComplete"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Activity leader:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IDLeaderBitComplete"></span>
+                                    </div>
+                                </div>
+
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Aperture date:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdApertureDateBitComplete"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Promise date:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdPromiseDateBitComplete"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Causes:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdCausesBitComplete"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Actions:</label>
+                                    <div class="col-lg-8 border-end border-white p-5">
+                                        <span class="fs-6" id="IdActionsBitComplete"></span>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <div class="col-lg border-end border-white p-5">
+                                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">Documents:</h1>
+                                        <div class="pe-2 row border border-gray-300 ">
+                                            <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Evidence file:</label>
+                                            <div class="col-lg-8 border-end border-white p-5">
+                                                <span class="fs-6" id="IdEvidenceBitComplete"></span>
+                                            </div>
+                                        </div>
+                                        <div class="pe-2 row border border-gray-300 ">
+                                            <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Problem analysis:</label>
+                                            <div class="col-lg-8 border-end border-white p-5">
+                                                <span class="fs-6" id="IdProblemBitComplete"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pe-2 row border border-gray-300 ">
+                                    <div class="col-lg border-end border-white p-5">
+                                        <h1 class="fw-bold fs-5 text-center border-bottom p-2 mb-0">History:</h1>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped  gy-7 gs-7">
+                                                <thead>
+                                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                        <th class="">#</th>
+                                                        <th class="">Responsable</th>
+                                                        <th class="">Retorno</th>
+                                                        <th class="text-center">Date</th>
+                                                        <th class="text-center">Nivel</th>
+                                                        <th class="">Comments</th>
+                                                        <th class="text-center">Operation</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodyBitComplete">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end::Accordion-->
+                <div class="pe-2 row border border-gray-300 ">
+                    <div class="col-lg border-end border-white p-5">
+                        <h1 class="fw-bold fs-5 text-center align-middle border-bottom p-2 mb-0">Closed:</h1>
+                        <form id="IdFormBitRewview">
+                            <input id="idRegistroStep3" name="idRegistroStep3" type="hidden" value="" />
+                            <input id="idStep3" name="idStep3" type="hidden" value="" />
+                            <div class="pe-2 row border border-gray-300">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Deadline:</label>
+                                <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                    <div class="position-relative d-flex align-items-center fv-row">
+                                        <span class="svg-icon svg-icon-2 position-absolute mx-4"><i class="fas fa-calendar-alt fs-3"></i></span>
+                                        <input id="IdDeadLine" name="IdDeadLine" class="form-control p-3 fs-7 ps-15"  placeholder="Pick a date" value="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pe-2 row border border-gray-300 ">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Closed by:</label>
+                                <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                    <select id="IdCloser" name="IdCloser"  class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true" data-dropdown-parent="#BodyReviewBit">
+                                        <option></option>
+                                        @foreach (var item in Model.ClosersUsers)
+                                        {
+                                            if(item.Value == Model.UserID.ToString())
+                                                {
+                                                <script> 
+                                                    $( document ).ready(function() { 
+                                                        $('#IdCloser').val(@Model.UserID).trigger('change');
+                                                        idUsuarioComboGlobal = @Model.UserID;
+                                                    });
+                                                </script>
+                                               }
+                                            <option value="@item.Value" >@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="pe-2 row border border-gray-300 ">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Solution type:</label>
+                                <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                    <select id="IdSolution" name="IdSolution" class="form-select form-select-sm p-3 fs-8" data-control="select2" data-placeholder="-- Select an option --" data-allow-clear="true">
+                                        <option></option>
+                                        @foreach (var item in Model.SolutionType)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="pe-2 row border border-gray-300 ">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">RASP Family:</label>
+                                <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                    <input type="text" id="IdFamilyRASP" name="IdFamilyRASP" maxlength="250" class="form-control p-3 fs-8" placeholder="RASP Family" />
+                                </div>
+                            </div>
+                            <div class="pe-2 row border border-gray-300 ">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">RASP Failure code:</label>
+                                <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                     <input type="text" id="IdFailure" name="IdFailure" maxlength="250" class="form-control p-3 fs-8" placeholder="RASP Failure code" />
+                                </div>
+                            </div>
+                             <div class="pe-2 row border border-gray-300 ">
+                                <label class="col-lg-3 fw-bold fs-6 border-end border-gray-300 p-5">Comments:</label>
+                                <div class="col-lg-8 border-end border-white p-5 fv-row">
+                                     <textarea id="CommentStep3" name="CommentStep3" class="form-control" rows="4" maxlength="500" data-kt-autosize="true"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer text-center">
+                                <button type="button" class="btn btn-secondary p-3 fs-8 me-3" data-bs-dismiss="modal">Close</button>
+                                <button type="button" id="idReturn" onclick="ReturnStep3(0)" class="btn btn-dark p-3 fs-8 me-3">
+                                     <span class="indicator-label"><i class="fas fa-undo-alt"></i>Return</span>
+                                </button>
+                                <button type="button" id="BtnBitModal" class="btn btn-primary p-3 fs-8 me-3">
+                                    <span class="indicator-label"><i class="far fa-save"></i>Save</span>
+                                    <span class="indicator-progress">
+                                        Please wait...
+                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Datatable library*@
+<script>
+    "use strict";
+
+    // Class definition
+    var KTDatatablesButtons = function () {
+        // Shared variables
+        var table;
+        var datatable;
+
+        // Private functions
+        var initDatatable = function () {
+            // Set date data order
+            const tableRows = table.querySelectorAll('tbody tr');
+
+            tableRows.forEach(row => {
+                const dateRow = row.querySelectorAll('td');
+                const realDate = moment(dateRow[3].innerHTML, "DD MMM YYYY, LT").format(); // select date from 4th column in table
+                dateRow[3].setAttribute('data-order', realDate);
+            });
+
+            // Init datatable --- more info on datatables: https://datatables.net/manual/
+            datatable = $(table).DataTable({
+
+                "info": false,
+                'order': [],
+                'pageLength': 100,
+                "scrollY": "500px",
+                "scrollCollapse": true,
+                "sScrollX": "100%",
+                                               });
+    }
+
+    //Hook export buttons
+    var exportButtons = () => {
+        const documentTitle = 'Corrective_Action_Report';
+        var buttons = new $.fn.dataTable.Buttons(table, {
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    title: documentTitle
+                },
+                {
+                    extend: 'csvHtml5',
+                    title: documentTitle
+
+                },
+                {
+                    extend: 'pdfHtml5',
+                    title: documentTitle
+                }
+            ]
+        }).container().appendTo($('#table_CorrectiveA_export'));
+
+        // Hook dropdown menu click event to datatable export buttons
+        const exportButtons = document.querySelectorAll('#table_CorrectiveA_export_menu [data-kt-export]');
+        exportButtons.forEach(exportButton => {
+            exportButton.addEventListener('click', e => {
+                e.preventDefault();
+
+                // Get clicked export value
+                const exportValue = e.target.getAttribute('data-kt-export');
+                const target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+
+                // Trigger click event on hidden datatable export buttons
+                target.click();
+            });
+        });
+    }
+
+    // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
+    var handleSearchDatatable = () => {
+        const filterSearch = document.querySelector('[data-kt-filter="search"]');
+        filterSearch.addEventListener('keyup', function (e) {
+            datatable.search(e.target.value).draw();
+        });
+    }
+
+    // Public methods
+    return {
+        init: function () {
+            table = document.querySelector('#table_DocsEdition');
+
+            if (!table) {
+                return;
+            }
+
+            initDatatable();
+            exportButtons();
+            handleSearchDatatable();
+        }
+    };
+	}();
+
+    // On document ready
+    KTUtil.onDOMContentLoaded(function () {
+        KTDatatablesButtons.init();
+    });
+</script>
+
+@*Datepickers*@
+<script>
+    //$("#ApertureDate").flatpickr();
+    $("#IdDeadLine").flatpickr({
+         dateFormat: "m-d-Y",
+         defaultDate: "today"
+    });
+    
+    //$("#ApertureDate").flatpickr();
+    $("#IdPromiseDateReviewUpdate").flatpickr({
+         dateFormat: "m-d-Y",
+         defaultDate: "today"
+    });
+</script>
+
+@*enable disable inputkey*@
+<script>
+    function enableInput(obj) 
+    {
+        if (obj.checked) {
+            document.getElementById('IdKeyReviewUpdate').disabled = false;
+        }
+        else {
+            document.getElementById('IdKeyReviewUpdate').disabled = true;
+        }
+    }
+</script>
+
+@*Validacion de textbox*@
+<script>
+    //============================================Modal Step 1
+    $('#IdCausesReviewStep1').maxlength({
+        threshold: 500,
+        warningClass: "badge badge-danger",
+        limitReachedClass: "badge badge-success",
+        separator: ' of ',
+        preText: 'You have ',
+        postText: ' chars remaining.',
+        validate: true
+    });
+    //===========================================End Modal Step 1
+
+</script>
+
+@*enable disable InputFile *@
+<script>
+    function disableInput() {
+      var x = document.getElementById("FileHide");
+      if (x.style.display === "none") 
+      {
+        x.style.display = "block";
+      } else
+      {
+        x.style.display = "none";
+      }
+    }
+</script>
+
+@*Show modal Information*@
+<script>
+    function ModalInfo(IdAccionC)
+    {
+        $.ajax({
+            url: "@Url.Action("GetInfModalCA","TMCorrectiveAction")",
+            data: {
+                IdAccionC: IdAccionC,
+            },
+            type: "POST",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+        }).done(function (result) 
+        {
+            if(result != null)
+            {
+                if (result == 'Error') {
+                    SystemServerError()
+                }
+                if (result == 'noSession') {
+                    swalExpired()
+                }
+                else if (result == 'Sorry') {
+                    swalNoAuthorized()
+                }
+                else if (result == 'NoPage') {
+                    swalNoAuthorized()
+                }
+                else
+                {
+                    var obj = JSON.parse(result);
+                    var tablaRetorno = "";
+
+                    $("#IdKey").html(obj.InfoBasicaModal.Clave);
+                    $("#IdTool").html(obj.InfoBasicaModal.Tool);
+                    $("#IdSource").html(obj.InfoBasicaModal.Sources);
+                    $("#IdDepartment").html(obj.InfoBasicaModal.Departament);
+                    $("#IdProcess").html(obj.InfoBasicaModal.Proceso);
+                    $("#IdLiderPCA").html(obj.InfoBasicaModal.ResponsableSeguimiento);
+                    $("#IDLeader").html(obj.InfoBasicaModal.ResponsableActividad);
+                    $("#IdCategory").html(obj.InfoBasicaModal.CategoriaAccion );
+                    $("#IdApertureDate").html(obj.InfoBasicaModal.FechaApertura);
+                    $("#IdPromiseDate").html(obj.InfoBasicaModal.FechaPromesa);
+                    $("#IdCauses").html(obj.InfoBasicaModal.Causas);
+                    $("#IdActions").html(obj.InfoBasicaModal.Acciones);
+                    $("#IdEvidence").html(obj.InfoBasicaModal.BtnEvidence);
+                    $("#IdProblem").html(obj.InfoBasicaModal.BtnAnalys);
+
+                    for(var i = 0;  i < obj.InfoRetorno.length; i++ )
+                    {
+                       tablaRetorno = tablaRetorno + 
+                       '<tr>'+
+                            '<td>'+ obj.InfoRetorno[i].ID+'</td>'+
+                            '<td>'+ obj.InfoRetorno[i].Responsable+'</td>'+
+                            '<td>'+ obj.InfoRetorno[i].ResponsableRetorno+'</td>'+
+                            '<td>'+ obj.InfoRetorno[i].ReturnDate+'</td>'+
+                            '<td class="text-center"><span class="badge badge-primary">Step-'+obj.InfoRetorno[i].Nivel+'</span></td>'+
+                            '<td>'+ obj.InfoRetorno[i].Comments+'</td>'+
+                            '<td class="text-center"><i class="'+ obj.InfoRetorno[i].Retorno +'"></i></td>'+
+                        '</tr>';
+                    }
+                   
+                    $("#tbody").html(tablaRetorno);
+
+                    $('#InfoCA').modal('toggle');
+                }
+            }
+            else 
+            {
+                SystemServerError()
+            }
+        }).fail(function (error) {
+             swalErrorServer()
+        });
+    }
+</script>
+
+@*============================================Start Show modals to Steps*@
+@*Show modal Reviews*@
+<script>
+    function ModalReview(IdAccionC, CloseBit, Step)
+    {
+        if((Step == 3 && CloseBit == 0) || (Step == 4) )
+        {
+            ModalReviewStep3(IdAccionC, CloseBit, Step)
+            if(idUsuarioComboGlobal != '')
+            {
+                $('#IdCloser').val(idUsuarioComboGlobal).trigger('change');
+            }
+        }
+		else if(Step == 3 && CloseBit == 1)
+        {
+			ModalReviewStep3_1(IdAccionC, CloseBit, Step)
+		}
+        else if(Step == 2)
+        {
+            ModalReviewStep2(IdAccionC, CloseBit, Step)
+        }
+        else if(Step == 1)
+        {
+            ModalReviewStep1(IdAccionC, CloseBit, Step)
+        }
+    }
+</script>
+
+@*Show Modal Update*@
+<script>
+    function ModalUpdate(IdAccionC) {
+        $.ajax({
+            url: "@Url.Action("GetInfModalCA","TMCorrectiveAction")",
+            data: {
+                IdAccionC: IdAccionC,
+            },
+            type: "POST",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+        }).done(function (result) {
+            if (result != null) {
+                 if (result == 'Error') {
+                    SystemServerError()
+                }
+                if (result == 'noSession') {
+                    swalExpired()
+                }
+                else if (result == 'Sorry') {
+                    swalNoAuthorized()
+                }
+                else if (result == 'NoPage') {
+                    swalNoAuthorized()
+                }
+                else {
+                    var obj = JSON.parse(result);
+                    var tablaRetorno = "";
+
+                    $("#idRegistroReviewUpdate").val(obj.InfoBasicaModal.ID_Registro);
+                    $("#idStepReviewUpdate").val(obj.InfoBasicaModal.Nivel);
+                    $("#IdKeyReviewUpdate").val(obj.InfoBasicaModal.Clave);
+                    $("#IdToolReviewUpdate").val(obj.InfoBasicaModal.Tool);
+                    $("#IdSourceReviewUpdate option:contains(" + obj.InfoBasicaModal.Sources + ")").attr('selected', true).trigger('change');
+                    $("#IdDepartmentReviewUpdate option:contains(" + obj.InfoBasicaModal.Departament + ")").attr('selected', true).trigger('change');
+                    $("#IdProcessReviewUpdate option:contains(" + obj.InfoBasicaModal.Proceso + ")").attr('selected', true).trigger('change');
+                    $("#IdActivityReviewUpdate option:contains(" + obj.InfoBasicaModal.ResponsableActividad + ")").attr('selected', true).trigger('change');
+                    $("#IdActionCategoryReviewUpdate option:contains(" + obj.InfoBasicaModal.CategoriaAccion + ")").attr('selected', true).trigger('change');
+                    $("#IdLiderPCAReviewUpdate option:contains(" + obj.InfoBasicaModal.ResponsableSeguimiento + ")").attr('selected', true).trigger('change');
+                    $("#IdCategoryReviewUpdate").html(obj.InfoBasicaModal.CategoriaAccion);
+                    $("#IdApertureDateReviewUpdate").val(obj.InfoBasicaModal.FechaApertura);
+                    $("#IdPromiseDateReviewUpdate").val(obj.InfoBasicaModal.FechaPromesa);
+                    $("#IdCausesReviewUpdate").val(obj.InfoBasicaModal.Causas);
+                    $("#IdActionsReviewUpdate").val(obj.InfoBasicaModal.Acciones);
+               
+
+                    for (var i = 0; i < obj.InfoRetorno.length; i++) {
+                        tablaRetorno = tablaRetorno +
+                            '<tr>' +
+                            '<td>' + obj.InfoRetorno[i].ID + '</td>' +
+                            '<td>' + obj.InfoRetorno[i].Responsable + '</td>' +
+                            '<td>' + obj.InfoRetorno[i].ResponsableRetorno + '</td>' +
+                            '<td>' + obj.InfoRetorno[i].ReturnDate + '</td>' +
+                            '<td class="text-center"><span class="badge badge-primary">Step-' + obj.InfoRetorno[i].Nivel + '</span></td>' +
+                            '<td>' + obj.InfoRetorno[i].Comments + '</td>' +
+                            '<td class="text-center"><i class="' + obj.InfoRetorno[i].Retorno + '"></i></td>' +
+                            '</tr>';
+                    }
+
+                    $("#tbodyReviewUpdate").html(tablaRetorno);
+
+                    $('#ModalReviewUpdate').modal('toggle');
+                }
+            }
+            else {
+                 SystemServerError()
+            }
+        }).fail(function (error) {
+              swalErrorServer()
+        });
+    }
+</script>
+
+@*Show Modal Step 1*@
+<script>
+    function ModalReviewStep1(IdAccionC, CloseBit, Step) {
+        $.ajax({
+            url: "@Url.Action("GetInfModalCA","TMCorrectiveAction")",
+            data: {
+                IdAccionC: IdAccionC,
+            },
+            type: "POST",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+        }).done(function (result) {
+            cosole.log(result);
+            if (result != null) {
+                if (result == 'Error') {
+                    SystemServerError()
+                }
+                if (result == 'noSession') {
+                    swalExpired()
+                }
+                else if (result == 'Sorry') {
+                    swalNoAuthorized()
+                }
+                else if (result == 'NoPage') {
+                    swalNoAuthorized()
+                }
+                else {
+                    var obj = JSON.parse(result);
+                    var tablaRetorno = "";
+
+                    $("#idRegistroReviewStep1").val(obj.InfoBasicaModal.ID_Registro);
+                    $("#idStepReviewStep1").val(obj.InfoBasicaModal.Nivel);
+                    $("#IdKeyReviewStep1").html(obj.InfoBasicaModal.Clave);
+                    $("#IdToolReviewStep1").val(obj.InfoBasicaModal.Tool);
+                    $("#IdSourceReviewStep1 option:contains(" + obj.InfoBasicaModal.Sources + ")").attr('selected', true).trigger('change');
+                    $("#IdDepartmentReviewStep1 option:contains(" + obj.InfoBasicaModal.Departament + ")").attr('selected', true).trigger('change');
+                    $("#IdProcessReviewStep1 option:contains(" + obj.InfoBasicaModal.Proceso + ")").attr('selected', true).trigger('change');
+                    $("#IdActivityReviewStep1 option:contains(" + obj.InfoBasicaModal.ResponsableActividad + ")").attr('selected', true).trigger('change');
+                    $("#IdActionCategoryReviewStep1 option:contains(" + obj.InfoBasicaModal.CategoriaAccion + ")").attr('selected', true).trigger('change');
+                    $("#IdLiderPCAReviewStep1").val(obj.InfoBasicaModal.ResponsableSeguimiento);
+                    $("#IdCategoryReviewStep1").html(obj.InfoBasicaModal.CategoriaAccion);
+                    $("#IdApertureDateReviewStep1").val(obj.InfoBasicaModal.FechaApertura);
+                    $("#IdPromiseDateReviewStep1").val(obj.InfoBasicaModal.FechaPromesa);
+                    $("#IdCausesReviewStep1").val(obj.InfoBasicaModal.Causas);
+                    $("#IdActionsReviewStep1").val(obj.InfoBasicaModal.Acciones);
+                    $("#IdProblemReviewStep1").html(obj.InfoBasicaModal.BtnAnalys);
+                    $("#CommentReviewStep1").html(obj.InfoBasicaModal.Comentarios);
+
+                    for (var i = 0; i < obj.InfoRetorno.length; i++) {
+                        tablaRetorno = tablaRetorno +
+                            '<tr>' +
+                            '<td>' + obj.InfoRetorno[i].ID + '</td>' +
+                            '<td>' + obj.InfoRetorno[i].Responsable + '</td>' +
+                            '<td>' + obj.InfoRetorno[i].ResponsableRetorno + '</td>' +
+                            '<td>' + obj.InfoRetorno[i].ReturnDate + '</td>' +
+                            '<td class="text-center"><span class="badge badge-primary">Step-' + obj.InfoRetorno[i].Nivel + '</span></td>' +
+                            '<td>' + obj.InfoRetorno[i].Comments + '</td>' +
+                            '<td class="text-center"><i class="' + obj.InfoRetorno[i].Retorno + '"></i></td>' +
+                            '</tr>';
+                    }
+
+                    $("#tbodyReviewStep1").html(tablaRetorno);
+
+                    $('#ModalReviewStep1').modal('toggle');
+                }
+            }
+            else {
+                SystemServerError()
+            }
+        }).fail(function (error) {
+             swalErrorServer()
+        });
+    }
+</script>
+
+@*Show Modal Step 2*@
+<script>
+    function ModalReviewStep2(IdAccionC, CloseBit, Step)
+    {
+              $.ajax({
+                url: "@Url.Action("GetInfModalCA","TMCorrectiveAction")",
+                data: {
+                    IdAccionC: IdAccionC,
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) 
+            {
+                if(result != null)
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else
+                    {
+                        var obj = JSON.parse(result);
+                        var tablaRetorno = "";
+
+                        $("#IdKeyReviewStep2").html(obj.InfoBasicaModal.Clave);
+                        $("#IdKeyReviewStep2Title").html(obj.InfoBasicaModal.Clave);
+                        $("#IdToolReviewStep2").html(obj.InfoBasicaModal.Tool);
+                        $("#IdSourceReviewStep2").html(obj.InfoBasicaModal.Sources);
+                        $("#IdDepartmentReviewStep2").html(obj.InfoBasicaModal.Departament);
+                        $("#IdProcessReviewStep2").html(obj.InfoBasicaModal.Proceso);
+                        $("#IdLiderPCAReviewStep2").html(obj.InfoBasicaModal.ResponsableSeguimiento);
+                        $("#IDLeaderReviewStep2").html(obj.InfoBasicaModal.ResponsableActividad);
+                        $("#IdCategoryReviewStep2").html(obj.InfoBasicaModal.CategoriaAccion);
+                        $("#IdApertureDateReviewStep2").html(obj.InfoBasicaModal.FechaApertura);
+                        $("#IdPromiseDateReviewStep2").html(obj.InfoBasicaModal.FechaPromesa);
+                        $("#IdCausesReviewStep2").html(obj.InfoBasicaModal.Causas);
+                        $("#IdActionsReviewStep2").html(obj.InfoBasicaModal.Acciones);
+                        $("#IdEvidenceReviewStep2").html(obj.InfoBasicaModal.BtnEvidence);
+                        $("#IdProblemReviewStep2").html(obj.InfoBasicaModal.BtnAnalys);
+                        $("#idRegistroReviewStep2").val(obj.InfoBasicaModal.ID_Registro);
+                        $("#idStepReviewStep2").val(Step);
+
+
+                        for(var i = 0;  i < obj.InfoRetorno.length; i++ )
+                        {
+                           tablaRetorno = tablaRetorno + 
+                           '<tr>'+
+                                '<td>'+ obj.InfoRetorno[i].ID+'</td>'+
+                                '<td>'+ obj.InfoRetorno[i].Responsable+'</td>'+
+                                '<td>'+ obj.InfoRetorno[i].ResponsableRetorno+'</td>'+
+                                '<td>'+ obj.InfoRetorno[i].ReturnDate+'</td>'+
+                                '<td class="text-center"><span class="badge badge-primary">Step-'+obj.InfoRetorno[i].Nivel+'</span></td>'+
+                                '<td>'+ obj.InfoRetorno[i].Comments+'</td>'+
+                                '<td class="text-center"><i class="'+ obj.InfoRetorno[i].Retorno +'"></i></td>'+
+                            '</tr>';
+                        }
+                   
+                        $("#tbodyReviewStep2").html(tablaRetorno);
+
+                        $('#ModalReviewStep2').modal('toggle');
+                    }
+                }
+                else 
+                {
+                     SystemServerError()
+                }
+            }).fail(function (error) {
+                 swalErrorServer()
+            });
+    }
+</script>
+
+@*Show Modal Step 3_1*@
+<script>
+    function ModalReviewStep3_1(IdAccionC, CloseBit, Step)
+    {
+        $.ajax({
+                url: "@Url.Action("GetInfModalCA","TMCorrectiveAction")",
+                data: {
+                    IdAccionC: IdAccionC,
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) 
+            {
+                if(result != null)
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else
+                    {
+                        var obj = JSON.parse(result);
+                        var tablaRetorno = "";
+
+                        $("#IdKeyReviewStep3_1Title").html(obj.InfoBasicaModal.Clave);
+                        $("#IdKeyReviewStep3_1").html(obj.InfoBasicaModal.Clave);
+                        $("#IdToolReviewStep3_1").html(obj.InfoBasicaModal.Tool);
+                        $("#IdSourceReviewStep3_1").html(obj.InfoBasicaModal.Sources);
+                        $("#IdDepartmentReviewStep3_1").html(obj.InfoBasicaModal.Departament);
+                        $("#IdProcessReviewStep3_1").html(obj.InfoBasicaModal.Proceso);
+                        $("#IdLiderPCAReviewStep3_1").html(obj.InfoBasicaModal.ResponsableSeguimiento);
+                        $("#IDLeaderReviewStep3_1").html(obj.InfoBasicaModal.ResponsableActividad);
+                        $("#IdCategoryReviewStep3_1").html(obj.InfoBasicaModal.CategoriaAccion);
+                        $("#IdApertureDateReviewStep3_1").html(obj.InfoBasicaModal.FechaApertura);
+                        $("#IdPromiseDateReviewStep3_1").html(obj.InfoBasicaModal.FechaPromesa);
+                        $("#IdCausesReviewStep3_1").html(obj.InfoBasicaModal.Causas);
+                        $("#IdActionsReviewStep3_1").html(obj.InfoBasicaModal.Acciones);
+                        $("#IdEvidenceReviewStep3_1").html(obj.InfoBasicaModal.BtnEvidence);
+                        $("#IdProblemReviewStep3_1").html(obj.InfoBasicaModal.BtnAnalys);
+                        $("#idRegistroReviewStep3_1").val(obj.InfoBasicaModal.ID_Registro);
+                        $("#idStepReviewStep3_1").val(Step);
+
+                        for(var i = 0;  i < obj.InfoRetorno.length; i++ )
+                        {
+                           tablaRetorno = tablaRetorno + 
+                           '<tr>'+
+                                '<td>'+ obj.InfoRetorno[i].ID+'</td>'+
+                                '<td>'+ obj.InfoRetorno[i].Responsable+'</td>'+
+                                '<td>'+ obj.InfoRetorno[i].ResponsableRetorno+'</td>'+
+                                '<td>'+ obj.InfoRetorno[i].ReturnDate+'</td>'+
+                                '<td class="text-center"><span class="badge badge-primary">Step-'+obj.InfoRetorno[i].Nivel+'</span></td>'+
+                                '<td>'+ obj.InfoRetorno[i].Comments+'</td>'+
+                                '<td class="text-center"><i class="'+ obj.InfoRetorno[i].Retorno +'"></i></td>'+
+                            '</tr>';
+                        }
+                   
+                        $("#tbodyReviewStep3_1").html(tablaRetorno);
+
+                        $('#ModalReviewStep3_1').modal('toggle');
+                    }
+                }
+                else 
+                {
+                     SystemServerError()
+                }
+            }).fail(function (error) {
+                 swalErrorServer()
+            });
+    }
+</script>
+
+@*Show Modal Step 3*@
+<script>
+    function ModalReviewStep3(IdAccionC, CloseBit, Step) {
+        $.ajax({
+            url: "@Url.Action("GetInfModalCA","TMCorrectiveAction")",
+            data: {
+                IdAccionC: IdAccionC,
+            },
+            type: "POST",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+        }).done(function (result) {
+            if (result != null) {
+                if (result == 'Error') {
+                    SystemServerError()
+                }
+                if (result == 'noSession') {
+                    swalExpired()
+                }
+                else if (result == 'Sorry') {
+                    swalNoAuthorized()
+                }
+                else if (result == 'NoPage') {
+                    swalNoAuthorized()
+                }
+                else {
+                    var obj = JSON.parse(result);
+                    var tablaRetorno = "";
+
+                    $("#IdKeyBitComplete").html(obj.InfoBasicaModal.Clave);
+                    $("#IdKeyreviewTitleBitComplete").html(obj.InfoBasicaModal.Clave);
+                    $("#IdToolBitComplete").html(obj.InfoBasicaModal.Tool);
+                    $("#IdSourceBitComplete").html(obj.InfoBasicaModal.Sources);
+                    $("#IdDepartmentBitComplete").html(obj.InfoBasicaModal.Departament);
+                    $("#IdProcessBitComplete").html(obj.InfoBasicaModal.Proceso);
+                    $("#IdLiderPCABitComplete").html(obj.InfoBasicaModal.Clave);
+                    $("#IDLeaderBitComplete").html(obj.InfoBasicaModal.Clave);
+                    $("#IdApertureDateBitComplete").html(obj.InfoBasicaModal.FechaApertura);
+                    $("#IdPromiseDateBitComplete").html(obj.InfoBasicaModal.FechaPromesa);
+                    $("#IdCausesBitComplete").html(obj.InfoBasicaModal.Causas);
+                    $("#IdActionsBitComplete").html(obj.InfoBasicaModal.Acciones);
+                    $("#IdEvidenceBitComplete").html(obj.InfoBasicaModal.BtnEvidence);
+                    $("#IdProblemBitComplete").html(obj.InfoBasicaModal.BtnAnalys);
+                    $("#idRegistroStep3").val(obj.InfoBasicaModal.ID_Registro);
+                    $("#idStep3").val(Step);
+
+                    for (var i = 0; i < obj.InfoRetorno.length; i++) {
+                        tablaRetorno = tablaRetorno +
+                            '<tr>' +
+                            '<td>' + obj.InfoRetorno[i].ID + '</td>' +
+                            '<td>' + obj.InfoRetorno[i].Responsable + '</td>' +
+                            '<td>' + obj.InfoRetorno[i].ResponsableRetorno + '</td>' +
+                            '<td>' + obj.InfoRetorno[i].ReturnDate + '</td>' +
+                            '<td class="text-center"><span class="badge badge-primary">Step-' + obj.InfoRetorno[i].Nivel + '</span></td>' +
+                            '<td>' + obj.InfoRetorno[i].Comments + '</td>' +
+                            '<td class="text-center"><i class="' + obj.InfoRetorno[i].Retorno + '"></i></td>' +
+                            '</tr>';
+                    }
+
+                    $("#tbodyBitComplete").html(tablaRetorno);
+
+                    $('#ModalReviewStep3').modal('toggle');
+                }
+            }
+            else {
+                SystemServerError()
+            }
+        }).fail(function (error) {
+              swalErrorServer()
+        });
+    }
+</script>
+@*============================================End Show modals to Steps*@
+
+@*============================================Start Save Steps*@
+@*Save Update*@
+<script>
+    function SaveUpdate() 
+    {
+            var formData = new FormData();
+      
+            formData.append("IdAccionCorrective", $("#idRegistroReviewUpdate").val());
+            formData.append("Key", $("#IdKeyReviewUpdate").val());
+            formData.append("Step", $("#idStepReviewUpdate").val());
+            formData.append("IdSources", $("#IdSourceReviewUpdate").val());
+            formData.append("IdDepartment", $("#IdDepartmentReviewUpdate").val());
+            formData.append("IdProcess", $("#IdProcessReviewUpdate").val());
+            formData.append("IdLiderPCA", $("#IdLiderPCAReviewUpdate").val());
+            formData.append("IdActivity", $("#IdActivityReviewUpdate").val());
+            formData.append("IdActionCategory", $("#IdActionCategoryReviewUpdate").val());
+            formData.append("PromiseDate", $("#IdPromiseDateReviewUpdate").val());
+            formData.append("Causes", $("#IdCausesReviewUpdate").val());
+            formData.append("Actions", $("#IdActionsReviewUpdate").val());
+          
+            $.ajax({
+                url: "@Url.Action("SaveUpdate","TMCorrectiveAction")",
+                data: formData,
+                type: "POST",
+                processData: false,
+                contentType: false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result)
+            {
+                if(result != null)
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else
+                    {
+                         if (result == 'Success') 
+                         {
+                            Swal.fire({
+                                text: "The Action has been successfully submitted!",
+                                icon: "success",
+                                buttonsStyling: false,
+                                allowEscapeKey: false,
+                                allowOutsideClick: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            }).then((result) => 
+                            {
+                                if (result.isConfirmed) 
+                                {
+                                    $('#modalReview').modal('hide');
+                                    $('body').removeClass('modal-open');
+                                    $('.modal-backdrop').remove();
+                                    showReport(@ViewData["MenuTaskId"])
+                                }
+                            });
+                         }
+                    }
+                }
+                else 
+                {
+                      SystemServerError()
+                }
+
+            }).fail(function (error) {
+                 swalErrorServer()
+            });
+    }
+</script>
+
+@*Delete accion*@
+<script>
+     function DeleteAccion(IdAccionC)
+     {
+        //var IdAccionC = $("#idRegistroReviewUpdate").val();
+
+         Swal.fire({
+              icon: "error",
+              title: 'Comment Delete',
+              input: 'textarea',
+			  //confirmButtonColor: "#DD6B55",
+              customClass: {
+                    validationMessage: 'my-validation-message'
+              },
+              preConfirm: (value) => {
+                if (!value) {
+                  Swal.showValidationMessage(
+                    'Need typing comment from Delete'
+                  )
+                }
+              },
+              inputAttributes: {
+                autocapitalize: 'off'
+              },
+                 allowEscapeKey: false,
+                 allowOutsideClick: false,
+                 showCancelButton: true,
+                 confirmButtonText: 'Delete',
+                 confirmButtonColor: '#f1416c',
+                 showLoaderOnConfirm: true,
+
+            }).then((result) => {
+              if (result.isConfirmed) 
+              {
+                //ajax
+
+                    $.ajax({
+                    url: "@Url.Action("DeleteAccionC","TMCorrectiveAction")",
+                    data: {
+                        IdAccionC: IdAccionC,
+                        Comment : result.value
+                    },
+                    type: "POST",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    }).done(function (result) 
+                    {
+                        if(result != null)
+                        {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else
+                            {
+                               Swal.fire({
+                                    text: "The operation has been successfully submitted!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    allowEscapeKey: false,
+                                    allowOutsideClick: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) 
+                                    {
+                                      $('#modalReview').modal('hide');
+                                      $('body').removeClass('modal-open');
+                                      $('.modal-backdrop').remove();
+                                      showReport(@ViewData["MenuTaskId"])
+                                    }
+                                });
+                            }
+                        }
+                        else 
+                        {
+                            SystemServerError()
+                        }
+                    }).fail(function (error) {
+                         swalErrorServer()
+                    });
+              }
+            })
+     }
+</script>
+
+@*Save step 1*@
+<script>
+    function SaveStep1() {
+        var analysis = document.getElementById("FileACReviewStep1").files;
+        var files = /(.*?)\.(xls|xlsx|csv|docx|doc|ppt|pptx|pdf)$/;
+        var formData = new FormData();
+
+        var xd =document.getElementById("idRegistroReviewStep1").value;
+
+        if(analysis.length > 0)
+        {
+            if (analysis[0].name.match(files)) 
+            {
+                formData.append("FileAC", analysis[0]);
+                formData.append("IdAccionCorrective", $("#idRegistroReviewStep1").val());
+                formData.append("Step", $("#idStepReviewStep1").val());
+                formData.append("IdSources", $("#IdSourceReviewStep1").val());
+                formData.append("IdDepartment", $("#IdDepartmentReviewStep1").val());
+                formData.append("IdProcess", $("#IdProcessReviewStep1").val());
+                formData.append("IdActivity", $("#IdActivityReviewStep1").val());
+                formData.append("IdAction", $("#IdActionCategoryReviewStep1").val());
+                formData.append("Causes", $("#IdCausesReviewStep1").val());
+                formData.append("Actions", $("#IdActionsReviewStep1").val());
+                formData.append("FamilyRASP", $("#IdFamilyRASPReviewStep1").val());
+                formData.append("Failure", $("#IdFailureReviewStep1").val());
+                formData.append("Comment", $("#CommentReviewStep1").val());
+            
+                $.ajax({
+                    url: "@Url.Action("SavePaso1","TMCorrectiveAction")",
+                    data: formData,
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (result) 
+                {
+
+                    if(result != null)
+                    {
+                        if (result == 'Error') {
+                            SystemServerError()
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'success') 
+                        {
+                            Swal.fire({
+                                text: "The Action has been successfully submitted!",
+                                icon: "success",
+                                buttonsStyling: false,
+                                allowEscapeKey: false,
+                                allowOutsideClick: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            }).then((result) => 
+                            {
+                                if (result.isConfirmed) 
+                                {
+                                    $('#modalReview').modal('hide');
+                                    $('body').removeClass('modal-open');
+                                    $('.modal-backdrop').remove();
+                                    showReport(@ViewData["MenuTaskId"])
+                                }
+                            });
+                        }
+                    }
+                    else {
+                        SystemServerError()
+                    }
+
+                }).fail(function (error) {
+                      swalErrorServer()
+                });
+            }
+            else {
+                toastr.error("Analysis File allow only types files xls|xlsx|csv|docx|doc|ppt|pptx|pdf !");
+            }
+        }
+        else
+        {       
+                formData.append("IdAccionCorrective", $("#idRegistroReviewStep1").val());
+                formData.append("Step", $("#idStepReviewStep1").val());
+                formData.append("IdSources", $("#IdSourceReviewStep1").val());
+                formData.append("IdDepartment", $("#IdDepartmentReviewStep1").val());
+                formData.append("IdProcess", $("#IdProcessReviewStep1").val());
+                formData.append("IdActivity", $("#IdActivityReviewStep1").val());
+                formData.append("IdAction", $("#IdActionCategoryReviewStep1").val());
+                formData.append("Causes", $("#IdCausesReviewStep1").val());
+                formData.append("Actions", $("#IdActionsReviewStep1").val());
+                formData.append("FamilyRASP", $("#IdFamilyRASPReviewStep1").val());
+                formData.append("Failure", $("#IdFailureReviewStep1").val());
+                formData.append("Comment", $("#CommentReviewStep1").val());
+            
+                 $.ajax({
+                    url: "@Url.Action("SavePaso1","TMCorrectiveAction")",
+                    data: formData,
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (result) {
+
+                    if(result != null)
+                    {
+                        if (result == 'Error') {
+                            SystemServerError()
+                        }
+                        if (result == 'noSession') {
+                            swalExpired()
+                        }
+                        else if (result == 'Sorry') {
+                            swalNoAuthorized()
+                        }
+                        else if (result == 'NoPage') {
+                            swalNoAuthorized()
+                        }
+                        else  if (result == 'success')
+                        {
+                            Swal.fire({
+                                text: "The Action has been successfully submitted!",
+                                icon: "success",
+                                buttonsStyling: false,
+                                allowEscapeKey: false,
+                                allowOutsideClick: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            }).then((result) => 
+                            {
+                                if (result.isConfirmed) 
+                                {
+                                    $('#modalReview').modal('hide');
+                                    $('body').removeClass('modal-open');
+                                    $('.modal-backdrop').remove();
+                                    showReport(@ViewData["MenuTaskId"])
+                                }
+                            });
+                         }
+                    }  
+                    else {
+                       SystemServerError()
+                    }
+
+                }).fail(function (error) {
+                      swalErrorServer()
+                });
+        }
+    }
+</script>
+
+@*Save step2*@
+<script>
+    function SaveStep2()
+    {
+        var analysis = document.getElementById("FileACReviewStep2").files;
+        var files = /(.*?)\.(xls|xlsx|csv|docx|doc|ppt|pptx|pdf)$/;
+        var formData = new FormData();
+
+        if (analysis[0].name.match(files)) 
+        {
+            formData.append("FileAC", analysis[0]);
+            formData.append("IdAccionC", $("#idRegistroReviewStep2").val());
+            formData.append("Step", $("#idStepReviewStep2").val());
+            formData.append("Comment", $('#CommentACReviewStep2').val());
+
+            $.ajax({
+                url: "@Url.Action("SavePaso2","TMCorrectiveAction")",
+                data: formData,
+                type: "POST",
+                processData: false,
+                contentType: false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+
+                if(result != null)
+                {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'success') {
+                        Swal.fire({
+                            text: "The Action has been successfully submitted!",
+                            icon: "success",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#modalReview').modal('hide');
+                                $('body').removeClass('modal-open');
+                                $('.modal-backdrop').remove();
+                                showReport(@ViewData["MenuTaskId"])
+                            }
+                        });
+                    }
+                }
+                else {
+                     SystemServerError()
+                }
+
+            }).fail(function (error) {
+                  swalErrorServer()
+            });
+        }
+        else {
+            toastr.error("Analysis File allow only types files xls|xlsx|csv|docx|doc|ppt|pptx|pdf !");
+        }
+    }
+</script>
+
+@*Save step3_1*@
+<script>
+    function SaveStep3_1()
+    {
+        var formData = new FormData();
+
+            formData.append("IdAccionC", $("#idRegistroReviewStep3_1").val());
+            formData.append("Step", $("#idStepReviewStep3_1").val());
+            formData.append("CommentStep", $('#CommentACReviewStep3_1').val());
+			formData.append("Opcion", 1);
+
+            $.ajax({
+                url: "@Url.Action("SavePaso3","TMCorrectiveAction")",
+                data: formData,
+                type: "POST",
+                processData: false,
+                contentType: false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+
+                if(result != null)
+                {
+                    if (result == 'Error') {
+                      SystemServerError()
+                    }
+                    if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    if (result == 'success') {
+                        Swal.fire({
+                            text: "The Action has been successfully submitted!",
+                            icon: "success",
+                            buttonsStyling: false,
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#modalReview').modal('hide');
+                                $('body').removeClass('modal-open');
+                                $('.modal-backdrop').remove();
+                                showReport(@ViewData["MenuTaskId"])
+                            }
+                        });
+                    }
+                }
+                else 
+                {
+                    SystemServerError()
+
+                }
+
+            }).fail(function (error) {
+                  swalErrorServer()
+            });
+
+    }
+</script>
+
+@*Save Step 3*@
+<script>
+    function SaveStep3()
+    {
+        var formData = new FormData();
+
+        formData.append("IdDeadLine", $("#IdDeadLine").val());
+        formData.append("IdCloser",   $("#IdCloser").val());
+        formData.append("IdSolution", $("#IdSolution").val());
+        formData.append("IdAccionC",  $("#idRegistroStep3").val());
+        formData.append("Step",   $("#idStep3").val());
+		formData.append("Opcion", 0);
+
+        if($('#IdFamilyRASP').val() != '' &&  $('#IdFamilyRASP').val() != null)
+        {
+            formData.append("FamilyRASP", $('#IdFamilyRASP').val());
+        }
+        if($('#IdFailure').val() != '' &&  $('#IdFailure').val() != null)
+        {
+          formData.append("Failure", $('#IdFailure').val());
+        }
+        if($('#CommentStep3').val() != '' &&  $('#CommentStep3').val() != null)
+        {
+        	formData.append("CommentStep", $('#CommentStep3').val());
+        }
+        
+        $.ajax({
+            url: "@Url.Action("SavePaso3","TMCorrectiveAction")",
+            data: formData,
+            type: "POST",
+            processData: false,
+            contentType: false,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+        }).done(function (result) {
+
+            if(result != null)
+            {
+                if (result == 'Error') {
+                    SystemServerError()
+                }
+                if (result == 'noSession') {
+                    swalExpired()
+                }
+                else if (result == 'Sorry') {
+                    swalNoAuthorized()
+                }
+                else if (result == 'NoPage') {
+                    swalNoAuthorized()
+                }
+                if (result == 'success') {
+                    Swal.fire({
+                        text: "The Action has been successfully submitted!",
+                        icon: "success",
+                        buttonsStyling: false,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn btn-primary"
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#ModalReviewStep3').modal('hide');
+                            $('body').removeClass('modal-open');
+                            $('.modal-backdrop').remove();
+                            showReport(@ViewData["MenuTaskId"])
+                        }
+                    });
+                }
+            }
+            else {
+                SystemServerError()
+            }
+
+        }).fail(function (error) {
+             swalErrorServer()
+        });
+    }
+</script>
+
+
+@*============================================End Save Steps*@
+
+@*============================================Start Swete to Return Accion*@
+@*Retornar accion paso 2*@
+<script>
+     function ReturnStep2()
+     {
+        var IdAccionC = $("#idRegistroReviewStep2").val();
+        var Step= $("#idStepReviewStep2").val();
+
+         Swal.fire({
+              title: 'Comment Return',
+              input: 'textarea',
+              customClass: {
+                    validationMessage: 'my-validation-message'
+              },
+              preConfirm: (value) => {
+                if (!value) {
+                  Swal.showValidationMessage(
+                    'Need typing comment from return'
+                  )
+                }
+              },
+              inputAttributes: {
+                autocapitalize: 'off'
+              },
+                 allowEscapeKey: false,
+                 allowOutsideClick: false,
+                 showCancelButton: true,
+                 confirmButtonText: 'Confirm',
+                 confirmButtonColor: '#009ef7',
+                 showLoaderOnConfirm: true,
+
+            }).then((result) => {
+              if (result.isConfirmed) 
+              {
+                //ajax
+
+                    $.ajax({
+                    url: "@Url.Action("ReturnCorrectiveAction","TMCorrectiveAction")",
+                    data: {
+                        IdAccionC: IdAccionC,
+                        Comment : result.value,
+                        Step : Step
+                    },
+                    type: "POST",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    }).done(function (result) 
+                    {
+                        if(result != null)
+                        {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else
+                            {
+                               Swal.fire({
+                                    text: "The operation has been successfully submitted!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    allowEscapeKey: false,
+                                    allowOutsideClick: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) 
+                                    {
+                                      $('#modalReview').modal('hide');
+                                      $('body').removeClass('modal-open');
+                                      $('.modal-backdrop').remove();
+                                      showReport(@ViewData["MenuTaskId"])
+                                    }
+                                });
+                            }
+                        }
+                        else 
+                        {
+                            SystemServerError()
+                        }
+                    }).fail(function (error) {
+                            swalErrorServer()
+                    });
+              }
+            })
+     }
+</script>
+
+@*Retornar accion paso 3 y 3.1*@
+<script>
+     function ReturnStep3(bit)
+     {
+		if(bit == 0)
+        {
+			var IdAccionC = $("#idRegistroStep3").val();
+			var Step= $("#idStep3").val();
+		}else
+        {
+			var IdAccionC = $("#idRegistroReviewStep3_1").val();
+			var Step= $("#idStepReviewStep3_1").val();
+		}
+
+         Swal.fire({
+              title: 'Comment Return',
+              input: 'textarea',
+              customClass: {
+                    validationMessage: 'my-validation-message'
+              },
+              preConfirm: (value) => {
+                if (!value) {
+                  Swal.showValidationMessage(
+                    'Need typing comment from return'
+                  )
+                }
+              },
+              inputAttributes: {
+                autocapitalize: 'off'
+              },
+                 allowEscapeKey: false,
+                 allowOutsideClick: false,
+                 showCancelButton: true,
+                 confirmButtonText: 'Confirm',
+                 confirmButtonColor: '#009ef7',
+                 showLoaderOnConfirm: true,
+
+            }).then((result) => {
+              if (result.isConfirmed) 
+              {
+                //ajax
+
+                    $.ajax({
+                    url: "@Url.Action("ReturnCorrectiveAction","TMCorrectiveAction")",
+                    data: {
+                        IdAccionC: IdAccionC,
+                        Comment : result.value,
+                        Step : Step
+                    },
+                    type: "POST",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    }).done(function (result) 
+                    {
+                        if(result != null)
+                        {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else
+                            {
+                               Swal.fire({
+                                    text: "The operation has been successfully submitted!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    allowEscapeKey: false,
+                                    allowOutsideClick: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) 
+                                    {
+                                      $('#modalReview').modal('hide');
+                                      $('body').removeClass('modal-open');
+                                      $('.modal-backdrop').remove();
+                                      showReport(@ViewData["MenuTaskId"])
+                                    }
+                                });
+                            }
+                        }
+                        else 
+                        {
+                            SystemServerError()
+                        }
+                    }).fail(function (error) {
+                          swalErrorServer()
+                    });
+              }
+            })
+     }
+</script>
+
+@*============================================ End Swete to Return Accion*@
+
+@*============================================ Start Forms Validation*@
+
+@*Form Validation Update*@
+<script>
+    var FormUpdate = document.getElementById('FormUpdate');
+
+    var validatorFormUpdate = FormValidation.formValidation(
+        FormUpdate,
+        {
+            fields: {
+                'IdSourceReviewUpdate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Source is required.'
+                        }
+                    }
+                },
+                
+                'IdDepartmentReviewUpdate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Department is required.'
+                        }
+                    }
+                },
+                
+                'IdProcessReviewUpdate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Process is required.'
+                        }
+                    }
+                },
+                
+                'IdActivityReviewUpdate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Activity leader is required.'
+                        }
+                    }
+                },
+                
+                'IdActionCategoryReviewUpdate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Action category is required.'
+                        }
+                    }
+                },
+                
+                'IdLiderPCAReviewUpdate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Lider PCA is required.'
+                        }
+                    }
+                },
+                
+                'IdActionsReviewUpdate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Causes is required.'
+                        }
+                    }
+                },
+                
+                'IdCausesReviewUpdate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Actions is required.'
+                        }
+                    }
+                },
+                
+                'IdPromiseDateReviewUpdate': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Promise date is required.'
+                        }
+                    }
+                },
+
+            },
+
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        }
+    );
+
+    // Submit button handler
+    var FormBtnUpdate = document.getElementById('BtnSendReviewUpdate');
+
+    FormBtnUpdate.addEventListener('click', function (e) {
+        // Prevent default button action
+        e.preventDefault();
+
+        // Validate form before submit
+        if (validatorFormUpdate) {
+            validatorFormUpdate.validate().then(function (status) {
+                if (status == 'Valid') {
+                    FormBtnUpdate.setAttribute('data-kt-indicator', 'on');
+                    FormBtnUpdate.disabled = true;
+                    setTimeout(function () {
+                        FormBtnUpdate.removeAttribute('data-kt-indicator');
+                        FormBtnUpdate.disabled = false;
+
+                        SaveUpdate()
+
+                    }, 1000);
+                }
+                else {
+                    FormBtnUpdate.setAttribute('data-kt-indicator', 'on');
+                    FormBtnUpdate.disabled = true;
+                    setTimeout(function () {
+                        FormBtnUpdate.removeAttribute('data-kt-indicator');
+                        FormBtnUpdate.disabled = false;
+                        swal.fire({
+                            text: "Sorry, looks like there are some empty inputs detected, please try again.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        });
+
+                    }, 150);
+                }
+            });
+        }
+    });
+</script>
+
+@*Form Validation SaveStep 1*@
+<script>
+    var formFormStep1 = document.getElementById('FormStep1');
+
+    var validatorNewRew1 = FormValidation.formValidation(
+        formFormStep1,
+        {
+            fields: {
+                'IdSourceReviewStep1': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Source is required.'
+                        }
+                    }
+                },
+                
+                'IdDepartmentReviewStep1': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Department is required.'
+                        }
+                    }
+                },
+                
+                'IdProcessReviewStep1': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Process is required.'
+                        }
+                    }
+                },
+                
+                'IdActivityReviewStep1': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Activity leader is required.'
+                        }
+                    }
+                },
+                
+                'IdActionCategoryReviewStep1': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Action category is required.'
+                        }
+                    }
+                },
+                
+                'IdActionsReviewStep1': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Causes is required.'
+                        }
+                    }
+                },
+                
+                'IdCausesReviewStep1': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Actions is required.'
+                        }
+                    }
+                },
+
+            },
+
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        }
+    );
+
+    // Submit button handler
+    var FormStep1 = document.getElementById('BtnSendReviewStep1');
+
+    FormStep1.addEventListener('click', function (e) {
+        // Prevent default button action
+        e.preventDefault();
+
+        // Validate form before submit
+        if (validatorNewRew1) {
+            validatorNewRew1.validate().then(function (status) {
+                if (status == 'Valid') {
+                    FormStep1.setAttribute('data-kt-indicator', 'on');
+                    FormStep1.disabled = true;
+                    setTimeout(function () {
+                        FormStep1.removeAttribute('data-kt-indicator');
+                        FormStep1.disabled = false;
+
+                        SaveStep1()
+
+                    }, 1000);
+                }
+                else {
+                    FormStep1.setAttribute('data-kt-indicator', 'on');
+                    FormStep1.disabled = true;
+                    setTimeout(function () {
+                        FormStep1.removeAttribute('data-kt-indicator');
+                        FormStep1.disabled = false;
+                        swal.fire({
+                            text: "Sorry, looks like there are some empty inputs detected, please try again.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        });
+
+                    }, 150);
+                }
+            });
+        }
+    });
+
+    function closeModal() {
+        $('.accordion-button').addClass("collapsed");
+        $('.accordion-collapse').removeClass("show");
+    }
+
+    var idUsuarioComboGlobal = '';
+</script>
+
+@*Form Validation SaveStep 2*@
+<script>
+    var FomrStep2 = document.getElementById('IdFormReviewStep2');
+
+    var validatorFormStep2 = FormValidation.formValidation(
+        FomrStep2,
+        {
+            fields: {
+                'FileACReviewStep2': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Evidence file is required.'
+                        }
+                    }
+                },
+                'CommentACReviewStep2': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The comments is required.'
+                        }
+                    }
+                },
+
+            },
+
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        }
+    );
+
+    // Submit button handler
+    var FormAC = document.getElementById('BtnSendReviewStep2');
+
+    FormAC.addEventListener('click', function (e) {
+        // Prevent default button action
+        e.preventDefault();
+
+        // Validate form before submit
+        if (validatorFormStep2) {
+            validatorFormStep2.validate().then(function (status) {
+                if (status == 'Valid') {
+                    FormAC.setAttribute('data-kt-indicator', 'on');
+                    FormAC.disabled = true;
+                    setTimeout(function () {
+                        FormAC.removeAttribute('data-kt-indicator');
+                        FormAC.disabled = false;
+
+                        SaveStep2()
+
+                    }, 1000);
+                }
+                else {
+                    FormAC.setAttribute('data-kt-indicator', 'on');
+                    FormAC.disabled = true;
+                    setTimeout(function () {
+                        FormAC.removeAttribute('data-kt-indicator');
+                        FormAC.disabled = false;
+                        swal.fire({
+                            text: "Sorry, looks like there are some empty inputs detected, please try again.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        });
+
+                    }, 150);
+                }
+            });
+        }
+    });
+</script>
+
+@*Form Validation SaveStep 3.1*@
+<script>
+    var formFormStep3_1 = document.getElementById('IdFormReviewStep3_1');
+
+    var validatorNewRew3_1 = FormValidation.formValidation(
+        formFormStep3_1,
+        {
+            fields: {
+                'CommentACReviewStep3_1': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Comment  is required.'
+                        }
+                    }
+                },
+
+            },
+
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        }
+    );
+
+    // Submit button handler
+    var FormStep3_1 = document.getElementById('BtnSendStep3_1');
+
+    FormStep3_1.addEventListener('click', function (e) {
+        // Prevent default button action
+        e.preventDefault();
+
+        // Validate form before submit
+        if (validatorNewRew3_1) {
+            validatorNewRew3_1.validate().then(function (status) {
+                if (status == 'Valid') {
+                    FormStep3_1.setAttribute('data-kt-indicator', 'on');
+                    FormStep3_1.disabled = true;
+                    setTimeout(function () {
+                        FormStep3_1.removeAttribute('data-kt-indicator');
+                        FormStep3_1.disabled = false;
+
+                        SaveStep3_1()
+
+                    }, 1000);
+                }
+                else {
+                    FormStep3_1.setAttribute('data-kt-indicator', 'on');
+                    FormStep3_1.disabled = true;
+                    setTimeout(function () {
+                        FormStep3_1.removeAttribute('data-kt-indicator');
+                        FormStep3_1.disabled = false;
+                        swal.fire({
+                            text: "Sorry, looks like there are some empty inputs detected, please try again.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        });
+
+                    }, 150);
+                }
+            });
+        }
+    });
+
+    function closeModal() {
+        $('.accordion-button').addClass("collapsed");
+        $('.accordion-collapse').removeClass("show");
+    }
+
+    var idUsuarioComboGlobal = '';
+</script>
+
+@*Form Validation SaveStep 3*@
+<script>
+    var formBitModalCorrectiveA = document.getElementById('IdFormBitRewview');
+
+    var validatorNewRew = FormValidation.formValidation(
+        formBitModalCorrectiveA ,
+        {
+            fields: {
+                'IdDeadLine': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The DeadLine by is required.'
+                        }
+                    }
+                },
+                
+                'IdCloser': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Closed is required.'
+                        }
+                    }
+                },
+                
+                'IdSolution': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The Solution  is required.'
+                        }
+                    }
+                },
+                
+
+            },
+
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap: new FormValidation.plugins.Bootstrap5({
+                    rowSelector: '.fv-row',
+                    eleInvalidClass: '',
+                    eleValidClass: ''
+                })
+            }
+        }
+    );
+
+    // Submit button handler
+    var FormBitModalAC  = document.getElementById('BtnBitModal');
+
+    FormBitModalAC.addEventListener('click', function (e) {
+        // Prevent default button action
+        e.preventDefault();
+
+        // Validate form before submit
+        if (validatorNewRew) {
+            validatorNewRew.validate().then(function (status) {
+                if (status == 'Valid')
+                {
+                    FormBitModalAC .setAttribute('data-kt-indicator', 'on');
+                    FormBitModalAC .disabled = true;
+                    setTimeout(function () {
+                        FormBitModalAC.removeAttribute('data-kt-indicator');
+                        FormBitModalAC.disabled = false;
+                        
+                        SaveStep3()
+
+                    }, 1000);
+                }
+                else 
+                {
+                    FormBitModalAC .setAttribute('data-kt-indicator', 'on');
+                    FormBitModalAC .disabled = true;
+                    setTimeout(function () {
+                        FormBitModalAC.removeAttribute('data-kt-indicator');
+                        FormBitModalAC.disabled = false;
+                        swal.fire({
+                            text: "Sorry, looks like there are some empty inputs detected, please try again.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        });
+
+                    }, 150);
+                }
+            });
+        }
+    });
+
+   function closeModal(){
+       $('.accordion-button').addClass("collapsed");
+       $('.accordion-collapse').removeClass("show");
+   }
+
+   var idUsuarioComboGlobal = '';
+</script>
+@*============================================ End Forms Validation*@

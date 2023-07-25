@@ -1,0 +1,416 @@
+﻿@model UserProfile
+@{
+    ViewData["Title"] = "MyProfile";
+}
+
+<div class="post d-flex flex-column-fluid" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <div class="card mb-5 mb-xl-10">
+            <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_profile_details" aria-expanded="true" aria-controls="kt_account_profile_details">
+                <div class="card-title m-0">
+                    <h3 class="fw-bolder m-0">Profile Details</h3>
+                </div>
+            </div>
+            <div id="kt_account_profile_details" class="collapse show">
+                <form id="kt_account_profile_details_form" asp-controller="Profile" asp-action="EditPicture" method="post" class="form">
+                    <div class="card-body border-top p-9">
+                        <div class="row mb-6">
+                            <label class="col-lg-3 col-form-label fw-bold fs-6">Avatar</label>
+                            <div class="col-lg-9">
+                                <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url(~/assets/media/avatars/blank.png)">
+                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url(/FactoryPlatform/Images/ProfilePictures/@Model.Image)"></div>
+                                    <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">
+                                        <i class="bi bi-pencil-fill fs-7"></i>
+                                        <input type="file" id="fileUpload" name="fileUpload" accept=".png, .jpg, .jpeg" />
+                                    </label>
+                                </div>
+                                <div class="form-text">Allowed file types: png, jpg, jpeg.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6">User</label>
+                            <div class="col-lg-9 fv-row">
+                                <input type="text" name="User" class="form-control form-control-lg form-control-solid" value="@Model.Usuario" disabled />
+                            </div>
+                        </div>
+                        <div class="row mb-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6">Full Name</label>
+                            <div class="col-lg-9">
+                                <div class="row">
+                                    <div class="col-lg-6 fv-row">
+                                        <input type="text" name="fname" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" value="@Model.Nombres" disabled />
+                                    </div>
+                                    <div class="col-lg-6 fv-row">
+                                        <input type="text" name="lname" class="form-control form-control-lg form-control-solid" value="@Model.ApellidoPaterno @Model.ApellidoMaterno" disabled />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6">Mail</label>
+                            <div class="col-lg-9 fv-row">
+                                <input type="text" name="Mail" class="form-control form-control-lg form-control-solid" value="@Model.Correo" disabled />
+                            </div>
+                        </div>
+                        <div class="row mb-6">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6">Job</label>
+                            <div class="col-lg-9 fv-row">
+                                <input type="text" name="Job" class="form-control form-control-lg form-control-solid" value="@Model.Puesto" disabled />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        @if (!User.Identity.Name.Contains("@"))
+        {
+            <div class="card mb-5 mb-xl-10">
+                <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_signin_method">
+                    <div class="card-title m-0">
+                        <h3 class="fw-bolder m-0">Update Password</h3>
+                    </div>
+                </div>
+                <div id="kt_account_signin_method" class="collapse show">
+                    <div class="card-body border-top p-9">
+                        <div class="d-flex flex-wrap align-items-center mb-10">
+                            <div id="kt_signin_password">
+                                <div class="fs-6 fw-bolder mb-1">Password</div>
+                                <div class="fw-bold text-gray-600">************</div>
+                            </div>
+                            <div id="kt_signin_password_edit" class="flex-row-fluid d-none">
+                                <form id="kt_signin_change_password" asp-action="UpdatePass" method="post" class="form" novalidate="novalidate">
+                                    <div class="row mb-1">
+                                        <div class="col-lg-3">
+                                            <div class="fv-row mb-0">
+                                                <label for="currentpassword" class="form-label fs-6 fw-bolder mb-3">Current Password</label>
+                                                <input type="password" class="form-control form-control-lg form-control-solid" name="currentpassword" id="currentpassword" minlength="6" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="fv-row mb-0">
+                                                <label for="newpassword" class="form-label fs-6 fw-bolder mb-3">New Password</label>
+                                                <input type="password" class="form-control form-control-lg form-control-solid" name="newpassword" id="newpassword" minlength="6" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="fv-row mb-0">
+                                                <label for="confirmpassword" class="form-label fs-6 fw-bolder mb-3">Confirm New Password</label>
+                                                <input type="password" class="form-control form-control-lg form-control-solid" name="confirmpassword" id="confirmpassword" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-text mb-5">Password must be more than 8 characters long and contain symbols</div>
+                                    <div class="d-flex">
+                                        <button id="kt_password_submit" type="submit" class="btn btn-primary me-2 px-6">Update Password</button>
+                                        <button id="kt_password_cancel" type="button" class="btn btn-color-gray-400 btn-active-light-primary px-6" onclick="buttonCancel()">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div id="kt_signin_password_button" class="ms-auto">
+                                <button class="btn btn-light btn-active-light-primary" onclick="buttonReset()">Change Password</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+@section Scripts {
+<script>
+
+        function buttonReset()
+        {
+            document.getElementById("kt_signin_password_edit").classList.remove("d-none");
+            document.getElementById("kt_signin_password").classList.add("d-none");
+            document.getElementById("kt_signin_password_button").classList.add("d-none");
+            document.getElementById("kt_signin_change_password").reset();
+            $( "input" ).removeClass( "is-valid" ).removeClass( "is-invalid" );
+            $('[data-field]').remove();
+        }
+
+        function buttonCancel()
+        {
+            document.getElementById("kt_signin_password_edit").classList.add("d-none");
+            document.getElementById("kt_signin_password").classList.remove("d-none");
+            document.getElementById("kt_signin_password_button").classList.remove("d-none");
+            document.getElementById("kt_signin_change_password").reset();
+            $( "input" ).removeClass( "is-valid" ).removeClass( "is-invalid" );
+            $('[data-field]').remove();
+        }
+
+
+         //--------------------------------------------------------------------------------------------------------
+
+        function updatePassword()
+         {
+            password = $("#currentpassword").val();
+            newPassword = $("#newpassword").val();
+            confirmPassword = $("#confirmpassword").val();
+
+            if(currentpassword != "")
+            {
+                if(newPassword == confirmPassword)
+                {
+                    $.ajax({
+                        url: "@Url.Action("UpdatePass","Profile")",
+                        data: {
+                        currentpassword:password,
+                        newpassword: newPassword,
+                        },
+                        type: 'POST',
+                        beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                        success: function(result) {
+                            if(result == 'Correcto')
+                            {
+                               toastr.success('The Password was changed!');
+                               document.getElementById("currentpassword").value = "";
+                               document.getElementById("newpassword").value = "";
+                               document.getElementById("confirmpassword").value = "";
+                                $( "input" ).removeClass( "is-valid" ).removeClass( "is-invalid" );
+                                $('[data-field]').remove();
+                            }
+                            else if(result == 'passIncorrect')
+                            {
+                                $("#currentpassword").val("");
+                                $("#currentpassword").focus();
+                                toastr.warning("Actual password is incorrect!");
+                            }
+                            else
+                            {
+                                toastr.error(result);
+                            }
+                        },
+                        error: function() {
+                              toastr.error("An error occurred on the server, please try again later!");
+                        }
+                    })
+                }
+                else
+                {
+                    toastr.error("The new password are diferents please check that are correct.!");
+                }
+            }else
+            {
+                toastr.error("The Actual password is required !");
+            }
+
+         }
+
+
+
+            "use strict";
+
+            // Class definition
+            var KTAccountSettingsSigninMethods = function () {
+
+                var handleChangePassword = function (e) {
+                    var validation;
+
+                    // form elements
+                    var passwordForm = document.getElementById('kt_signin_change_password');
+
+                    const strongPassword = function () {
+                        return {
+                            validate: function (input) {
+                                const value = input.value;
+                                if (value === '') {
+                                    return {
+                                        valid: true,
+                                    };
+                                }
+
+                                // Check the password strength
+                                if (value.length < 8) {
+                                    return {
+                                        valid: false,
+                                        message: 'The password must be more than 8 characters long',
+                                    };
+                                }
+
+                                // The password doesn't contain any uppercase character
+                                if (value === value.toLowerCase()) {
+                                    return {
+                                        valid: false,
+                                        message: 'The password must contain at least one upper case character',
+                                    };
+                                }
+
+                                // The password doesn't contain any uppercase character
+                                if (value === value.toUpperCase()) {
+                                    return {
+                                        valid: false,
+                                        message: 'The password must contain at least one lower case character',
+                                    };
+                                }
+
+                                // The password doesn't contain any digit
+                                if (value.search(/[0-9]/) < 0) {
+                                    return {
+                                        valid: false,
+                                        message: 'The password must contain at least one digit',
+                                    };
+                                }
+
+                                return {
+                                    valid: true,
+                                };
+                            },
+                        };
+                    };
+
+                    validation = FormValidation.formValidation(
+                        passwordForm,
+                        {
+                            fields: {
+                                currentpassword: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: 'Current Password is required'
+                                        }
+                                    }
+                                },
+
+                                newpassword: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: 'New Password is required'
+                                        },
+                                        checkPassword: {
+                                            message: 'The password is too weak',
+                                        }
+                                    }
+                                },
+
+                                confirmpassword: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: 'Confirm Password is required'
+                                        },
+                                        identical: {
+                                            compare: function() {
+                                                return passwordForm.querySelector('[name="newpassword"]').value;
+                                            },
+                                            message: 'The password and its confirm are not the same'
+                                        }
+                                    }
+                                },
+                            },
+
+                            plugins: { //Learn more: https://formvalidation.io/guide/plugins
+                                trigger: new FormValidation.plugins.Trigger(),
+                                bootstrap: new FormValidation.plugins.Bootstrap5({
+                                    rowSelector: '.fv-row'
+                                })
+                            }
+                        }
+                    ).registerValidator('checkPassword', strongPassword);
+
+                    passwordForm.querySelector('#kt_password_submit').addEventListener('click', function (e) {
+                        e.preventDefault();
+                        console.log('click');
+
+                        validation.validate().then(function (status) {
+
+                            if (status == 'Valid') {
+                                    updatePassword()
+                                    validation.resetForm();
+                            }
+                            else
+                            {
+                                swal.fire({
+                                    text: "Sorry, looks like there are some errors detected, please try again.",
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn font-weight-bold btn-light-primary"
+                                    }
+                                });
+
+                            }
+                        });
+                    });
+                }
+
+                // Public methods
+                return {
+                    init: function () {
+                        handleChangePassword();
+                    }
+                }
+            }();
+
+            // On document ready
+            KTUtil.onDOMContentLoaded(function() {
+                KTAccountSettingsSigninMethods.init();
+            });
+
+
+        //--------------------------------------------------------------------------------
+
+        function refresh(foto)
+        {
+            var num = Math.random();
+            const img1 = document.getElementById("Profile1");
+            img1.src = "/FactoryPlatform/Images/ProfilePictures/"+foto+"?v="+num;
+            const img2 = document.getElementById("Profile2");
+            img2.src = "/FactoryPlatform/Images/ProfilePictures/"+foto+"?v="+num;
+        }
+
+
+        //-----------------------------------------------------------------------------------------------------------
+
+         $("#fileUpload").on('change', function () {
+
+            var files = $('#fileUpload').prop("files");
+            if($('#fileUpload').val() != "")
+            {
+                formData = new FormData();
+                formData.append("perfilPicture", files[0]);
+                jQuery.ajax({
+                    type: 'POST',
+                    url: "@Url.Action("EditPicture","Profile")",
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    success: function (result) {
+
+                        if(result != null)
+                        {
+                            const img1 = document.getElementById("Profile1");
+                            img1.src = "~/Images/ProfilePictures/blank.png";
+                            const img2 = document.getElementById("Profile2");
+                            img2.src = "~/Images/ProfilePictures/blank.png";
+                            formData = new FormData();
+
+                            refresh(result);
+
+                            toastr.success("Picture was saved!");
+                        }
+                        else
+                        {
+                            toastr.warning("Picture format not validate!");
+                        }
+                    },
+                    error: function() {
+                        toastr.error("An error occurred on the server, please try again later!");
+                    }
+                });
+            }
+
+        });
+    //---------------------------------------------------------------------------------------------------------------
+</script>
+}
+

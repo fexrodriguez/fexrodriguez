@@ -1,0 +1,534 @@
+﻿@page "/ServiceNow/release-PDF"
+@model FactoryPlatform.Areas.ServiceNow.Pages.Account.release_PDFModel
+@{
+}
+
+<html lang="en">
+<!--begin::Head-->
+<head>
+    <base href="../../">
+    <title>FactoryPlatform - @ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="~/Images/SystemPictures/favicons.png" />
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <!--end::Fonts-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <!--end::Global Stylesheets Bundle-->
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body_page" class="bg-body">
+    @if (Model.Release != null)
+    {
+        @if (Model.Release.ReleaseInfoDocument.Count > 0)
+        {
+            var docInf = Model.Release.ReleaseInfoDocument.First();
+
+            <div class="d-flex flex-column flex-root">
+                <div class="d-flex flex-column flex-column-fluid">
+                    <div class="d-flex flex-column flex-column-fluid p-10 py-lg-15">
+
+                        <!-- begin::Wrapper-->
+                        <div class="mw-lg-950px mx-auto w-100">
+                            <div class="d-flex justify-content-between flex-column flex-sm-row mb-10">
+                                <img alt="Logo" src="~/Images/SystemPictures/logo-lkq_3.png" width="250" height="80" />
+                                <div class="my-1 text-end">
+                                    <strong>Fecha ultimo cambio:</strong> 10-Marzo-2020<br>
+                                    <strong>Responsable:</strong> Ing. Seguridad y Control Ambiental<br>
+                                    <strong>Tiempo retención:</strong>12 meses<br>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="border gy-7 gs-7 p-5 mb-20">
+                                <h1 class="card-title fs-1qx p-2 text-center">LIBERACION DE EQUIPO / PROCESOS NUEVOS O MODIFICADOS <br>Departamento de Seguridad y Medio Ambiente</h1>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-5 mb-5">
+                                    <tr>
+                                        <td class="border-bottom border-end align-middle p-2"><strong class="me-1">#ID MEJORA: </strong> @docInf.IDMejora</td>
+                                        <td class="border-bottom border-end align-middle p-2"><strong class="me-1">Fecha: </strong>@docInf.FechaRegistro</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-bottom align-middle p-2" colspan=2><strong class="me-1">Planta: </strong>@docInf.Planta</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-bottom align-middle p-2" colspan=2><strong class="me-1">Descripción: </strong>@docInf.Descripcion</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-bottom align-middle p-2" colspan=2><strong class="me-1">Tipo de evaluación: </strong>@docInf.EV</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-bottom align-middle p-2" colspan=2>@docInf.EVTipo</td>
+                                    </tr>
+                                </table>
+
+                                <h5 class="bg-primary text-white p-2">*En caso de aplicar instalaciones nuevas debe llenar los ANEXOS A y B</h5>
+
+                                <h3 class="card-title fs-1qx my-10 mb-4">SEGURIDAD</h3>
+                                <div class="separator my-1 mb-5"></div>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-10">
+                                    <tr class="fw-bolder fs-7 text-uppercase gs-0 bg-primary border-bottom border-end border-top  border-gray-300 fs-6 text-white">
+                                        <th class="border-bottom border-end align-middle p-2">No.</th>
+                                        <th class="border-bottom border-end align-middle p-2">Tipo</th>
+                                        <th class="border-bottom border-end align-middle p-2">Cumple</th>
+                                        <th class="border-bottom border-end align-middle p-2">Observaciones</th>
+                                    </tr>
+                                    @if (Model.Release.ReleaseQuestions.Count > 0)
+                                    {
+                                        for (int I = 0; I < Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 1).ToList().Count; I++)
+                                        {
+                                            <tr>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].ID_Registro</td>
+                                                <td class="border-bottom border-end p-1 align-middle ">@Model.Release.ReleaseQuestions[I].Preguntas</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Cumple</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Comentario</td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                                <br>
+
+                                <h3 class="card-title fs-1qx my-10 mb-5">MEDIO AMBIENTE</h3>
+                                <div class="separator my-1 mb-6"></div>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                    <tr class="fw-bolder fs-7 text-uppercase gs-0 bg-primary border-bottom border-end border-top  border-gray-300 fs-6 text-white">
+                                        <th class="border-bottom border-end align-middle p-2">No.</th>
+                                        <th class="border-bottom border-end align-middle p-2">Tipo</th>
+                                        <th class="border-bottom border-end align-middle p-2">Cumple</th>
+                                        <th class="border-bottom border-end align-middle p-2">Observaciones</th>
+                                    </tr>
+                                    @if (Model.Release.ReleaseQuestions.Count > 0)
+                                    {
+                                        var sum = Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 1).ToList().Count + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 2).ToList().Count;
+                                        for (int I = Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 1).ToList().Count; I < sum; I++)
+                                        {
+                                            <tr>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].ID_Registro</td>
+                                                <td class="border-bottom border-end p-1 align-middle ">@Model.Release.ReleaseQuestions[I].Preguntas</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Cumple</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Comentario</td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+
+                                <h3 class="card-title fs-1qx my-10 mb-5">EMERGENCIAS</h3>
+                                <div class="separator my-1 mb-6"></div>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                    <tr class="fw-bolder fs-7 text-uppercase gs-0 bg-primary border-bottom border-end border-top  border-gray-300 fs-6 text-white">
+                                        <th class="border-bottom border-end align-middle p-2">No.</th>
+                                        <th class="border-bottom border-end align-middle p-2">Tipo</th>
+                                        <th class="border-bottom border-end align-middle p-2">Cumple</th>
+                                        <th class="border-bottom border-end align-middle p-2">Observaciones</th>
+                                    </tr>
+                                    @if (Model.Release.ReleaseQuestions.Count > 0)
+                                    {
+                                        var sum = Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 1).ToList().Count + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 2).ToList().Count;
+                                        for (int I = sum; I < sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 3).ToList().Count; I++)
+                                        {
+                                            <tr>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].ID_Registro</td>
+                                                <td class="border-bottom border-end p-1 align-middle ">@Model.Release.ReleaseQuestions[I].Preguntas</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Cumple</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Comentario</td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+
+                                <h3 class="card-title fs-1qx my-10 mb-5">DOCUMENTACIÓN TÉCNICA</h3>
+                                <div class="separator my-1 mb-6"></div>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                    <tr class="fw-bolder fs-7 text-uppercase gs-0 bg-primary border-bottom border-end border-top  border-gray-300 fs-6 text-white">
+                                        <th class="border-bottom border-end align-middle p-2">No.</th>
+                                        <th class="border-bottom border-end align-middle p-2">Tipo</th>
+                                        <th class="border-bottom border-end align-middle p-2">Cumple</th>
+                                        <th class="border-bottom border-end align-middle p-2">Observaciones</th>
+                                    </tr>
+                                    @if (Model.Release.ReleaseQuestions.Count > 0)
+                                    {
+                                        var sum = Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 1).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 2).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 3).ToList().Count;
+                                        for (int I = sum; I < sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 4).ToList().Count; I++)
+                                        {
+                                            <tr>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].ID_Registro</td>
+                                                <td class="border-bottom border-end p-1 align-middle ">@Model.Release.ReleaseQuestions[I].Preguntas</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Cumple</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Comentario</td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+
+                                <h3 class="card-title fs-1qx my-10 mb-5">CAPACITACIÓN</h3>
+                                <div class="separator my-1 mb-6"></div>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                    <tr class="fw-bolder fs-7 text-uppercase gs-0 bg-primary border-bottom border-end border-top  border-gray-300 fs-6 text-white">
+                                        <th class="border-bottom border-end align-middle p-2">No.</th>
+                                        <th class="border-bottom border-end align-middle p-2">Tipo</th>
+                                        <th class="border-bottom border-end align-middle p-2">Cumple</th>
+                                        <th class="border-bottom border-end align-middle p-2">Observaciones</th>
+                                    </tr>
+                                    @if (Model.Release.ReleaseQuestions.Count > 0)
+                                    {
+                                        var sum = Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 1).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 2).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 3).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 4).ToList().Count;
+                                        for (int I = sum; I < sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 5).ToList().Count; I++)
+                                        {
+                                            <tr>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].ID_Registro</td>
+                                                <td class="border-bottom border-end p-1 align-middle ">@Model.Release.ReleaseQuestions[I].Preguntas</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Cumple</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Comentario</td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            
+                                <h3 class="card-title fs-1qx my-10 mb-5">INSTALACIONES</h3>
+                                <div class="separator my-1 mb-6"></div>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-10">
+                                    <tr class="fw-bolder fs-7 text-uppercase gs-0 bg-primary border-bottom border-end border-top  border-gray-300 fs-6 text-white">
+                                        <th class="border-bottom border-end align-middle p-2">No.</th>
+                                        <th class="border-bottom border-end align-middle p-2">Tipo</th>
+                                        <th class="border-bottom border-end align-middle p-2">Cumple</th>
+                                        <th class="border-bottom border-end align-middle p-2">Observaciones</th>
+                                    </tr>
+                                    @if (Model.Release.ReleaseQuestions.Count > 0)
+                                    {
+                                        var sum = Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 1).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 2).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 3).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 4).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 5).ToList().Count;
+                                        for (int I = sum; I < sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 6).ToList().Count; I++)
+                                        {
+                                            <tr>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].ID_Registro</td>
+                                                <td class="border-bottom border-end p-1 align-middle ">@Model.Release.ReleaseQuestions[I].Preguntas</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Cumple</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Comentario</td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                                <br>
+                                <br>
+
+                                <h3 class="card-title fs-1qx my-10 mb-5">ALMACENAMIENTO / MANEJO DE MATERIALES</h3>
+                                <div class="separator my-1 mb-6"></div>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                    <tr class="fw-bolder fs-7 text-uppercase gs-0 bg-primary border-bottom border-end border-top  border-gray-300 fs-6 text-white">
+                                        <th class="border-bottom border-end align-middle p-2">No.</th>
+                                        <th class="border-bottom border-end align-middle p-2">Tipo</th>
+                                        <th class="border-bottom border-end align-middle p-2">Cumple</th>
+                                        <th class="border-bottom border-end align-middle p-2">Observaciones</th>
+                                    </tr>
+                                    @if (Model.Release.ReleaseQuestions.Count > 0)
+                                    {
+                                        var sum = Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 1).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 2).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 3).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 4).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 5).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 6).ToList().Count;
+                                        for (int I = sum; I < sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 7).ToList().Count; I++)
+                                        {
+                                            <tr>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].ID_Registro</td>
+                                                <td class="border-bottom border-end p-1 align-middle ">@Model.Release.ReleaseQuestions[I].Preguntas</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Cumple</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Comentario</td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+
+                                <h3 class="card-title fs-1qx my-10 mb-5">ACCIONES CORRECTIVAS</h3>
+                                <div class="separator my-1 mb-6"></div>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                    <tr class="fw-bolder fs-7 text-uppercase gs-0 bg-primary border-bottom border-end border-top  border-gray-300 fs-6 text-white">
+                                        <th class="border-bottom border-end p-3">No.</th>
+                                        <th class="border-bottom border-end p-3">Acción correctiva</th>
+                                        <th class="border-bottom border-end p-3">Responsable</th>
+                                        <th class="border-bottom border-end p-3">Fecha compromiso</th>
+                                    </tr>
+                                    @if (docInf.FechaCompromiso != null)
+                                    {
+                                        var accFech = docInf.FechaCompromiso.Split("*");
+                                        var accion = docInf.Accions.Split("*");
+                                        var accName = docInf.ACName.Split("*");
+                                        var cont = 0;
+
+                                        @foreach (var item in accFech)
+                                        {
+                                            <tr>
+                                                <td class="border-bottom border-end p-3">@{
+                                                        var id = cont + 1;
+                                                    } @id</td>
+                                                <td class="border-bottom border-end p-3">@accion[cont]</td>
+                                                <td class="border-bottom border-end p-3">@accName[cont]</td>
+                                                <td class="border-bottom border-end p-3">@item</td>
+                                            </tr>
+                                            cont++;
+                                        }
+                                    }
+
+                                </table>
+
+                                <h3 class="card-title fs-1qx my-10 mb-5">Evaluación del Equipo</h3>
+                                <div class="separator my-1 mb-5"></div>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-10">
+                                    <tr class="fw-bolder fs-7 text-uppercase gs-0 bg-primary border-bottom border-end border-top  border-gray-300 fs-6 text-white">
+                                        <th class="border-bottom border-end align-middle p-2">No.</th>
+                                        <th class="border-bottom border-end align-middle p-2">Tipo</th>
+                                        <th class="border-bottom border-end align-middle p-2">Cumple</th>
+                                        <th class="border-bottom border-end align-middle p-2">Observaciones</th>
+                                    </tr>
+                                    @if (Model.Release.ReleaseQuestions.Count > 0)
+                                    {
+                                        var sum = Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 1).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 2).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 3).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 4).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 5).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 6).ToList().Count;
+                                        sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 7).ToList().Count;
+                                        var count = 1;
+                                        for (int I = sum; I < sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 8).ToList().Count; I++)
+                                        {
+                                            <tr>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@count</td>
+                                                <td class="border-bottom border-end p-1 align-middle ">@Model.Release.ReleaseQuestions[I].Preguntas</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Cumple</td>
+                                                <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Comentario</td>
+                                            </tr>
+                                            count++;
+                                        }
+                                    }
+                                </table>
+                                <br>
+                                <br>
+
+                                <h3 class="card-title fs-1qx my-10 mb-5">Revisó y Aprobó</h3>
+                                <div class="separator my-1 mb-5"></div>
+                                <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                    @{
+                                        var apro = @docInf.Aprobador.Split("*");
+                                    }
+
+                                    <tr>
+                                        <td class="border-bottom border-end w-200px p-2 align-middle fw-bold">Proyectos: </td>
+                                        <td class="border-bottom border-end w-200px p-2 align-middle ">@apro[1]</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-bottom border-end w-200px p-2 align-middle fw-bold">Responsible del área: </td>
+                                        <td class="border-bottom border-end w-200px p-2 align-middle ">@apro[0]</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-bottom border-end w-200px p-2 align-middle fw-bold">Mantenimiento:</td>
+                                        <td class="border-bottom border-end w-200px p-2 align-middle ">@apro[2]</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-bottom border-end w-200px p-2 align-middle fw-bold">Seguridad y Medio Ambiente: </td>
+                                        <td class="border-bottom border-end w-200px p-2 align-middle ">@apro[3]</td>
+                                    </tr>
+                                </table>
+                                <br>
+                                <br>
+
+                            </div>
+                            
+                            
+                            @if (docInf.TypeID == 4)
+                            {
+                            <br><br><br><br><br>
+                            <br><br><br><br><br>
+
+                                <div class="border gy-7 gs-7 p-5 my-20 mb-15">
+                                    <div class="card-header">
+                                        <h1 class="card-title fs-1qx p-3 text-center">ANEXO A</h1>
+                                    </div>
+                                    <h3 class="card-title fs-1qx my-10 mb-4">EVALUACION PARA NUEVAS INSTALACIONES</h3>
+                                    <div class="separator my-1 mb-5"></div>
+                                    <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                        <tr class="fw-bolder fs-7 text-uppercase gs-0 border-bottom border-end border-top  border-gray-300 fs-6">
+                                            <th class="border-bottom border-end p-3">No.</th>
+                                            <th class="border-bottom border-end p-3">Tipo</th>
+                                            <th class="border-bottom border-end p-3">Aplica</th>
+                                            <th class="border-bottom border-end p-3">Observaciones</th>
+                                        </tr>
+                                         @if (Model.Release.ReleaseQuestions.Count > 0)
+                                        {
+                                            var sum = Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 1).ToList().Count;
+                                            sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 2).ToList().Count;
+                                            sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 3).ToList().Count;
+                                            sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 4).ToList().Count;
+                                            sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 5).ToList().Count;
+                                            sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 6).ToList().Count;
+                                            sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 7).ToList().Count;
+                                            sum = sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 8).ToList().Count;
+                                            var count = 1;
+                                            for (int I = sum; I < sum + Model.Release.ReleaseQuestions.Where(Q => Q.Tipo == 9).ToList().Count; I++)
+                                            {
+                                                <tr>
+                                                    <td class="border-bottom border-end p-1 align-middle text-center">@count</td>
+                                                    <td class="border-bottom border-end p-1 align-middle ">@Model.Release.ReleaseQuestions[I].Preguntas</td>
+                                                    <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Cumple</td>
+                                                    <td class="border-bottom border-end p-1 align-middle text-center">@Model.Release.ReleaseQuestions[I].Comentario</td>
+                                                </tr>
+                                                count++;
+                                            }
+                                        }
+                                    </table>
+                                </div>
+                                <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                               
+                                <div class="border gy-7 gs-7 p-5 mb-10">
+                                    <div class="card-header">
+                                        <h1 class="card-title fs-1qx p-3 text-center">ANEXO B</h1>
+                                    </div>
+                                    <h3 class="card-title fs-1qx my-10 mb-4">Vinculación con la normatividad federal, estatal y municipal vigente</h3>
+                                    <div class="separator my-1 mb-5"></div>
+
+                                    <table class="table table-row-bordered table-rounded border gy-7 gs-7 fs-6 mb-5">
+                                        
+                                        <thead>
+                                        <tr class="fw-bolder  text-uppercase gs-0 border-bottom border-end border-top  border-gray-300 fs-6 text-center">
+                                            <th class="border-bottom border-end w-50px align-middle p-2">Etapa</th>
+                                            <th class="border-bottom border-end w-150px align-middle p-2">Aspectos Ambientales</th>
+                                            <th class="border-bottom border-end w-150px align-middle p-2">Marque en caso de aplicar</th>
+                                            <th class="border-bottom border-end w-150px align-middle p-2">Regulaciones aplicables (Leyes, Reglamentos, Normas etc.)</th>
+                                            <th class="border-bottom border-end w-150px align-middle p-2">Autorizaciones, Licencias, Permisos y reportes requeridos</th>
+                                            <th class="border-bottom border-end w-150px align-middle p-2">Planes, Estudios y/o análisis requeridos</th>
+                                            <th class="border-bottom border-end w-150px align-middle p-2">Infraestructura y obras requeridas de acuerdo a las regulaciones</th>
+                                        </tr>
+                                         </thead>
+                                         @if(Model.Release.ReleaseQAnexoB.Count > 0)
+                                         {
+
+                                            <tbody>
+                                                    <tr>
+                                                        @{var sum = Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 10).ToList().Count() + 1;}
+                                                         <td class="border-bottom border-end w-150px p-3  text-center align-middle" rowspan="@sum"><p class="align-middle text-center" >@Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 10).ToList().First().Etapa</p></td>
+                                                    </tr>
+                                                @foreach(var item in Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 10).ToList())
+                                                {
+                                                    <tr class="fs-7">
+                                                        <td  class="border-top border-bottom border-end w-50px align-middle p-2">@item.Preguntas</td>
+                                                        <td  class="border-bottom border-end w-150px align-middle p-2">@item.Resultado</td>
+                                                        <td  class="border-bottom border-end w-150px align-middle p-2">@item.Regulaciones</td>
+                                                        <td  class="border-bottom border-end w-150px align-middle p-2">@item.Autorizaciones</td>
+                                                        <td  class="border-bottom border-end w-150px align-middle p-2">@item.Planes</td>
+                                                        <td  class="border-bottom border-end w-150px align-middle p-2">@item.Infraestructura</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+
+                                            <tbody>
+                                                    <tr>
+                                                        @{var sum11 = Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 11).ToList().Count() + 1;}
+                                                         <td class="border-bottom border-end w-150px p-3" rowspan="@sum11"><span style="">@Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 11).ToList().First().Etapa</span></td>
+                                                    </tr>
+                                                @foreach(var item in Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 11).ToList())
+                                                {
+                                                    <tr class="fs-7">
+                                                        <td class="border-top border-bottom border-end w-50px align-middle p-2">@item.Preguntas</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Resultado</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Regulaciones</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Autorizaciones</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Planes</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Infraestructura</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+
+                                            <tbody>
+                                                    <tr>
+                                                        @{var sum12 = Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 12).ToList().Count() + 1;}
+                                                         <td class="border-bottom border-end w-150px p-3" rowspan="@sum12"><span style="">@Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 12).ToList().First().Etapa</span></td>
+                                                    </tr>
+                                                @foreach(var item in Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 12).ToList())
+                                                {
+                                                    <tr class="fs-7">
+                                                        <td class="border-top border-bottom border-end w-1=50px align-middle p-2">@item.Preguntas</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Resultado</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Regulaciones</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Autorizaciones</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Planes</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Infraestructura</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+
+                                             <tbody>
+                                                    <tr>
+                                                        @{var sum13 = Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 13).ToList().Count() + 1;}
+                                                         <td class="border-bottom border-end w-150px p-3" rowspan="@sum12"><span style="">@Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 13).ToList().First().Etapa</span></td>
+                                                    </tr>
+                                                @foreach(var item in Model.Release.ReleaseQAnexoB.Where(B => B.Tipo == 13).ToList())
+                                                {
+                                                    <tr class="fs-7">
+                                                        <td class="border-top border-bottom border-end w-1=50px align-middle p-2">@item.Preguntas</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Resultado</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Regulaciones</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Autorizaciones</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Planes</td>
+                                                        <td class="border-bottom border-end w-150px align-middle p-2">@item.Infraestructura</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+
+                                         }
+                                    </table>
+                                </div>
+                            }
+
+                        </div>
+                        <!-- end::Wrapper-->
+
+                    </div>
+                </div>
+            </div>
+        }
+
+    }
+    else
+    {
+        <div class="d-flex flex-column flex-root">
+            <div class="d-flex flex-column flex-column-fluid">
+                <div class="d-flex flex-column flex-column-fluid text-center p-10 py-lg-15">
+                    <a class="mb-10 pt-lg-10">
+                        <img alt="Logo" src="~/Images/SystemPictures/LKQ.png" class="w-300px mb-5" />
+                    </a>
+                    <div class="pt-lg-10 mb-10">
+                        <h1 class="fw-bolder fs-4qx text-danger mb-10">System Error</h1>
+                        <div class="fw-bold fs-3 text-muted mb-15">
+                            @ViewData["Message"]
+                            <br />Please try again later.
+                        </div>
+                        <div class="text-center">
+                            <a href="/FactoryPlatform" class="btn btn-lg btn-primary fw-bolder">Go to homepage</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script>var hostUrl = "assets/";</script>
+    <!--begin::Javascript-->
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script src="~/assets/plugins/global/plugins.bundle.js"></script>
+    <script src="~/assets/js/scripts.bundle.js"></script>
+    <!--end::Global Javascript Bundle-->
+    <!--end::Javascript-->
+</body>
+<!--end::Body-->
+</html>

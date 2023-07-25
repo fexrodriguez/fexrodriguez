@@ -1,0 +1,460 @@
+﻿@using FactoryPlatform.Areas.Quality.Models.ControlPanel.StopModel
+@model CP_StopModelsView
+@{
+    ViewData["Title"] = ViewData["Titulo"];
+}
+
+<div class="post d-flex flex-column-fluid border" id="kt_post">
+    <div id="kt_content_container" class="container-fluid">
+        <div id="BlockPantalla">
+            <div class="card mb-5">
+                <div class="card-body p-8 mb-0">
+                    <h1 class="text-center">Stop model</h1>
+                    <form id="IdFormAlert">
+                        <div class="col-lg-4 fv-row">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">Model:</label>
+                            <input type="text" id="IdModelAlert" name="IdModelAlert" placeholder="Model" class="form-control p-3 fs-7 mb-0" />
+                        </div>
+                        <div class="fv-row">
+                            <label class="col-lg-3 col-form-label required fw-bold fs-6 mb-0">User Alert</label>
+                            <textarea class="form-control" id="IdAlertText" name="IdAlertText" maxlength="60" rows="4"></textarea>
+                            <span class="fs-7 text-muted">(max 60 characters)</span>
+                        </div>
+                        <button id="SendNewAlert" type="button" class="btn btn-primary fs-7 p-3">
+                            <span class="indicator-label">Save</span>
+                            <span class="indicator-progress">
+                                Please wait...<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="card mb-5">
+                <div class="card-body p-5 mb-0">
+                    <h1 class="text-center">Stoped Models</h1>
+                    <input type="hidden" name="SeccionId" id="IdSeccion" value="@Model.IdSeccion" />
+                    <input type="hidden" name="Tipo" id="Tipo" value="@Model.Tipo" />
+                    <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                        <div class="card-title">
+                            <div class="d-flex align-items-center position-relative my-1">
+                                <span class="svg-icon svg-icon-1 position-absolute ms-4"><i class="fas fa-search"></i></span>
+                                <input type="text" data-kt-filter="search" class="form-control form-control-solid w-250px ps-13" placeholder="Search Report" />
+                            </div>
+                            <div id="TablaStoped_export" class="d-none"></div>
+                        </div>
+                        <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                            <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                <span class="svg-icon svg-icon-1 position-absolute ms-4"></span>
+                                Export Report
+                            </button>
+                            <div id="TablaStoped_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-export="excel">
+                                        Export as excel &nbsp;&nbsp; <i class="fas fa-file-excel text-success fs-3"></i>
+                                    </a>
+                                </div>
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-export="csv">
+                                        Export as csv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-csv text-info fs-3"></i>
+                                    </a>
+                                </div>
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                                        Export as pdf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf text-danger fs-3"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div id="TablaStoped_buttons" class="d-none"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table id="TablaStoped" class="table border-gray-400 table-hover table-row-bordered gy-4 gs-7">
+                            <thead>
+                                <tr class="fw-bold fs-6 text-gray-800 text-uppercase bg-gray-300 border-top">
+                                    <th class="min-w-20px  align-middle border-end border-start">Delete</th>
+                                    <th class="min-w-100px align-middle border-end">Model</th>
+                                    <th class="min-w-850px align-middle border-end">Alert</th>
+                                    <th class="min-w-250px align-middle border-end">Record User</th>
+                                </tr>
+                            </thead>
+                            <tbody id="IdTbody" class="fw-semibold text-gray-600">
+                                @foreach (var item in Model.CP_Stopeds)
+                                {
+                                    <tr class="">
+                                        <td>
+                                            <a class="p-0 btn btn-sm  me-2" onclick="DeleteStop(this,@item.ID_Registro)"><i class="fas fa-times fs-3 text-danger"></i></a>
+                                        </td>
+                                        <td>@item.Modelo</td>
+                                        <td>@item.MensajeAlerta</td>
+                                        <td>@item.UsuarioRegistro</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*Block pantalla*@
+    <script>
+        var button = document.querySelector("#BlockPantalla");
+        var target = document.querySelector("#BlockPantalla");
+
+        var BlockPantalla = new KTBlockUI(target, {
+            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+        });
+    </script>
+
+    @*Libreria datatable Stoped*@
+    <script type="text/javascript">
+        var KTDatatablesStop = function () {
+            var table;
+            var datatable;
+
+            var initDatatable = function () {
+                const tableRows = table.querySelectorAll('tbody tr');
+
+                tableRows.forEach(row => {
+                    const dateRow = row.querySelectorAll('td');
+                });
+
+                datatable = $(table).DataTable({
+                    "info": true,
+                    "order": [],
+                    "pageLength": 25,
+                    "scrollX": true,
+                    "columns": [
+                        { className: "border-end align-middle border-gray-400 border-start min-w-20px text-center", },
+                        { className: "border-end align-middle border-gray-400 min-w-100px", },
+                        { className: "border-end align-middle border-gray-400 min-w-850px", },
+                        { className: "border-end align-middle border-gray-400 min-w-250px", },
+                    ],
+
+                });
+            }
+
+            // Hook export buttons
+            var exportButtons = () => {
+                const documentTitle = 'TablaStoped_Report';
+                var buttons = new $.fn.dataTable.Buttons(table, {
+                    buttons: [
+                        {
+                            extend: 'copyHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'csvHtml5',
+                            title: documentTitle
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            title: documentTitle
+                        }
+                    ]
+                }).container().appendTo($('#TablaStoped_buttons'));
+
+                const exportButtons = document.querySelectorAll('#TablaStoped_export_menu [data-kt-export]');
+                exportButtons.forEach(exportButton => {
+                    exportButton.addEventListener('click', e => {
+                        e.preventDefault();
+
+                        var exportValue = e.target.getAttribute('data-kt-export');
+                        var target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+
+                        target.click();
+                    });
+                });
+            }
+
+            var handleSearchDatatable = () => {
+                const filterSearch = document.querySelector('[data-kt-filter="search"]');
+                filterSearch.addEventListener('keyup', function (e) {
+                    datatable.search(e.target.value).draw();
+                });
+            }
+
+            return {
+                init: function () {
+                    table = document.querySelector('#TablaStoped');
+
+                    if (!table) {
+                        return;
+                    }
+
+                    initDatatable();
+                    exportButtons();
+                    handleSearchDatatable();
+                }
+            };
+        }();
+
+        KTUtil.onDOMContentLoaded(function () {
+            KTDatatablesStop.init();
+        });
+    </script>
+
+    @*globales*@
+    <script>
+        var IdSeccion = $("#IdSeccion").val();
+    </script>
+
+    @*save the new ALert*@
+    <script>
+        function SaveNewAlert() {
+            var Modelo = $('#IdModelAlert').val();
+            var Alert = $('#IdAlertText').val();
+
+            $.ajax({
+                url: "@Url.Action("StopModel","CP_StopModels")",
+                data: {
+                    Modelo: Modelo,
+                    Alert: Alert,
+                    IdSeccion: IdSeccion
+                },
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+            }).done(function (result) {
+                if (result != null) {
+                    if (result == 'Error') {
+                        SystemServerError()
+                    }
+                    else if (result == 'noSession') {
+                        swalExpired()
+                    }
+                    else if (result == 'Sorry') {
+                        swalNoAuthorized()
+                    }
+                    else if (result == 'NoPage') {
+                        swalNoAuthorized()
+                    }
+                    else {
+
+                        var obj = JSON.parse(result);
+
+                        var IdRegistro = obj[0].ID;
+                        var Respuesta = obj[0].Resultado;
+
+                        console.log(Respuesta)
+
+                        if (Respuesta == 'NoExist') {
+                            swal.fire({
+                                text: "There is no model, or the model you want to stop is stopped, please review it.",
+                                icon: "warning",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-light-primary"
+                                }
+                            })
+                        }
+                        else {
+                            var t = $('#TablaStoped').DataTable();
+
+                            Swal.fire({
+                                text: "The action has been successfully submitted!",
+                                icon: "success",
+                                buttonsStyling: false,
+                                allowEscapeKey: false,
+                                allowOutsideClick: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+
+                                    t.row.add([
+                                        `<a class="p-0 btn btn-sm  me-2" onclick="DeleteStop(this, ${IdRegistro})"><i class="fas fa-times fs-3 text-danger"></i></a>`,
+                                        Modelo,
+                                        Alert,
+                                        Respuesta
+                                    ]).draw();
+
+                                    KTApp.init();
+                                    KTApp.initPageLoader();
+                                    KTMenu.init();
+
+                                    $("#IdModelAlert").val("");
+                                    $("#IdAlertText").val('');
+
+                                    $('#NewAlert').modal('hide');
+                                }
+                            });
+                        }
+
+
+                    }
+
+                }
+                else {
+                    SystemServerError()
+                }
+            }).fail(function (error) {
+                swalErrorServer()
+            });
+
+
+
+        }
+    </script>
+
+    @*Delete ALert*@
+    <script>
+        function DeleteStop(DeleteRow, RegisterID) {
+            Swal.fire({
+                text: "Are you sure to Delete the Model Stoped?",
+                icon: "question",
+                buttonsStyling: false,
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                showCancelButton: true,
+                closeOnCancel: true,
+                confirmButtonText: "Confirm",
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: 'btn btn-danger'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "@Url.Action("DeleteStope","CP_StopModels")",
+                        data: {
+                            RegisterID: RegisterID,
+                            IdSeccion: IdSeccion
+                        },
+                        type: "POST",
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                    }).done(function (result) {
+                        if (result != null) {
+                            if (result == 'Error') {
+                                SystemServerError()
+                            }
+                            if (result == 'noSession') {
+                                swalExpired()
+                            }
+                            else if (result == 'Sorry') {
+                                swalNoAuthorized()
+                            }
+                            else if (result == 'NoPage') {
+                                swalNoAuthorized()
+                            }
+                            else {
+
+                                Swal.fire({
+                                    text: "The action has been successfully submitted!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    allowEscapeKey: false,
+                                    allowOutsideClick: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        var table = $('#TablaStoped').DataTable();
+                                        table.row($(DeleteRow).parents('tr')).remove().draw();
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            SystemServerError()
+                        }
+                    }).fail(function (error) {
+                        swalErrorServer()
+                    });
+
+                }
+                else {
+                    $('.swal2-container').css('display', 'none');
+                }
+            });
+        }
+    </script>
+
+    @*Form Validation New Alert*@
+    <script>
+        var AlertForm = document.getElementById('IdFormAlert');
+        var validatorNewAlert = FormValidation.formValidation(
+            AlertForm,
+            {
+                fields: {
+                    IdModelAlert: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Input Model is required!'
+                            }
+                        }
+                    },
+                    IdAlertText: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Input Alert is required!'
+                            }
+                        }
+                    }
+
+                },
+
+                plugins: { //Learn more: https://formvalidation.io/guide/plugins
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        var submitButtonAlert = document.getElementById('SendNewAlert');
+
+        submitButtonAlert.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (validatorNewAlert) {
+                validatorNewAlert.validate().then(function (status) {
+                    if (status == 'Valid') {
+
+                        submitButtonAlert.setAttribute('data-kt-indicator', 'on');
+                        submitButtonAlert.disabled = true;
+                        setTimeout(function () {
+                            submitButtonAlert.removeAttribute('data-kt-indicator');
+                            submitButtonAlert.disabled = false;
+
+                            SaveNewAlert()
+
+                        }, 900);
+                    }
+                    else {
+                        submitButtonAlert.setAttribute('data-kt-indicator', 'on');
+                        submitButtonAlert.disabled = true;
+                        setTimeout(function () {
+                            submitButtonAlert.removeAttribute('data-kt-indicator');
+                            submitButtonAlert.disabled = false;
+
+                        }, 100);
+
+                    }
+                });
+            }
+        });
+    </script>
+
+}
